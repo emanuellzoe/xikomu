@@ -1,0 +1,15 @@
+# OS
+.DS_Store
+
+# Node
+node_modules/
+
+# Foundry
+contracts/cache/
+contracts/out/
+contracts/broadcast/
+
+# Secrets
+.env
+.env.local
+**/.env
