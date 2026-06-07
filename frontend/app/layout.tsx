@@ -1,0 +1,28 @@
+import type { Metadata } from "next";
+import Script from "next/script";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "Casa Flow | Effortless Furnishing",
+  description:
+    "Premium furnishing without the financial pressure — factory-direct furniture with flexible, interest-free payment plans.",
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" className="scroll-smooth">
+      <body
+        className="bg-[#FAFAF8] text-stone-600 text-xl font-light antialiased min-h-screen flex flex-col relative overflow-x-hidden"
+        style={{ fontFamily: "'Inter', sans-serif" }}
+      >
+        {children}
+        {/* Icon libraries used by the template markup */}
+        <Script
+          src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"
+          strategy="afterInteractive"
+        />
+        <Script src="https://unpkg.com/lucide@latest" strategy="afterInteractive" />
+      </body>
+    </html>
+  );
+}
