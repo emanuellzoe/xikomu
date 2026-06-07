@@ -23,7 +23,7 @@ export const landingHtml = String.raw`
                 <button class="hidden md:flex items-center gap-2 text-lg font-normal text-stone-900 hover:text-stone-600 transition-colors">
                     Docs
                 </button>
-                <button class="hover:bg-[#A84F2E] transition-all flex text-lg font-normal text-white bg-[#C96442] rounded-full pt-2.5 pr-5 pb-2.5 pl-5 gap-x-2 gap-y-2 items-center">Launch App</button>
+                <a href="/app" class="hover:bg-[#A84F2E] transition-all flex text-lg font-normal text-white bg-[#C96442] rounded-full pt-2.5 pr-5 pb-2.5 pl-5 gap-x-2 gap-y-2 items-center">Launch App</a>
             </div>
         </div>
     </nav>
@@ -48,7 +48,7 @@ export const landingHtml = String.raw`
                 <p class="leading-relaxed text-2xl font-light text-stone-500 font-montserrat max-w-2xl mb-10">Set a savings plan once and let an on-chain keeper move cUSD into your vault on schedule. Non-custodial, withdraw anytime &mdash; right inside MiniPay.</p>
 
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                    <button class="hover:bg-[#A84F2E] transition-all sm:w-auto text-xl font-normal text-white bg-[#C96442] w-full rounded-full pt-4 pr-8 pb-4 pl-8 shadow-xl">Start Saving Free</button>
+                    <a href="/app" class="text-center hover:bg-[#A84F2E] transition-all sm:w-auto text-xl font-normal text-white bg-[#C96442] w-full rounded-full pt-4 pr-8 pb-4 pl-8 shadow-xl">Start Saving Free</a>
                     <a href="#payment-section" class="sm:w-auto hover:text-stone-900 transition-colors flex hover:border-stone-200 text-xl font-normal text-stone-600 w-full border-transparent border rounded-full pt-4 pr-8 pb-4 pl-8 gap-x-2 gap-y-2 items-center justify-center">See How It Works</a>
                 </div>
             </div>
@@ -370,7 +370,7 @@ export const landingHtml = String.raw`
                 </h2>
                 <p class="text-2xl text-stone-500 max-w-2xl mr-auto mb-12 ml-auto font-light">Start your first auto-save plan today &mdash; non-custodial, on Celo, right inside MiniPay.</p>
                 <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-                    <button class="sm:w-auto hover:bg-[#A84F2E] transition-colors flex btn-pulse text-xl font-normal text-white bg-[#C96442] w-full rounded-full pt-4 pr-8 pb-4 pl-8 relative gap-x-2 gap-y-2 items-center justify-center">Start Saving</button>
+                    <a href="/app" class="sm:w-auto hover:bg-[#A84F2E] transition-colors flex btn-pulse text-xl font-normal text-white bg-[#C96442] w-full rounded-full pt-4 pr-8 pb-4 pl-8 relative gap-x-2 gap-y-2 items-center justify-center">Start Saving</a>
                     <button class="sm:w-auto hover:bg-stone-50 transition-all flex text-xl font-normal text-stone-900 bg-white w-full border-stone-200 border rounded-full pt-4 pr-8 pb-4 pl-8 gap-x-2 gap-y-2 items-center justify-center">Learn More</button>
                 </div>
             </div>
