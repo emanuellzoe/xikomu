@@ -67,18 +67,18 @@ export default function Landing() {
     const slider = document.getElementById("finance-slider") as HTMLInputElement | null;
     const monthsDisplay = document.getElementById("months-display");
     const completionPrice = document.getElementById("completion-price");
-    const baseCompletionAmount = 70000;
+    const dailyAmount = 1; // cUSD saved per day in the projection
     const onSlider = (e: Event) => {
       const months = parseInt((e.target as HTMLInputElement).value);
       if (!monthsDisplay || !completionPrice) return;
       if (months === 0) {
         monthsDisplay.textContent = "0 MONTHS";
-        completionPrice.textContent = "AED " + baseCompletionAmount.toLocaleString();
+        completionPrice.textContent = "0 cUSD";
       } else {
         monthsDisplay.textContent = months === 1 ? "1 MONTH" : `${months} MONTHS`;
-        const monthly = baseCompletionAmount / months;
+        const projected = dailyAmount * 30 * months;
         completionPrice.textContent =
-          "AED " + monthly.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+          projected.toLocaleString(undefined, { maximumFractionDigits: 0 }) + " cUSD";
       }
     };
     if (slider) slider.addEventListener("input", onSlider);

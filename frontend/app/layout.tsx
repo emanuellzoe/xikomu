@@ -3,9 +3,9 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Casa Flow | Effortless Furnishing",
+  title: "Xikomu | Automatic Savings on Celo",
   description:
-    "Premium furnishing without the financial pressure — factory-direct furniture with flexible, interest-free payment plans.",
+    "Set a savings plan once and let an on-chain keeper move cUSD into your vault on schedule. Non-custodial, withdraw anytime — a MiniPay mini-app on Celo.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
