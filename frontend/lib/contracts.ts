@@ -10,11 +10,18 @@ export const CUSD: Record<number, Address> = {
   [celoSepolia.id]: (process.env.NEXT_PUBLIC_CUSD_SEPOLIA as Address) || ZERO_ADDRESS,
 };
 
-/** AutoSaveVault per chain. Filled after deploy (via env). */
+/** AutoSaveVault per chain (legacy auto-save product). */
 export const VAULT: Record<number, Address> = {
   [celo.id]: (process.env.NEXT_PUBLIC_VAULT_CELO as Address) || ZERO_ADDRESS,
   [celoAlfajores.id]: (process.env.NEXT_PUBLIC_VAULT_ALFAJORES as Address) || ZERO_ADDRESS,
   [celoSepolia.id]: (process.env.NEXT_PUBLIC_VAULT_SEPOLIA as Address) || ZERO_ADDRESS,
+};
+
+/** XikomuFlip game per chain. Filled after deploy (via env). */
+export const FLIP: Record<number, Address> = {
+  [celo.id]: (process.env.NEXT_PUBLIC_FLIP_CELO as Address) || ZERO_ADDRESS,
+  [celoAlfajores.id]: (process.env.NEXT_PUBLIC_FLIP_ALFAJORES as Address) || ZERO_ADDRESS,
+  [celoSepolia.id]: (process.env.NEXT_PUBLIC_FLIP_SEPOLIA as Address) || ZERO_ADDRESS,
 };
 
 export const EXPLORER: Record<number, string> = {
@@ -45,6 +52,18 @@ export function isConfigured(chainId: number): boolean {
   );
 }
 
+export function isFlipConfigured(chainId: number): boolean {
+  const f = FLIP[chainId];
+  const c = CUSD[chainId];
+  return (
+    !!f && f.toLowerCase() !== ZERO_ADDRESS &&
+    !!c && c.toLowerCase() !== ZERO_ADDRESS
+  );
+}
+
+export const MIN_BET = 10_000_000_000_000_000n; // 0.01 cUSD
+export const MAX_BET = 5_000_000_000_000_000_000n; // 5 cUSD
+
 export const vaultAbi = [
   { type: "function", name: "createPlan", stateMutability: "nonpayable", inputs: [{ name: "amount", type: "uint128" }, { name: "interval", type: "uint64" }], outputs: [] },
   { type: "function", name: "cancelPlan", stateMutability: "nonpayable", inputs: [], outputs: [] },
@@ -63,4 +82,25 @@ export const erc20Abi = [
   { type: "function", name: "approve", stateMutability: "nonpayable", inputs: [{ name: "spender", type: "address" }, { name: "amount", type: "uint256" }], outputs: [{ name: "", type: "bool" }] },
   { type: "function", name: "allowance", stateMutability: "view", inputs: [{ name: "owner", type: "address" }, { name: "spender", type: "address" }], outputs: [{ name: "", type: "uint256" }] },
   { type: "function", name: "balanceOf", stateMutability: "view", inputs: [{ name: "", type: "address" }], outputs: [{ name: "", type: "uint256" }] },
+] as const;
+
+export const flipAbi = [
+  { type: "function", name: "buyCredits", stateMutability: "nonpayable", inputs: [{ name: "amount", type: "uint256" }], outputs: [] },
+  { type: "function", name: "cashOut", stateMutability: "nonpayable", inputs: [{ name: "amount", type: "uint256" }], outputs: [] },
+  { type: "function", name: "flip", stateMutability: "nonpayable", inputs: [{ name: "bet", type: "uint256" }, { name: "choiceHeads", type: "bool" }], outputs: [{ name: "won", type: "bool" }, { name: "resultHeads", type: "bool" }] },
+  { type: "function", name: "chips", stateMutability: "view", inputs: [{ name: "", type: "address" }], outputs: [{ name: "", type: "uint256" }] },
+  { type: "function", name: "houseLiquidity", stateMutability: "view", inputs: [], outputs: [{ name: "", type: "uint256" }] },
+  { type: "function", name: "previewNetWin", stateMutability: "view", inputs: [{ name: "bet", type: "uint256" }], outputs: [{ name: "", type: "uint256" }] },
+  { type: "function", name: "paused", stateMutability: "view", inputs: [], outputs: [{ name: "", type: "bool" }] },
+  { type: "event", name: "Flipped", inputs: [
+    { name: "player", type: "address", indexed: true },
+    { name: "bet", type: "uint256", indexed: false },
+    { name: "choiceHeads", type: "bool", indexed: false },
+    { name: "resultHeads", type: "bool", indexed: false },
+    { name: "won", type: "bool", indexed: false },
+    { name: "payout", type: "uint256", indexed: false },
+    { name: "newChips", type: "uint256", indexed: false },
+  ] },
+  { type: "event", name: "CreditsBought", inputs: [{ name: "player", type: "address", indexed: true }, { name: "amount", type: "uint256", indexed: false }, { name: "newChips", type: "uint256", indexed: false }] },
+  { type: "event", name: "CashedOut", inputs: [{ name: "player", type: "address", indexed: true }, { name: "amount", type: "uint256", indexed: false }, { name: "newChips", type: "uint256", indexed: false }] },
 ] as const;
