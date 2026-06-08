@@ -30,6 +30,8 @@ import {
   ZERO_ADDRESS,
   flipAbi,
   isFlipConfigured,
+  maxBetForHouse,
+  netWin,
 } from "@/lib/contracts";
 
 // Percent-of-chips quick bets (100 = all chips, capped at MAX_BET).
@@ -130,15 +132,23 @@ export default function FlipGamePage() {
   }, [bet]);
   const flipping = (writing || confirming) && lastAction === "flip";
 
-  // Set the bet to a percentage of current chips, clamped to [MIN_BET, MAX_BET].
+  // Largest bet the house pool can pay out on (caps MAX_BET). 0 while loading.
+  const houseMaxBet = house !== undefined ? maxBetForHouse(house) : MAX_BET;
+
+  // Set the bet to a percentage of current chips, clamped to what's playable:
+  // [MIN_BET, min(MAX_BET, chips, houseMaxBet)].
   function setBetPct(pct: number) {
     if (!chips || chips <= 0n) return;
     let w = (chips * BigInt(pct)) / 100n;
-    if (w > MAX_BET) w = MAX_BET;
+    const cap = houseMaxBet < MAX_BET ? houseMaxBet : MAX_BET;
+    if (w > cap) w = cap;
     if (w < MIN_BET) w = MIN_BET;
     setBet(formatUnits(w, CUSD_DECIMALS));
   }
-  const betValid = betWei >= MIN_BET && betWei <= MAX_BET && (chips ?? 0n) >= betWei;
+  // House must be able to cover the win (mirrors the contract's InsufficientHouse).
+  const houseCovers = house !== undefined && house >= netWin(betWei);
+  const betValid =
+    betWei >= MIN_BET && betWei <= MAX_BET && (chips ?? 0n) >= betWei && houseCovers;
 
   // on tx confirmation, decode result + refresh
   useEffect(() => {
@@ -302,7 +312,7 @@ export default function FlipGamePage() {
                 className="w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-lg text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#FF5E00]/40"
                 placeholder="0.10" />
               <p className="text-xs text-stone-400 mt-1.5 mb-4 font-light">
-                Min {fmt(MIN_BET)} · Max {fmt(MAX_BET)} CELO{chips ? ` · you have ${fmt(chips)} chips` : ""}
+                Min {fmt(MIN_BET)} · Max {fmt(houseMaxBet < MAX_BET ? houseMaxBet : MAX_BET)} CELO{chips ? ` · you have ${fmt(chips)} chips` : ""}
               </p>
 
               <button onClick={doFlip} disabled={!configured || busy || !betValid}
@@ -317,7 +327,9 @@ export default function FlipGamePage() {
                         ? `Max ${fmt(MAX_BET)} CELO`
                         : (chips ?? 0n) < betWei
                           ? "Buy more chips below"
-                          : `Flip for ${bet} CELO`}
+                          : !houseCovers
+                            ? `House max ${fmt(houseMaxBet)} CELO right now`
+                            : `Flip for ${bet} CELO`}
               </button>
             </Card>
 
