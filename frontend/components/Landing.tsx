@@ -1,271 +1,179 @@
-"use client";
+import Link from "next/link";
 
-import { useEffect } from "react";
-import { landingHtml } from "./landingHtml";
+/* ---------- small coin visuals ---------- */
+function CoinFace({ heads, className = "" }: { heads: boolean; className?: string }) {
+  return (
+    <div
+      className={`rounded-full flex items-center justify-center border-4 ${className}`}
+      style={
+        heads
+          ? {
+              background: "radial-gradient(circle at 35% 30%, #E8A07E, #C96442 60%, #A84F2E)",
+              borderColor: "#E8A07E",
+              boxShadow: "0 18px 40px -10px rgba(201,100,66,0.6)",
+            }
+          : {
+              background: "radial-gradient(circle at 35% 30%, #E7E5E4, #A8A29E 60%, #78716C)",
+              borderColor: "#D6D3D1",
+              boxShadow: "0 18px 40px -12px rgba(0,0,0,0.3)",
+            }
+      }
+    >
+      <span className="font-playfair text-white">{heads ? "H" : "T"}</span>
+    </div>
+  );
+}
 
-/**
- * Landing page ported from the Casa Flow static template.
- * Markup is injected verbatim (display:contents keeps nav/main/footer as
- * direct flex children of <body>); the original scroll/animation script
- * runs here in a post-mount effect. Colors are themed to Claude orange.
- */
+function Step({ n, title, body }: { n: number; title: string; body: string }) {
+  return (
+    <div className="rounded-3xl border border-stone-200 bg-white p-7">
+      <div className="w-9 h-9 rounded-full bg-[#C96442] text-white flex items-center justify-center font-medium mb-4">
+        {n}
+      </div>
+      <h3 className="font-playfair text-2xl text-[#2C2B29] mb-2">{title}</h3>
+      <p className="text-base text-stone-500 font-light leading-relaxed">{body}</p>
+    </div>
+  );
+}
+
+function Faq({ q, a }: { q: string; a: string }) {
+  return (
+    <details className="group rounded-2xl border border-stone-200 bg-white px-6 py-5">
+      <summary className="flex items-center justify-between cursor-pointer list-none font-medium text-stone-800">
+        {q}
+        <span className="text-[#C96442] transition-transform group-open:rotate-45 text-2xl leading-none">+</span>
+      </summary>
+      <p className="mt-3 text-base text-stone-500 font-light leading-relaxed">{a}</p>
+    </details>
+  );
+}
+
 export default function Landing() {
-  useEffect(() => {
-    let rafId = 0;
-    let running = true;
+  return (
+    <div className="w-full">
+      {/* Nav */}
+      <header className="sticky top-0 z-40 bg-[#FAFAF8]/80 backdrop-blur-md border-b border-stone-200/60">
+        <div className="max-w-5xl mx-auto px-5 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <span className="text-[#E8A07E] font-light tracking-widest text-xl uppercase">Xiko</span>
+            <span className="text-[#C96442] font-normal text-xl tracking-tight -ml-1">mu</span>
+            <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-[#C96442]/10 text-[#A84F2E] font-medium">Flip</span>
+          </div>
+          <Link
+            href="/app"
+            className="bg-[#C96442] text-white rounded-full px-5 py-2 text-sm font-medium hover:bg-[#A84F2E] transition-colors shadow-[0_6px_16px_rgba(201,100,66,0.35)]"
+          >
+            Launch App
+          </Link>
+        </div>
+      </header>
 
-    const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
-    const mapRange = (val: number, inMin: number, inMax: number, outMin: number, outMax: number) =>
-      outMin + ((clamp(val, inMin, inMax) - inMin) / (inMax - inMin)) * (outMax - outMin);
+      {/* Hero */}
+      <section className="max-w-5xl mx-auto px-5 pt-16 pb-20 sm:pt-24 sm:pb-28">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <span className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full bg-[#C96442]/10 text-[#A84F2E] mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C96442]" /> A coin-flip game on Celo
+            </span>
+            <h1 className="font-playfair text-5xl sm:text-6xl leading-[1.05] text-[#2C2B29] mb-5">
+              Pick a side.
+              <br />
+              Flip. Win <span className="text-[#C96442]">1.95×</span>.
+            </h1>
+            <p className="text-lg text-stone-500 font-light leading-relaxed mb-8 max-w-md">
+              Buy chips with CELO, call Heads or Tails, and every flip settles in one on-chain
+              transaction. Provably fair, low-stakes fun — cash out anytime.
+            </p>
+            <div className="flex flex-wrap items-center gap-4">
+              <Link
+                href="/app"
+                className="bg-[#C96442] text-white rounded-full px-7 py-3.5 text-lg font-medium hover:bg-[#A84F2E] transition-colors shadow-[0_8px_20px_rgba(201,100,66,0.35)]"
+              >
+                Play now
+              </Link>
+              <a href="#how" className="text-stone-500 hover:text-stone-900 transition-colors font-light">
+                How it works ↓
+              </a>
+            </div>
+          </div>
 
-    // Lucide icons (loaded via <Script>); poll until available.
-    const tryLucide = () => {
-      const l = (window as unknown as { lucide?: { createIcons: () => void } }).lucide;
-      if (l) { l.createIcons(); return true; }
-      return false;
-    };
-    if (!tryLucide()) {
-      const iv = setInterval(() => { if (tryLucide()) clearInterval(iv); }, 200);
-      setTimeout(() => clearInterval(iv), 6000);
-    }
+          {/* Coin cluster */}
+          <div className="relative h-72 sm:h-96 flex items-center justify-center">
+            <CoinFace heads className="w-44 h-44 sm:w-56 sm:h-56 text-6xl sm:text-7xl rotate-[-8deg]" />
+            <div className="absolute right-6 top-6 sm:right-12">
+              <CoinFace heads={false} className="w-24 h-24 sm:w-28 sm:h-28 text-3xl sm:text-4xl rotate-[12deg]" />
+            </div>
+            <div className="absolute left-2 bottom-4 sm:left-8">
+              <CoinFace heads={false} className="w-16 h-16 sm:w-20 sm:h-20 text-xl sm:text-2xl rotate-[-18deg]" />
+            </div>
+          </div>
+        </div>
+      </section>
 
-    // SVG draw loop on hover
-    const svgWrapper = document.getElementById("svg-wrapper");
-    let loopInterval: ReturnType<typeof setInterval> | undefined;
-    const onSvgEnter = () => {
-      if (!svgWrapper) return;
-      const restart = () => { svgWrapper.innerHTML = svgWrapper.innerHTML; };
-      restart();
-      loopInterval = setInterval(restart, 3200);
-    };
-    const onSvgLeave = () => { if (loopInterval) clearInterval(loopInterval); };
-    if (svgWrapper) {
-      svgWrapper.addEventListener("mouseenter", onSvgEnter);
-      svgWrapper.addEventListener("mouseleave", onSvgLeave);
-    }
+      {/* How it works */}
+      <section id="how" className="bg-white border-y border-stone-200/70">
+        <div className="max-w-5xl mx-auto px-5 py-20">
+          <h2 className="font-playfair text-3xl sm:text-4xl text-[#2C2B29] mb-3 text-center">How it works</h2>
+          <p className="text-stone-500 font-light text-center mb-12 max-w-lg mx-auto">
+            Three taps from wallet to win. No accounts, no custody — just play.
+          </p>
+          <div className="grid sm:grid-cols-3 gap-5">
+            <Step n={1} title="Buy chips" body="Top up chips with CELO at 1:1. Chips are your in-game balance — never custodial." />
+            <Step n={2} title="Flip a coin" body="Pick Heads or Tails and set your bet. Each flip is one on-chain transaction." />
+            <Step n={3} title="Win 1.95× or cash out" body="Win and your chips grow 1.95×. Cash chips back to CELO whenever you like." />
+          </div>
+        </div>
+      </section>
 
-    // Staggered reveal
-    const ctaObserver = new IntersectionObserver(
-      (entries, observer) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.querySelectorAll(".cta-bounce-enter").forEach((line, index) => {
-              setTimeout(() => line.classList.add("active"), index * 150);
-            });
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { root: null, rootMargin: "0px", threshold: 0.3 }
-    );
-    ["cta-heading", "hero-heading", "gallery-content-wrapper", "live-quote-text-content"].forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) ctaObserver.observe(el);
-    });
+      {/* Why */}
+      <section className="max-w-5xl mx-auto px-5 py-20">
+        <h2 className="font-playfair text-3xl sm:text-4xl text-[#2C2B29] mb-12 text-center">Built to be fair</h2>
+        <div className="grid sm:grid-cols-2 gap-5">
+          {[
+            ["Provably on-chain", "Every flip's result is decided and settled by the smart contract — verifiable on Celoscan, no hidden server."],
+            ["Cash out anytime", "Withdrawing your chips always works — even if the game is paused. Your balance is yours."],
+            ["The house can't touch your chips", "The owner can only manage the house pool. Player chips are off-limits, by design."],
+            ["Real on-chain activity", "1 flip = 1 transaction. Fast, cheap, and a genuinely on-chain game on Celo."],
+          ].map(([title, body]) => (
+            <div key={title} className="rounded-3xl border border-stone-200 bg-white p-7">
+              <h3 className="font-playfair text-xl text-[#2C2B29] mb-2">{title}</h3>
+              <p className="text-base text-stone-500 font-light leading-relaxed">{body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-    // Financing slider
-    const slider = document.getElementById("finance-slider") as HTMLInputElement | null;
-    const monthsDisplay = document.getElementById("months-display");
-    const completionPrice = document.getElementById("completion-price");
-    const dailyAmount = 1; // cUSD saved per day in the projection
-    const onSlider = (e: Event) => {
-      const months = parseInt((e.target as HTMLInputElement).value);
-      if (!monthsDisplay || !completionPrice) return;
-      if (months === 0) {
-        monthsDisplay.textContent = "0 MONTHS";
-        completionPrice.textContent = "0 cUSD";
-      } else {
-        monthsDisplay.textContent = months === 1 ? "1 MONTH" : `${months} MONTHS`;
-        const projected = dailyAmount * 30 * months;
-        completionPrice.textContent =
-          projected.toLocaleString(undefined, { maximumFractionDigits: 0 }) + " cUSD";
-      }
-    };
-    if (slider) slider.addEventListener("input", onSlider);
+      {/* FAQ */}
+      <section className="bg-white border-t border-stone-200/70">
+        <div className="max-w-3xl mx-auto px-5 py-20">
+          <h2 className="font-playfair text-3xl sm:text-4xl text-[#2C2B29] mb-10 text-center">FAQ</h2>
+          <div className="flex flex-col gap-3">
+            <Faq q="What do I bet with?" a="CELO. You convert CELO into chips (1:1), then bet chips on each flip. Chips cash back to CELO anytime." />
+            <Faq q="How much can I win?" a="A winning flip pays 1.95× your bet — your stake back plus 0.95× profit. A losing bet goes to the house pool." />
+            <Faq q="Is it fair?" a="The coin result is computed on-chain by the contract, and the whole contract is open source and verified on Celoscan." />
+            <Faq q="Can I lose my deposit?" a="Only what you actually bet is at risk. Chips you haven't wagered can always be cashed out for CELO." />
+          </div>
+        </div>
+      </section>
 
-    // FAQ 3D wheel
-    const faqCarousel = document.getElementById("faq-carousel");
-    const faqCards = Array.from(document.querySelectorAll<HTMLElement>(".faq-card-wrapper"));
-    const faqBtnPrev = document.getElementById("faq-prev");
-    const faqBtnNext = document.getElementById("faq-next");
-    const faqScene = document.querySelector(".faq-scene");
-    let onResize: (() => void) | undefined;
-    if (faqCarousel && faqCards.length > 0) {
-      let faqAngle = 0;
-      const faqNumCards = faqCards.length;
-      const faqTheta = 360 / faqNumCards;
-      const getFaqRadius = () => (window.innerWidth < 640 ? 250 : 380);
-      const layoutFaqCards = () => {
-        const radius = getFaqRadius();
-        faqCards.forEach((card, index) => {
-          card.style.transform = `rotateY(${index * faqTheta}deg) translateZ(${radius}px)`;
-        });
-      };
-      const updateFaqCarousel = () => {
-        faqCarousel.style.transform = `rotateY(${faqAngle}deg)`;
-        const normalized = ((faqAngle % 360) + 360) % 360;
-        const activeIdx = Math.round((360 - normalized) / faqTheta) % faqNumCards;
-        faqCards.forEach((card, idx) => {
-          const inner = card.querySelector(".faq-card-inner");
-          if (idx === activeIdx) card.classList.add("is-active");
-          else { card.classList.remove("is-active"); inner?.classList.remove("is-flipped"); }
-        });
-      };
-      layoutFaqCards();
-      updateFaqCarousel();
-      onResize = layoutFaqCards;
-      window.addEventListener("resize", onResize);
-      faqBtnNext?.addEventListener("click", () => { faqAngle -= faqTheta; updateFaqCarousel(); });
-      faqBtnPrev?.addEventListener("click", () => { faqAngle += faqTheta; updateFaqCarousel(); });
-      faqCards.forEach((card, idx) => {
-        card.addEventListener("click", () => {
-          if (!card.classList.contains("is-active")) {
-            const targetAngle = -idx * faqTheta;
-            let shortest = (targetAngle - faqAngle) % 360;
-            if (shortest > 180) shortest -= 360;
-            if (shortest < -180) shortest += 360;
-            faqAngle += shortest;
-            updateFaqCarousel();
-          } else {
-            card.querySelector(".faq-card-inner")?.classList.toggle("is-flipped");
-          }
-        });
-      });
-      if (faqScene) {
-        let faqStartX = 0;
-        let faqIsDragging = false;
-        faqScene.addEventListener("touchstart", (e) => {
-          faqStartX = (e as TouchEvent).touches[0].clientX; faqIsDragging = true;
-        }, { passive: true } as AddEventListenerOptions);
-        faqScene.addEventListener("touchend", (e) => {
-          if (!faqIsDragging) return;
-          const diffX = faqStartX - (e as TouchEvent).changedTouches[0].clientX;
-          if (diffX > 50) { faqAngle -= faqTheta; updateFaqCarousel(); }
-          else if (diffX < -50) { faqAngle += faqTheta; updateFaqCarousel(); }
-          faqIsDragging = false;
-        });
-      }
-    }
+      {/* CTA + footer */}
+      <section className="max-w-5xl mx-auto px-5 py-20 text-center">
+        <h2 className="font-playfair text-4xl sm:text-5xl text-[#2C2B29] mb-4">Ready to flip?</h2>
+        <p className="text-stone-500 font-light mb-8">Pick a side and find out — your luck is one tap away.</p>
+        <Link
+          href="/app"
+          className="inline-block bg-[#C96442] text-white rounded-full px-8 py-4 text-lg font-medium hover:bg-[#A84F2E] transition-colors shadow-[0_8px_20px_rgba(201,100,66,0.35)]"
+        >
+          Launch the game
+        </Link>
+      </section>
 
-    // Scroll-driven animations
-    const parallaxSection = document.getElementById("collections");
-    const parallaxItems = Array.from(document.querySelectorAll<HTMLElement>(".parallax-item"));
-    const paySec = document.getElementById("payment-section");
-    const mockViewport = document.getElementById("mockup-viewport");
-    const mockScroll = document.getElementById("mockup-scroll-content");
-    const animItems = Array.from(document.querySelectorAll<HTMLElement>(".checkout-anim-item"));
-    const fastItems = Array.from(document.querySelectorAll<HTMLElement>(".fast-item"));
-    const quoteHeader = document.getElementById("quote-header");
-    const m1 = document.getElementById("m1");
-    const m2 = document.getElementById("m2");
-    const m3 = document.getElementById("m3");
-    const mLine = document.getElementById("milestone-progress-line");
-    const featSec = document.getElementById("features-section");
-    const featHeading = document.getElementById("features-heading");
-    const featCard1 = document.getElementById("feature-card-1");
-    const featCard2 = document.getElementById("feature-card-2");
-    const featCard3 = document.getElementById("feature-card-3");
-
-    let currentPayProg = 0;
-    let currentParallaxProg = -1;
-
-    function updateScroll() {
-      if (!running) return;
-      const windowHeight = window.innerHeight;
-
-      if (featSec && featCard1 && featCard2 && featCard3) {
-        const rect = featSec.getBoundingClientRect();
-        const rawP = -rect.top / (rect.height - windowHeight);
-        const p = clamp(rawP, 0, 1);
-        const easeP = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
-        if (featHeading) {
-          const hProg = clamp(rawP * 3, 0, 1);
-          featHeading.style.opacity = String(hProg);
-          featHeading.style.transform = `translateY(${20 * (1 - hProg)}px)`;
-        }
-        if (window.innerWidth >= 1024) {
-          featCard1.style.transform = `translateX(calc(${-15 - 105 * easeP}%)) rotate(${-3 - 9 * easeP}deg) translateY(${10 * easeP}px)`;
-          featCard2.style.transform = `translateY(${-15 * easeP}px) scale(${1 + 0.05 * easeP})`;
-          featCard3.style.transform = `translateX(calc(${15 + 105 * easeP}%)) rotate(${3 + 9 * easeP}deg) translateY(${10 * easeP}px)`;
-        } else {
-          featCard1.style.transform = `translateY(calc(${-5 - 55 * easeP}%)) rotate(${-2 - 4 * easeP}deg) scale(${1 - 0.05 * easeP})`;
-          featCard2.style.transform = `scale(${1 + 0.02 * easeP})`;
-          featCard3.style.transform = `translateY(calc(${5 + 55 * easeP}%)) rotate(${2 + 4 * easeP}deg) scale(${1 - 0.05 * easeP})`;
-        }
-      }
-
-      if (parallaxSection) {
-        const rect = parallaxSection.getBoundingClientRect();
-        if (rect.top <= windowHeight && rect.bottom >= 0) {
-          let targetProg = clamp(-rect.top / (rect.height - windowHeight), 0, 1);
-          if (currentParallaxProg === -1) currentParallaxProg = targetProg;
-          currentParallaxProg += (targetProg - currentParallaxProg) * 0.08;
-          parallaxItems.forEach((item) => {
-            const speed = parseFloat(item.dataset.speed || "0");
-            const rot = parseFloat(item.dataset.rotation || "0");
-            const travelDistance = windowHeight * 2.2;
-            const yOffset = (0.5 - currentParallaxProg) * travelDistance * speed;
-            item.style.transform = `translateY(${yOffset}px) rotate(${rot}deg)`;
-          });
-        }
-      }
-
-      if (paySec && mockScroll && mockViewport) {
-        const pRect = paySec.getBoundingClientRect();
-        const targetPayProg = Math.max(0, Math.min(1, -pRect.top / (pRect.height - windowHeight)));
-        currentPayProg += (targetPayProg - currentPayProg) * 0.05;
-        const prog = currentPayProg;
-        if (quoteHeader) {
-          quoteHeader.style.transform = `translateY(${mapRange(prog, 0.0, 0.1, -20, 0)}px)`;
-          quoteHeader.style.opacity = String(mapRange(prog, 0.0, 0.1, 0, 1));
-        }
-        const maxScroll = mockScroll.scrollHeight - mockViewport.clientHeight;
-        if (maxScroll > 0) {
-          mockScroll.style.transform = `translateY(${-mapRange(prog, 0.1, 0.9, 0, maxScroll + 50)}px)`;
-        }
-        animItems.forEach((item, idx) => {
-          const start = 0.05 + idx * 0.05;
-          const itemP = clamp(mapRange(prog, start, start + 0.1, 0, 1), 0, 1);
-          const dir = item.dataset.anim === "left" ? -20 : item.dataset.anim === "right" ? 20 : 0;
-          const yDir = item.dataset.anim === "summary" ? 20 : 0;
-          item.style.opacity = String(itemP);
-          item.style.transform = `translate(${dir * (1 - itemP)}px, ${yDir * (1 - itemP)}px) scale(${0.95 + 0.05 * itemP})`;
-        });
-        const fProg = clamp(mapRange(prog, 0.15, 0.35, 0, 1), 0, 1);
-        fastItems.forEach((item, idx) => {
-          const step = 1 / fastItems.length;
-          const itemStart = idx * step;
-          const itemP = clamp(mapRange(fProg, itemStart, itemStart + step * 2, 0, 1), 0, 1);
-          item.style.opacity = String(itemP);
-          item.style.transform = `translateY(${15 * (1 - itemP)}px)`;
-        });
-        if (m1 && m2 && m3 && mLine) {
-          const mProg = clamp(mapRange(prog, 0.45, 0.85, 0, 1), 0, 1);
-          mLine.style.height = `${mProg * 100}%`;
-          if (mProg > 0.05) { m1.classList.add("active"); mLine.classList.add("drawing-active"); }
-          else { m1.classList.remove("active"); mLine.classList.remove("drawing-active"); }
-          m2.classList.toggle("active", mProg > 0.45);
-          m3.classList.toggle("active", mProg > 0.85);
-        }
-      }
-
-      rafId = requestAnimationFrame(updateScroll);
-    }
-    rafId = requestAnimationFrame(updateScroll);
-
-    return () => {
-      running = false;
-      cancelAnimationFrame(rafId);
-      if (loopInterval) clearInterval(loopInterval);
-      if (svgWrapper) {
-        svgWrapper.removeEventListener("mouseenter", onSvgEnter);
-        svgWrapper.removeEventListener("mouseleave", onSvgLeave);
-      }
-      if (slider) slider.removeEventListener("input", onSlider);
-      if (onResize) window.removeEventListener("resize", onResize);
-      ctaObserver.disconnect();
-    };
-  }, []);
-
-  return <div style={{ display: "contents" }} dangerouslySetInnerHTML={{ __html: landingHtml }} />;
+      <footer className="border-t border-stone-200/70">
+        <div className="max-w-5xl mx-auto px-5 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-stone-400 font-light">
+          <span>Xikomu Flip · a MiniPay mini-app on Celo</span>
+          <span>Provably on-chain · open source</span>
+        </div>
+      </footer>
+    </div>
+  );
 }
