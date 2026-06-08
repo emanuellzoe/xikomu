@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   useAccount,
   useBalance,
+  useBlockNumber,
   useChainId,
   useConnect,
   useDisconnect,
@@ -14,6 +15,7 @@ import {
   useWriteContract,
   usePublicClient,
 } from "wagmi";
+import { useQueryClient } from "@tanstack/react-query";
 import { celo, celoSepolia } from "wagmi/chains";
 import { formatUnits, parseUnits, parseEventLogs, parseAbiItem, type Address } from "viem";
 import {
@@ -74,7 +76,7 @@ export default function FlipGamePage() {
   }, [mounted, isConnected, connect, connectors]);
 
   // reads
-  const { data: gameData, refetch: refetchGame } = useReadContracts({
+  const { data: gameData, refetch: refetchGame, queryKey: gameQueryKey } = useReadContracts({
     contracts:
       configured && address
         ? [
@@ -88,13 +90,28 @@ export default function FlipGamePage() {
   const house = gameData?.[1]?.result as bigint | undefined;
 
   // Native CELO wallet balance (no token).
-  const { data: walletBalData, refetch: refetchWallet } = useBalance({
+  const { data: walletBalData, refetch: refetchWallet, queryKey: walletQueryKey } = useBalance({
     address,
     query: { enabled: !!address && supported },
   });
   const walletBal = walletBalData?.value;
 
   const refetchAll = () => { refetchGame(); refetchWallet(); };
+
+  // Keep balances live: invalidate reads on each new block so chips / wallet
+  // update after buy / flip / cash-out without a manual page refresh. A single
+  // post-tx refetch can race the RPC (read a node that hasn't synced the new
+  // block yet); re-invalidating per block self-corrects within a few seconds.
+  const queryClient = useQueryClient();
+  const { data: blockNumber } = useBlockNumber({
+    watch: true,
+    query: { enabled: !!address && supported },
+  });
+  useEffect(() => {
+    if (blockNumber === undefined) return;
+    queryClient.invalidateQueries({ queryKey: gameQueryKey });
+    queryClient.invalidateQueries({ queryKey: walletQueryKey });
+  }, [blockNumber]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // writes
   const { writeContract, data: txHash, isPending: writing, error: writeError, reset } = useWriteContract();
