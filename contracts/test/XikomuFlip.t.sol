@@ -3,44 +3,37 @@ pragma solidity 0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 import {XikomuFlip} from "../src/XikomuFlip.sol";
-import {MockERC20} from "./mocks/MockERC20.sol";
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract XikomuFlipTest is Test {
     XikomuFlip game;
-    MockERC20 cusd;
 
     address owner = makeAddr("owner");
     address alice = makeAddr("alice");
     address bob = makeAddr("bob");
 
     function setUp() public {
-        cusd = new MockERC20();
-        game = new XikomuFlip(address(cusd), owner);
+        game = new XikomuFlip(owner);
 
-        // Fund the house.
-        cusd.mint(owner, 1_000e18);
-        vm.startPrank(owner);
-        cusd.approve(address(game), type(uint256).max);
-        game.fundHouse(500e18);
-        vm.stopPrank();
+        // Fund the house with native CELO.
+        vm.deal(owner, 1_000e18);
+        vm.prank(owner);
+        game.fundHouse{value: 500e18}();
 
-        // Fund Alice and let the game pull chips.
-        cusd.mint(alice, 100e18);
-        vm.prank(alice);
-        cusd.approve(address(game), type(uint256).max);
+        // Give Alice some CELO to play with.
+        vm.deal(alice, 100e18);
     }
 
     /// invariant: contract holds exactly the chips + house it owes.
     function _assertBacked() internal view {
-        assertEq(cusd.balanceOf(address(game)), game.totalChips() + game.houseLiquidity());
+        assertEq(address(game).balance, game.totalChips() + game.houseLiquidity());
     }
 
     // ---------------------------------------------------------------- buy/cash
     function test_BuyCredits() public {
         vm.prank(alice);
-        game.buyCredits(20e18);
+        game.buyCredits{value: 20e18}();
         assertEq(game.chips(alice), 20e18);
         assertEq(game.totalChips(), 20e18);
         _assertBacked();
@@ -49,16 +42,16 @@ contract XikomuFlipTest is Test {
     function test_BuyCredits_RevertsZero() public {
         vm.prank(alice);
         vm.expectRevert(XikomuFlip.ZeroAmount.selector);
-        game.buyCredits(0);
+        game.buyCredits{value: 0}();
     }
 
     function test_CashOut() public {
         vm.startPrank(alice);
-        game.buyCredits(20e18);
+        game.buyCredits{value: 20e18}();
         game.cashOut(8e18);
         vm.stopPrank();
         assertEq(game.chips(alice), 12e18);
-        assertEq(cusd.balanceOf(alice), 100e18 - 12e18);
+        assertEq(alice.balance, 100e18 - 12e18);
         _assertBacked();
     }
 
@@ -70,7 +63,7 @@ contract XikomuFlipTest is Test {
 
     function test_CashOut_WorksWhilePaused() public {
         vm.prank(alice);
-        game.buyCredits(20e18);
+        game.buyCredits{value: 20e18}();
         vm.prank(owner);
         game.pause();
         vm.prank(alice);
@@ -81,7 +74,7 @@ contract XikomuFlipTest is Test {
     // ------------------------------------------------------------------- flip
     function test_Flip_SettlesConsistently() public {
         vm.prank(alice);
-        game.buyCredits(50e18);
+        game.buyCredits{value: 50e18}();
 
         uint256 before = game.chips(alice);
         uint256 bet = 1e18;
@@ -101,7 +94,7 @@ contract XikomuFlipTest is Test {
     function test_Flip_RevertsBetTooLow() public {
         uint256 minBet = game.MIN_BET();
         vm.prank(alice);
-        game.buyCredits(50e18);
+        game.buyCredits{value: 50e18}();
         vm.prank(alice);
         vm.expectRevert(XikomuFlip.BetOutOfRange.selector);
         game.flip(minBet - 1, true);
@@ -110,7 +103,7 @@ contract XikomuFlipTest is Test {
     function test_Flip_RevertsBetTooHigh() public {
         uint256 maxBet = game.MAX_BET();
         vm.prank(alice);
-        game.buyCredits(50e18);
+        game.buyCredits{value: 50e18}();
         vm.prank(alice);
         vm.expectRevert(XikomuFlip.BetOutOfRange.selector);
         game.flip(maxBet + 1, true);
@@ -119,7 +112,7 @@ contract XikomuFlipTest is Test {
     function test_Flip_RevertsInsufficientChips() public {
         uint256 minBet = game.MIN_BET();
         vm.prank(alice);
-        game.buyCredits(minBet); // tiny balance
+        game.buyCredits{value: minBet}(); // tiny balance
         vm.prank(alice);
         vm.expectRevert(XikomuFlip.InsufficientChips.selector);
         game.flip(1e18, true);
@@ -130,7 +123,7 @@ contract XikomuFlipTest is Test {
         vm.prank(owner);
         game.withdrawHouse(500e18);
         vm.prank(alice);
-        game.buyCredits(50e18);
+        game.buyCredits{value: 50e18}();
         vm.prank(alice);
         vm.expectRevert(XikomuFlip.InsufficientHouse.selector);
         game.flip(1e18, true);
@@ -138,7 +131,7 @@ contract XikomuFlipTest is Test {
 
     function test_Flip_RevertsWhenPaused() public {
         vm.prank(alice);
-        game.buyCredits(50e18);
+        game.buyCredits{value: 50e18}();
         vm.prank(owner);
         game.pause();
         vm.prank(alice);
@@ -149,7 +142,7 @@ contract XikomuFlipTest is Test {
     /// Many flips keep the backing invariant exact, regardless of outcomes.
     function test_Flip_ManyKeepsInvariant() public {
         vm.prank(alice);
-        game.buyCredits(50e18);
+        game.buyCredits{value: 50e18}();
         for (uint256 i = 0; i < 50; i++) {
             vm.roll(block.number + 1);
             vm.prevrandao(bytes32(uint256(i + 1)));
@@ -177,14 +170,14 @@ contract XikomuFlipTest is Test {
     /// can ever pull is houseLiquidity — the player can always cash out their chips.
     function test_Owner_CannotTouchPlayerChips() public {
         vm.prank(alice);
-        game.buyCredits(40e18);
+        game.buyCredits{value: 40e18}();
         uint256 house = game.houseLiquidity();
         vm.prank(owner);
         game.withdrawHouse(house); // drain entire house
         // Alice's chips remain fully redeemable.
         vm.prank(alice);
         game.cashOut(40e18);
-        assertEq(cusd.balanceOf(alice), 100e18);
+        assertEq(alice.balance, 100e18);
     }
 
     function test_Pause_OnlyOwner() public {
@@ -197,7 +190,7 @@ contract XikomuFlipTest is Test {
         buy = bound(buy, 1e18, 90e18);
         uint256 bet = bound(betSeed, game.MIN_BET(), 5e18);
         vm.prank(alice);
-        game.buyCredits(buy);
+        game.buyCredits{value: buy}();
         if (game.chips(alice) >= bet && game.houseLiquidity() >= game.previewNetWin(bet)) {
             vm.prank(alice);
             game.flip(bet, choice);

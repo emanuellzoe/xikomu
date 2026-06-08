@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   useAccount,
+  useBalance,
   useChainId,
   useConnect,
   useDisconnect,
@@ -14,10 +15,9 @@ import {
   usePublicClient,
 } from "wagmi";
 import { celo, celoSepolia } from "wagmi/chains";
-import { formatUnits, parseUnits, parseEventLogs, parseAbiItem, maxUint256, type Address } from "viem";
+import { formatUnits, parseUnits, parseEventLogs, parseAbiItem, type Address } from "viem";
 import {
   CHAIN_LABEL,
-  CUSD,
   CUSD_DECIMALS,
   EXPLORER,
   FLIP,
@@ -26,12 +26,12 @@ import {
   START_BLOCK,
   SUPPORTED_CHAIN_IDS,
   ZERO_ADDRESS,
-  erc20Abi,
   flipAbi,
   isFlipConfigured,
 } from "@/lib/contracts";
 
-const BETS = ["0.01", "0.05", "0.1", "0.5", "1"]; // cUSD quick-picks
+// Percent-of-chips quick bets (100 = all chips, capped at MAX_BET).
+const BET_PCTS = [10, 25, 50, 100];
 
 const FLIPPED_EVENT = parseAbiItem(
   "event Flipped(address indexed player, uint256 bet, bool choiceHeads, bool resultHeads, bool won, uint256 payout, uint256 newChips)",
@@ -62,7 +62,6 @@ export default function FlipGamePage() {
   const supported = SUPPORTED_CHAIN_IDS.includes(chainId);
   const configured = supported && isFlipConfigured(chainId);
   const flip = (supported ? FLIP[chainId] : ZERO_ADDRESS) as Address;
-  const cusd = (supported ? CUSD[chainId] : ZERO_ADDRESS) as Address;
   const explorer = EXPLORER[chainId] ?? "https://celoscan.io";
 
   // Auto-connect in MiniPay
@@ -88,18 +87,12 @@ export default function FlipGamePage() {
   const chips = gameData?.[0]?.result as bigint | undefined;
   const house = gameData?.[1]?.result as bigint | undefined;
 
-  const { data: walletData, refetch: refetchWallet } = useReadContracts({
-    contracts:
-      address && supported
-        ? [
-            { address: cusd, abi: erc20Abi, functionName: "balanceOf", args: [address] },
-            { address: cusd, abi: erc20Abi, functionName: "allowance", args: [address, flip] },
-          ]
-        : [],
+  // Native CELO wallet balance (no token).
+  const { data: walletBalData, refetch: refetchWallet } = useBalance({
+    address,
     query: { enabled: !!address && supported },
   });
-  const walletBal = walletData?.[0]?.result as bigint | undefined;
-  const allowance = (walletData?.[1]?.result as bigint | undefined) ?? 0n;
+  const walletBal = walletBalData?.value;
 
   const refetchAll = () => { refetchGame(); refetchWallet(); };
 
@@ -112,14 +105,23 @@ export default function FlipGamePage() {
   const [bet, setBet] = useState("0.1");
   const [buyAmt, setBuyAmt] = useState("1");
   const [result, setResult] = useState<FlipResult | null>(null);
-  const [lastAction, setLastAction] = useState<"flip" | "buy" | "cashout" | "approve" | null>(null);
+  const [lastAction, setLastAction] = useState<"flip" | "buy" | "cashout" | null>(null);
   const [coinFace, setCoinFace] = useState(true); // displayed face (heads=true)
 
   const betWei = useMemo(() => {
     try { return bet ? parseUnits(bet, CUSD_DECIMALS) : 0n; } catch { return 0n; }
   }, [bet]);
-  const needsApproval = allowance < maxUint256 / 2n;
   const flipping = (writing || confirming) && lastAction === "flip";
+
+  // Set the bet to a percentage of current chips, clamped to [MIN_BET, MAX_BET].
+  function setBetPct(pct: number) {
+    if (!chips || chips <= 0n) return;
+    let w = (chips * BigInt(pct)) / 100n;
+    if (w > MAX_BET) w = MAX_BET;
+    if (w < MIN_BET) w = MIN_BET;
+    setBet(formatUnits(w, CUSD_DECIMALS));
+  }
+  const betValid = betWei >= MIN_BET && betWei <= MAX_BET && (chips ?? 0n) >= betWei;
 
   // on tx confirmation, decode result + refresh
   useEffect(() => {
@@ -139,16 +141,13 @@ export default function FlipGamePage() {
     reset();
   }, [confirmed, receipt]); // eslint-disable-line
 
-  function doApprove() {
-    setLastAction("approve");
-    writeContract({ address: cusd, abi: erc20Abi, functionName: "approve", args: [flip, maxUint256] });
-  }
   function doBuy() {
     let amt: bigint;
     try { amt = parseUnits(buyAmt || "0", CUSD_DECIMALS); } catch { return; }
     if (amt <= 0n) return;
     setLastAction("buy");
-    writeContract({ address: flip, abi: flipAbi, functionName: "buyCredits", args: [amt] });
+    // Native CELO: send value, no token approval.
+    writeContract({ address: flip, abi: flipAbi, functionName: "buyCredits", value: amt });
   }
   function doFlip() {
     if (betWei < MIN_BET || betWei > MAX_BET) return;
@@ -198,12 +197,17 @@ export default function FlipGamePage() {
             <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-[#C96442]/10 text-[#A84F2E] font-medium">Flip</span>
           </Link>
           {mounted && isConnected ? (
-            <div className="flex items-center gap-2">
-              <span className="hidden sm:inline text-xs font-medium px-2.5 py-1 rounded-full bg-stone-100 border border-stone-200 text-stone-600">
-                {CHAIN_LABEL[chainId] ?? "Unsupported"}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {configured && (
+                <span title="Your chips" className="flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-full bg-white border border-stone-200 text-stone-700">
+                  <ChipIcon /> {fmt(chips)}
+                </span>
+              )}
+              <span title="Wallet CELO" className="flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-full bg-white border border-stone-200 text-stone-700">
+                <CeloIcon /> {fmt(walletBal)}
               </span>
-              <span className="text-sm font-mono px-3 py-1.5 rounded-full bg-white border border-stone-200 text-stone-700">{shortAddr(address)}</span>
-              <button onClick={() => disconnect()} className="text-sm text-stone-500 hover:text-stone-900 transition-colors px-2">Exit</button>
+              <span className="hidden sm:inline text-sm font-mono px-3 py-1.5 rounded-full bg-white border border-stone-200 text-stone-700">{shortAddr(address)}</span>
+              <button onClick={() => disconnect()} className="text-sm text-stone-500 hover:text-stone-900 transition-colors px-1.5 sm:px-2">Exit</button>
             </div>
           ) : null}
         </div>
@@ -230,20 +234,6 @@ export default function FlipGamePage() {
               </div>
             )}
 
-            {/* Balance row */}
-            <div className="grid grid-cols-2 gap-4">
-              <Card compact>
-                <p className="uppercase text-[10px] tracking-widest text-stone-400 font-medium mb-1">Your chips</p>
-                <p className="font-playfair text-3xl text-[#2C2B29]">{fmt(chips)}</p>
-                <p className="text-xs text-stone-400 mt-1 font-light">≈ {fmt(chips)} cUSD</p>
-              </Card>
-              <Card compact>
-                <p className="uppercase text-[10px] tracking-widest text-stone-400 font-medium mb-1">Wallet</p>
-                <p className="font-playfair text-3xl text-[#2C2B29]">{fmt(walletBal)}</p>
-                <p className="text-xs text-stone-400 mt-1 font-light">cUSD</p>
-              </Card>
-            </div>
-
             {/* The coin */}
             <Card>
               <div className="flex flex-col items-center py-2">
@@ -257,7 +247,7 @@ export default function FlipGamePage() {
                   <p className="text-stone-500 font-light h-8">Flipping…</p>
                 ) : result ? (
                   <div className={`result-pop h-8 text-xl font-medium ${result.won ? "text-emerald-600" : "text-stone-500"}`}>
-                    {result.won ? `You won +${fmt(result.payout)} cUSD 🎉` : "You lost — try again"}
+                    {result.won ? `You won +${fmt(result.payout)} CELO 🎉` : "You lost — try again"}
                   </div>
                 ) : (
                   <p className="text-stone-400 font-light h-8">Pick a side and flip</p>
@@ -277,28 +267,40 @@ export default function FlipGamePage() {
               </div>
 
               {/* Bet */}
-              <p className="text-sm text-stone-500 mt-5 mb-2 font-light">Bet (cUSD) · win pays 1.95×</p>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {BETS.map((b) => (
-                  <button key={b} onClick={() => setBet(b)}
-                    className={`text-sm rounded-xl px-4 py-2 border transition-colors ${bet === b ? "bg-[#C96442] text-white border-[#C96442]" : "bg-white text-stone-600 border-stone-200 hover:border-stone-300"}`}>
-                    {b}
+              <p className="text-sm text-stone-500 mt-5 mb-2 font-light">Bet (CELO) · win pays 1.95×</p>
+
+              {/* Percent of your chips */}
+              <div className="flex flex-wrap gap-2 mb-2">
+                {BET_PCTS.map((p) => (
+                  <button key={p} onClick={() => setBetPct(p)} disabled={!chips}
+                    className="text-sm rounded-xl px-4 py-2 border bg-white text-stone-600 border-stone-200 hover:border-stone-300 disabled:opacity-40 transition-colors">
+                    {p === 100 ? "Max" : `${p}%`}
                   </button>
                 ))}
               </div>
 
-              {needsApproval ? (
-                <PrimaryBtn full disabled={!configured || busy} onClick={doApprove}>
-                  {busy && lastAction === "approve" ? "Confirming…" : "Approve cUSD to play"}
-                </PrimaryBtn>
-              ) : (chips ?? 0n) < betWei ? (
-                <PrimaryBtn full disabled>Not enough chips — buy below</PrimaryBtn>
-              ) : (
-                <button onClick={doFlip} disabled={!configured || busy}
-                  className="w-full bg-[#C96442] text-white rounded-full py-4 text-lg font-medium hover:bg-[#A84F2E] transition-colors disabled:opacity-40 shadow-[0_6px_16px_rgba(201,100,66,0.35)]">
-                  {flipping ? "Flipping…" : `Flip for ${bet} cUSD`}
-                </button>
-              )}
+              {/* Custom amount */}
+              <input inputMode="decimal" value={bet} onChange={(e) => setBet(e.target.value)}
+                className="w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-lg text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#C96442]/40"
+                placeholder="0.10" />
+              <p className="text-xs text-stone-400 mt-1.5 mb-4 font-light">
+                Min {fmt(MIN_BET)} · Max {fmt(MAX_BET)} CELO{chips ? ` · you have ${fmt(chips)} chips` : ""}
+              </p>
+
+              <button onClick={doFlip} disabled={!configured || busy || !betValid}
+                className="w-full bg-[#C96442] text-white rounded-full py-4 text-lg font-medium hover:bg-[#A84F2E] transition-colors disabled:opacity-40 shadow-[0_6px_16px_rgba(201,100,66,0.35)]">
+                {flipping
+                  ? "Flipping…"
+                  : betWei === 0n
+                    ? "Enter a bet"
+                    : betWei < MIN_BET
+                      ? `Min ${fmt(MIN_BET)} CELO`
+                      : betWei > MAX_BET
+                        ? `Max ${fmt(MAX_BET)} CELO`
+                        : (chips ?? 0n) < betWei
+                          ? "Buy more chips below"
+                          : `Flip for ${bet} CELO`}
+              </button>
             </Card>
 
             {/* Buy / Cash out */}
@@ -317,7 +319,7 @@ export default function FlipGamePage() {
                   {busy && lastAction === "buy" ? "Confirming…" : "Buy chips"}
                 </PrimaryBtn>
               </div>
-              <p className="text-xs text-stone-400 mt-3 font-light">1 cUSD = 1 chip. Cash out is always available.</p>
+              <p className="text-xs text-stone-400 mt-3 font-light">1 CELO = 1 chip. Cash out is always available.</p>
             </Card>
 
             {/* History */}
@@ -334,7 +336,7 @@ export default function FlipGamePage() {
                       </span>
                       <a href={`${explorer}/tx/${h.tx}`} target="_blank" rel="noreferrer"
                         className={`font-medium ${h.won ? "text-emerald-600" : "text-stone-400"} hover:underline`}>
-                        {h.won ? "Won" : "Lost"} · {fmt(h.bet)} cUSD
+                        {h.won ? "Won" : "Lost"} · {fmt(h.bet)} CELO
                       </a>
                     </li>
                   ))}
@@ -349,7 +351,7 @@ export default function FlipGamePage() {
             )}
 
             <p className="text-center text-xs text-stone-400 font-light">
-              House pool: {fmt(house)} cUSD · provably on-chain, low-stakes fun.
+              House pool: {fmt(house)} CELO · provably on-chain, low-stakes fun.
             </p>
           </div>
         )}
@@ -387,6 +389,28 @@ function CoinMini({ heads }: { heads: boolean }) {
   );
 }
 
+/* ---------- balance icons ---------- */
+function ChipIcon() {
+  // Poker chip — represents in-game chips.
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="shrink-0" aria-hidden>
+      <circle cx="12" cy="12" r="10" fill="#C96442" />
+      <circle cx="12" cy="12" r="6.2" fill="none" stroke="#FAFAF8" strokeWidth="1.6" strokeDasharray="2.6 2.2" />
+      <circle cx="12" cy="12" r="2.4" fill="#FAFAF8" />
+    </svg>
+  );
+}
+function CeloIcon() {
+  // CELO coin — two overlapping rings on a coin.
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="shrink-0" aria-hidden>
+      <circle cx="12" cy="12" r="10" fill="#FCFF52" />
+      <circle cx="10" cy="12" r="4.2" fill="none" stroke="#1A1A1A" strokeWidth="1.7" />
+      <circle cx="14" cy="12" r="4.2" fill="none" stroke="#1A1A1A" strokeWidth="1.7" />
+    </svg>
+  );
+}
+
 /* ---------- UI atoms ---------- */
 function Card({ children, compact }: { children: React.ReactNode; compact?: boolean }) {
   return <div className={`bg-white rounded-[1.75rem] border border-stone-200 shadow-[0_20px_40px_-24px_rgba(0,0,0,0.12)] ${compact ? "p-5" : "p-6 sm:p-7"}`}>{children}</div>;
@@ -420,7 +444,7 @@ function ConnectCard() {
           </div>
         </div>
         <h1 className="font-playfair text-4xl text-[#2C2B29] mb-3">Xikomu Lucky Flip</h1>
-        <p className="text-stone-500 font-light mb-8">Connect your wallet, pick Heads or Tails, and flip to win 1.95× in cUSD.</p>
+        <p className="text-stone-500 font-light mb-8">Connect your wallet, pick Heads or Tails, and flip to win 1.95× in CELO.</p>
         <button
           disabled={isPending || !injected}
           onClick={() => injected && connect({ connector: injected })}
