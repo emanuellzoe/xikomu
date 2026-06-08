@@ -1,28 +1,34 @@
 # Xikomu — Frontend
 
-> Mini-app MiniPay untuk **Xikomu Auto-Save**: nabung cUSD otomatis di Celo.
+> MiniPay mini-app for **Xikomu Lucky Flip**: a cUSD coin-flip game on Celo.
 
-UI tempat user membuat rencana nabung, melihat progress tabungan, dan menarik dana. Backend = smart contract `AutoSaveVault` + keeper bot (repo: [`xikomu`](https://github.com/emanuellzoe/xikomu)).
+Next.js (App Router) frontend with two surfaces:
+- **Landing (`/`)** — marketing page, Claude-orange theme.
+- **Game (`/app`)** — connect wallet, buy chips, flip **Heads (orange)** / **Tails (gray)**, win 1.95×, cash out anytime, recent flips.
 
-## Fitur (v1)
-- Connect wallet — **auto-connect di MiniPay**, manual di web
-- **Create Plan** — set jumlah + interval (approve cUSD + `createPlan`)
-- **Dashboard** — saldo tabungan, plan aktif, jadwal save berikutnya
-- **Withdraw** — tarik cUSD kapan saja (selalu tersedia)
-- **Riwayat** — dari events kontrak, tanpa backend
+Backend = `XikomuFlip` smart contract (repo: [`xikomu`](https://github.com/emanuellzoe/xikomu) `contracts/`).
 
 ## Stack
-Next.js (App Router) · TypeScript · wagmi v2 + viem · Tailwind · Vercel · Celo (Mainnet 42220 + Alfajores 44787)
+Next.js 14 · TypeScript · wagmi v2 + viem · Tailwind · Vercel · Celo (Mainnet 42220 + Celo Sepolia 11142220).
 
-## Dua tampilan
-- **MiniPay (mobile)** — prioritas, jalan di dompet Opera MiniPay
-- **Web (desktop)** — landing + dashboard responsive
+## Run
+```bash
+npm install
+npm run dev   # http://localhost:3000
+```
 
-## Dokumen
-Spesifikasi lengkap (layar, integrasi kontrak, MiniPay, milestone) di **[PRD.md](./PRD.md)**.
+## Config (after contract deploy)
+Create `.env.local`:
+```bash
+NEXT_PUBLIC_FLIP_CELO=0x...          # XikomuFlip on mainnet
+NEXT_PUBLIC_START_BLOCK=<deploy block>
+# testnet (optional):
+# NEXT_PUBLIC_FLIP_SEPOLIA=0x...
+# NEXT_PUBLIC_CUSD_SEPOLIA=0x...     # TestUSD on Sepolia
+```
 
-## Status
-🚧 In development — bagian dari Celo Proof of Ship Season 2.
+## Docs
+Full spec in [PRD.md](./PRD.md) and the repo root [PRD.md](../PRD.md).
 
-## Lisensi
+## License
 MIT

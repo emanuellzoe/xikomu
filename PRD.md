@@ -1,215 +1,136 @@
-# PRD — Xikomu Auto-Save
+# PRD — Xikomu Lucky Flip
 
-**Status:** v1 (MVP) · **Owner:** xikomu team · **Target:** Celo Proof of Ship S2 (deadline onchain 22 Jun 2026)
+**Status:** v1 (MVP) · **Target:** Celo Proof of Ship S2 · **Deploy:** Celo **Mainnet** (direct)
 
-> Dokumen ini adalah **sumber kebenaran**. Saat coding, ikuti spec ini. Jangan menambah scope di luar "v1 (MVP)" tanpa update PRD. Nilai bertanda `⚠️ VERIFY` harus dikonfirmasi dari sumber resmi sebelum dipakai — jangan diasumsikan.
-
----
-
-## 1. Ringkasan produk
-
-Mini-app MiniPay untuk **menabung cUSD otomatis & berulang**. User set rencana (jumlah + interval) sekali; keeper bot mengeksekusi `executeSave` tiap jatuh tempo, memindahkan cUSD dari wallet user (via allowance) ke saldo per-user di vault. User bisa **withdraw kapan saja**.
-
-**Bukan**: trading bot, prediksi harga, yield farming, swap/DCA ke koin lain (itu v2). Keeper **deterministik berbasis jadwal**, bukan AI.
+> Source of truth. Follow this when coding; don't add scope beyond "v1 (MVP)" without updating the PRD. Values marked `⚠️ VERIFY` must be confirmed from an authoritative source before use.
 
 ---
 
-## 2. Tujuan & non-tujuan
+## 1. Summary
+A MiniPay coin-flip game on Celo. Players buy **chips** with **cUSD** (1:1), bet on **Heads/Tails**, and each **flip is one on-chain tx** paying **1.95×** on a win. Chips cash back to cUSD anytime.
 
-### Tujuan v1
-1. `AutoSaveVault.sol` ter-deploy & **verified** di Celo Mainnet.
-2. Keeper bot live mengeksekusi save terjadwal (1 user = 1 tx, no loop on-chain).
-3. Next.js mini-app (web + MiniPay view): connect, createPlan, lihat progress, withdraw.
-4. Terdaftar di talent.app + Proof of Ship campaign.
-
-### Non-tujuan v1 (JANGAN dikerjakan dulu)
-- Swap / DCA ke token lain (v2) · Yield routing (v2) · LLM/chat (opsional, paling akhir, free tier)
-- Multi-token & multi-plan (v1: **cUSD saja, 1 plan/user**)
-- Backend/indexer (riwayat dibaca dari events, no backend)
-- Upgradeable/proxy (**ditolak** — immutable demi anti-rug)
+**Category:** Game / x-to-earn (deliberately NOT custodial DeFi — chips are game credits, owner can't touch them, cash-out always works).
 
 ---
 
-## 3. Konstanta chain
+## 2. Goals & non-goals
+### Goals (v1)
+1. `XikomuFlip` deployed & **verified** on Celo Mainnet, house pool funded.
+2. Next.js MiniPay app: connect, buy chips, flip (Heads/Tails), cash out, history.
+3. Real on-chain flips from real players (tx volume + DAU).
+4. Registered on talent.app + Proof of Ship campaign.
 
+### Non-goals (v1)
+- Multiplayer / PvP, jackpots, leaderboards (v2)
+- Multi-token (cUSD only)
+- Backend/indexer (history read from events)
+- VRF/oracle randomness (v1 uses on-chain entropy, low-stakes — see §4.4)
+- The legacy auto-save vault + keeper (superseded; left in repo for history)
+
+---
+
+## 3. Chain constants
 | Item | Value |
 |---|---|
 | Celo Mainnet chainId | `42220` |
 | Celo Mainnet RPC | `https://forno.celo.org` |
-| Explorer (verify) | Celoscan `https://celoscan.io` |
-| **cUSD (mainnet)** | `0x765DE816845861e75A25fCA122bb6898B8B1282a` (hardcoded di kontrak) |
-| Testnet | Alfajores `44787` (cUSD `0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1`, RPC `https://alfajores-forno.celo-testnet.org`) ⚠️ VERIFY: Alfajores vs Celo Sepolia (sebagian repo referensi pakai Celo Sepolia). Untuk testnet, alamat cUSD beda → **set lewat constructor arg di deploy testnet**, mainnet pakai konstanta. |
-
-> Untuk fleksibilitas testnet vs mainnet tanpa mengorbankan immutability: alamat cUSD di-set **sekali di `constructor` (immutable variable)**, default-nya alamat mainnet. Tetap tidak bisa diubah setelah deploy.
+| Explorer | Celoscan `https://celoscan.io` |
+| **cUSD (mainnet)** | `0x765DE816845861e75A25fCA122bb6898B8B1282a` |
+| Testnet | Celo Sepolia `11142220`, RPC `https://forno.celo-sepolia.celo-testnet.org`, explorer `https://sepolia.celoscan.io`; uses a deployed TestUSD as the chip token |
 
 ---
 
-## 4. Smart Contract — `AutoSaveVault.sol`
+## 4. Smart contract — `XikomuFlip.sol` (built)
 
-### 4.1 Prinsip (LOCKED)
-- **Immutable / non-upgradeable.** Tidak ada proxy, tidak ada fungsi upgrade.
-- **No unbounded loop on-chain.** Keeper iterasi off-chain → panggil per-user. Hot path O(1).
-- **Storage di-pack** (Plan = 1 slot). Custom errors. Events untuk riwayat.
-- **CEI + ReentrancyGuard + SafeERC20** (OpenZeppelin).
-- **Kuasa owner minimal & tidak bisa menyentuh dana:**
-  - Owner cuma bisa `pause()/unpause()`.
-  - `pause` memblokir **setoran baru** (`createPlan`, `executeSave`) saja.
-  - **`withdraw` SELALU jalan, termasuk saat paused.** Owner tidak bisa mengunci dana.
-  - Tidak ada fungsi yang mengubah `balanceOf` user / menarik dana user. Tidak ada `drain`.
-  - `Ownable2Step` (transfer owner 2 langkah). Bisa dipindah ke multisig / renounce nanti.
+### 4.1 Principles
+- **Immutable / non-upgradeable**, game-credit model (not a savings vault).
+- **No unbounded loops**; `flip()` is O(1) with **no external calls**.
+- **CEI + ReentrancyGuard + SafeERC20**, custom errors, events for history.
+- **Owner power is minimal & cannot touch player funds**: owner only `fundHouse` / `withdrawHouse` (the house pool) + `pause`. Player `chips` are tracked separately (`totalChips`); **cash-out works even while paused**.
+- Invariant: `cusd.balanceOf(contract) == totalChips + houseLiquidity`.
 
-### 4.2 Storage
+### 4.2 Constants
+`MIN_BET = 0.01 cUSD` · `MAX_BET = 5 cUSD` · payout `1.95×` (`PAYOUT_NUM/DEN = 195/100`) → ~2.5% house edge.
 
+### 4.3 Interface
 ```solidity
-IERC20 public immutable cusd;          // di-set di constructor (default mainnet cUSD)
+// Player
+function buyCredits(uint256 amount) external;          // approve cUSD first; chips += amount
+function cashOut(uint256 amount) external;             // chips -> cUSD; ALWAYS allowed (ignores pause)
+function flip(uint256 bet, bool choiceHeads)           // 1 tx, O(1), no external calls
+    external returns (bool won, bool resultHeads);
 
-struct Plan {
-    uint128 amount;    // jumlah per eksekusi (18 desimal)   ┐
-    uint64  interval;  // detik antar save                   ├─ 1 slot (16+8+8 = 32 byte)
-    uint64  nextRun;   // timestamp eligible berikutnya       ┘
-}
-mapping(address => Plan) public plans;        // 1 plan/user; "aktif" = amount != 0
-mapping(address => uint256) public balanceOf; // saldo tabungan cUSD per user
+// Owner (Ownable2Step) — house only, never player chips
+function fundHouse(uint256 amount) external;
+function withdrawHouse(uint256 amount) external;
+function pause() / unpause() external;
+
+// Views
+function chips(address) view returns (uint256);
+function houseLiquidity() view returns (uint256);
+function previewNetWin(uint256 bet) view returns (uint256);
+function backingRequired() view returns (uint256);     // totalChips + houseLiquidity
 ```
-> Tidak ada field `active` terpisah (hemat slot). Plan aktif jika `amount != 0`. `cancelPlan` = `delete plans[user]`.
 
-### 4.3 Konstanta
-```solidity
-uint64 public constant MIN_INTERVAL = 60;        // 60 detik (demo cepat & banyak tx)
-uint64 public constant MAX_INTERVAL = 365 days;  // batas atas wajar
-```
-> Hardcoded — **tidak ada setter**. Menghilangkan kuasa owner atas parameter ini.
-
-### 4.4 Fungsi (interface final)
-
-```solidity
-// ---- User ----
-function createPlan(uint128 amount, uint64 interval) external whenNotPaused;
-//   require amount > 0 (ZeroAmount)
-//   require MIN_INTERVAL <= interval <= MAX_INTERVAL (IntervalOutOfRange)
-//   plans[msg.sender] = Plan(amount, interval, uint64(block.timestamp) + interval); // save pertama tunggu 1 interval
-//   emit PlanCreated
-
-function cancelPlan() external;
-//   require plans[msg.sender].amount != 0 (NoActivePlan)
-//   delete plans[msg.sender]; emit PlanCancelled   // boleh saat paused (tak menyentuh dana)
-
-function withdraw(uint256 amount) external nonReentrant;   // TANPA whenNotPaused — selalu jalan
-//   require balanceOf[msg.sender] >= amount (InsufficientBalance)
-//   balanceOf[msg.sender] -= amount;                       // effect
-//   cusd.safeTransfer(msg.sender, amount);                 // interaction
-//   emit Withdrawn
-
-// ---- Keeper / publik (permissionless) ----
-function executeSave(address user) external nonReentrant whenNotPaused;
-//   Plan memory p = plans[user];
-//   require p.amount != 0 (NoActivePlan)
-//   require block.timestamp >= p.nextRun (NotDue)
-//   plans[user].nextRun = uint64(block.timestamp) + p.interval;  // effect (sebelum interaction)
-//   balanceOf[user] += p.amount;                                 // effect
-//   cusd.safeTransferFrom(user, address(this), p.amount);        // interaction (revert kalau allowance/saldo kurang → rollback)
-//   emit Saved
-//   AMAN permissionless: dana hanya pindah dari wallet user (yg sudah approve) ke SALDO user sendiri.
-
-// ---- Views ----
-function getPlan(address user) external view returns (Plan memory);
-function previewDue(address user) external view returns (bool);
-//   return plans[user].amount != 0 && block.timestamp >= plans[user].nextRun;
-
-// ---- Admin (Ownable2Step) ----
-function pause() external onlyOwner;
-function unpause() external onlyOwner;
-```
+### 4.4 Randomness (caveat)
+`flip()` derives the result from `keccak256(prevrandao, blockhash(n-1), msg.sender, nonce, bet)`. Good enough for a **low-stakes** game; a block proposer could bias it, so bets are capped by `MAX_BET`. v2 may move to commit-reveal/VRF.
 
 ### 4.5 Events
-```solidity
-event PlanCreated(address indexed user, uint128 amount, uint64 interval, uint64 nextRun);
-event PlanCancelled(address indexed user);
-event Saved(address indexed user, uint128 amount, uint64 nextRun, uint256 newBalance);
-event Withdrawn(address indexed user, uint256 amount);
-```
+`Flipped(player, bet, choiceHeads, resultHeads, won, payout, newChips)`, `CreditsBought(player, amount, newChips)`, `CashedOut(player, amount, newChips)`, `HouseFunded`, `HouseWithdrawn`.
 
-### 4.6 Errors (custom)
-`ZeroAmount, IntervalOutOfRange, NoActivePlan, NotDue, InsufficientBalance` (+ `EnforcedPause` dari OZ Pausable, revert SafeERC20).
-
-### 4.7 Keputusan (RESOLVED — final)
-- ✅ Immutable (bukan upgradeable) — anti-rug untuk kontrak pegang-dana.
-- ✅ `executeSave` permissionless (aman karena dana ke saldo user sendiri).
-- ✅ Save pertama tunggu 1 interval (tidak menarik dana saat create).
-- ✅ 1 plan/user, cUSD saja (v1).
-- ✅ Owner hanya `pause`; `withdraw` selalu jalan.
-
-### 4.8 Checklist audit sebelum mainnet
-- [ ] Tidak ada loop atas data dinamis (by design)
-- [ ] CEI di `withdraw` & `executeSave`
-- [ ] ReentrancyGuard di fungsi transfer
-- [ ] SafeERC20 untuk transfer & transferFrom
-- [ ] Owner tak bisa menyentuh dana (review semua fungsi onlyOwner)
-- [ ] `withdraw` tidak ber-`whenNotPaused`
-- [ ] Events di semua perubahan state
-- [ ] Solidity 0.8+ (overflow check otomatis)
-- [ ] `forge test` hijau (happy path + semua revert case)
+### 4.6 Tests
+17 Foundry tests passing: buy/cash, flip settlement, all reverts, paused-cash-out, **backing invariant over many flips**, **owner can't touch player chips**, fuzz.
 
 ---
 
-## 5. Keeper Bot (`keeper/`)
-**Tugas:** tiap interval cron, cari plan `due`, panggil `executeSave(user)` per user.
-**Logika (off-chain, no on-chain loop):**
-1. Kumpulkan user dari event `PlanCreated` minus `PlanCancelled` (baca log / set lokal).
-2. Tiap user: cek `previewDue(user)` (view, gratis) → jika due, kirim tx `executeSave(user)`.
-3. Wallet keeper sendiri (EOA) bayar gas. **Tidak** memegang dana user.
-4. Idempotent: kalau belum due, kontrak revert `NotDue` → skip (tangani error).
-**Config:** `KEEPER_PRIVATE_KEY`, `RPC_URL`, `VAULT_ADDRESS`, `CRON_INTERVAL`, `BATCH_SIZE`.
-**Transparansi:** keeper = fitur produk, didokumentasikan. Melakukan kerja nyata (eksekusi rencana user), bukan no-op/spam, bukan menyamar jadi user manusia.
+## 5. Frontend (`frontend/`)
+Next.js App Router, two surfaces, mobile-first.
+
+- **Landing (`/`)** — marketing page (orange/Claude theme). ⚠️ copy still being migrated from the old auto-save template to the game.
+- **Game (`/app`)** — the product:
+  1. Connect (auto-connect in MiniPay) / wrong-network switch
+  2. Coin UI — **Heads = orange**, **Tails = gray**, animated flip
+  3. Pick side + bet (cUSD quick-picks) → **Flip** (1 tx) → win/lose from `Flipped` event
+  4. Buy chips (approve + `buyCredits`), **Cash out** anytime
+  5. Recent flips (from events), chips/house/wallet balances
+- Stack: wagmi v2 + viem + Tailwind. Chains: Celo + Celo Sepolia. Contract address/ABI in `lib/contracts.ts` (vault via `NEXT_PUBLIC_FLIP_*`).
 
 ---
 
-## 6. Frontend (`web/`) — Next.js (sederhana dulu)
-2 tampilan: **MiniPay (mobile, prioritas)** + **Web (desktop)**.
-- **MiniPay**: auto-connect injected provider (`window.ethereum.isMiniPay`), pasang MiniPay hook (booster).
-- **Layar**: (1) Dashboard — saldo, plan aktif, progress, tombol Tambah/Tarik; (2) Create Plan — jumlah + interval (preset harian/mingguan + custom) → `approve` + `createPlan`; (3) Withdraw; (4) Riwayat dari events.
-- **Web**: landing + dashboard responsive, connect via wagmi.
-- **Teknis**: wagmi v2 + viem + Tailwind, chain Celo Mainnet (+ testnet dev), ABI dari output Foundry.
+## 6. Deploy plan (Mainnet-direct)
+1. Get CELO (gas) + cUSD (house funding + play) in the deployer wallet.
+2. `contracts/.env`: `PRIVATE_KEY`, optional `OWNER`, optional `HOUSE_AMOUNT`.
+3. Deploy `XikomuFlip` pointing at **real cUSD** (`script/DeployFlip.s.sol`) + fund the house pool.
+4. Verify on Celoscan.
+5. Set frontend env: `NEXT_PUBLIC_FLIP_CELO=<addr>`, `NEXT_PUBLIC_START_BLOCK=<block>`; deploy to Vercel.
+6. Register on talent.app + enroll campaign.
+
+> The house pool must hold enough cUSD to pay the max single-win (`bet*0.95`). Start small; top up via `fundHouse`.
 
 ---
 
-## 7. Alur data (E2E)
-```
-1. Buka mini-app di MiniPay → auto-connect
-2. Create Plan: approve(vault, X) → createPlan(amount, interval)            [2 tx]
-3. Tiap interval: keeper → executeSave(user) → transferFrom → balanceOf++   [1 tx/eksekusi]
-4. Dashboard: saldo naik; Riwayat dari events
-5. Withdraw: withdraw(amount) → cUSD kembali ke user                        [1 tx]
-```
+## 7. Metric strategy (legit, Proof of Ship)
+- **Tx volume**: 1 flip = 1 tx; fast replay → high organic tx from real players.
+- **DAU**: short, fun loop → players return; promote via build-in-public.
+- **Commits/PRs**: small focused PRs (contract, FE screens, polish, docs).
+- **Booster**: MiniPay hook + verified mainnet contract + open source.
+- ❌ No bots/farming — real play only.
 
 ---
 
-## 8. Strategi metrik Celo POS (sah)
-- **Tx banyak**: interval kecil → tiap eksekusi 1 tx; tiap aksi user = tx. Keeper transparan menambah tx (kerja nyata).
-- **DAU**: user cek progress tabungan; build-in-public (TG/X) cari 5–10 user asli.
-- **Commit/PR**: kerja per-PR kecil (kontrak, test, keeper, tiap layar FE, docs).
-- **Booster**: MiniPay hook + kontrak verified + open source.
+## 8. Milestones
+| Step | Deliverable |
+|---|---|
+| ✅ | `XikomuFlip` + 17 tests; testnet deploy script; mainnet deploy script |
+| ✅ | `/app` game UI (flip, buy, cash out, history) |
+| ▶ | Mainnet deploy + verify + fund house |
+| ▶ | Wire frontend env + deploy Vercel |
+| ▶ | Migrate landing copy to the game |
+| ▶ | Register talent.app + go-to-market (real players) |
 
----
-
-## 9. Milestone (8–22 Jun 2026)
-| Hari | Deliverable | PR |
-|---|---|---|
-| D1 | Foundry scaffold, `AutoSaveVault` + tests, deploy **testnet** | contracts |
-| D2 | Keeper bot di testnet (cron jalan) | keeper |
-| **D3–4** | **Deploy + verify MAINNET** (begitu test hijau) — biar aktivitas cepat kehitung | deploy-mainnet |
-| D5–6 | FE: connect + createPlan + dashboard | web-core |
-| D7–8 | MiniPay hook + withdraw + riwayat | minipay |
-| D9–10 | Polish mobile, daftar talent.app + campaign | polish |
-| D11–13 | Build-in-public, user asli, keeper live mainnet | — |
-| D14 | Buffer + demo video + rapikan | — |
-
----
-
-## 10. Definisi selesai (v1)
-- [ ] Kontrak verified di Celoscan (mainnet)
-- [ ] `forge test` hijau
-- [ ] Keeper jalan & ada tx `Saved` di mainnet
-- [ ] FE live (Vercel) jalan di MiniPay & web
-- [ ] Repo publik + README + PRD
-- [ ] Terdaftar di talent.app + Proof of Ship campaign
+## 9. Definition of done (v1)
+- [ ] `XikomuFlip` verified on Celoscan (mainnet), house funded
+- [ ] `forge test` green
+- [ ] FE live on Vercel, playable in MiniPay & web (real flips on mainnet)
+- [ ] Public repo + README + PRD
+- [ ] Registered on talent.app + Proof of Ship campaign

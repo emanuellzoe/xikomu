@@ -1,35 +1,36 @@
-# Xikomu — Auto-Save on Celo
+# Xikomu — Lucky Flip
 
-> Celengan otomatis di MiniPay. Set sekali, nabung jalan sendiri.
+> A MiniPay coin-flip game on Celo. Pick a side, flip, win 1.95×. Cash out anytime.
 
-Xikomu adalah **mini-app MiniPay** di Celo Mainnet untuk **menabung stablecoin (cUSD) secara otomatis & berulang**. User membuat rencana nabung sekali (jumlah + interval), lalu sebuah **keeper bot** mengeksekusi pemindahan dana sesuai jadwal — transparan, on-chain, non-kustodial.
+Xikomu Lucky Flip is a **MiniPay mini-app** on Celo Mainnet: buy chips with **cUSD**, flip a coin (**Heads** or **Tails**), and win **1.95×** your bet. Every flip is **one on-chain transaction** — fast, fair, and fun.
 
-Dibangun untuk **Celo Proof of Ship Season 2**.
-
----
-
-## Kenapa ini
-
-- **Non-kustodial & anti-rug** — kontrak **immutable** (non-upgradeable). Dana disimpan per-user, **withdraw selalu terbuka kapan saja** (bahkan saat paused). Tidak ada fungsi yang bisa menyentuh/menguras dana user.
-- **Otomatis** — keeper bot deterministik (cron) mengeksekusi save terjadwal. Bukan AI prediksi harga, murni jadwal.
-- **Hemat gas** — tanpa loop on-chain, storage di-pack 1 slot, custom errors, riwayat lewat events.
-- **MiniPay-native** — jalan di dalam dompet MiniPay (Opera), plus tampilan web.
+Built for **Celo Proof of Ship Season 2** (Games / x-to-earn).
 
 ---
 
-## Arsitektur singkat
+## Why it fits
+
+- **A game, not custodial DeFi** — chips are game credits; the owner can **never** touch a player's chips, and **cash-out always works** (even when paused).
+- **High on-chain activity by design** — 1 flip = 1 tx → real, organic transaction volume from real play.
+- **MiniPay-native** — runs inside the Opera MiniPay wallet (auto-connect), plus a web view.
+- **Cheap & snappy** — chips are an internal balance, so flips don't need a token transfer each round.
+
+---
+
+## How it works
 
 ```
-User (MiniPay / Web)
-   │  createPlan(amount, interval) + approve cUSD
-   ▼
-AutoSaveVault.sol  (Celo Mainnet, verified)
-   ▲  executeSave(user)   ← dipanggil keeper, 1 user = 1 tx (O(1), no loop)
-   │
-Keeper Bot (Node + viem + cron)  ← iterasi user OFF-chain, poke yang jatuh tempo
+Player (MiniPay / Web)
+  │  buyCredits(cUSD)            → chips
+  │  flip(bet, Heads/Tails)      → win ~1.95× or lose (1 tx)
+  │  cashOut(chips)              → cUSD  (always available)
+  ▼
+XikomuFlip.sol  (Celo Mainnet, verified)
+  houseLiquidity pool pays wins / absorbs losses
+  owner can only top-up/withdraw the HOUSE, never player chips
 ```
 
-Detail lengkap (interface kontrak, event, logika keeper, layar FE, alamat, milestone) ada di **[PRD.md](./PRD.md)** — itu sumber kebenaran saat development.
+Full spec (contract interface, randomness notes, screens, milestones) is in **[PRD.md](./PRD.md)**.
 
 ---
 
@@ -37,45 +38,43 @@ Detail lengkap (interface kontrak, event, logika keeper, layar FE, alamat, miles
 
 | Layer | Tech |
 |---|---|
-| Smart Contract | Solidity 0.8.x + **Foundry** (forge/cast) + OpenZeppelin |
-| Keeper Bot | Node.js + viem + node-cron |
-| Frontend | Next.js + wagmi v2 + viem + Tailwind (2 tampilan: web & mobile/MiniPay) |
-| Chain | Celo Mainnet (42220) · token: cUSD |
+| Smart contract | Solidity 0.8.24 + **Foundry** + OpenZeppelin |
+| Frontend | **Next.js 14** (App Router) + **wagmi v2 + viem** + Tailwind |
+| Chain | Celo Mainnet (42220) · token: **cUSD** · testnet: Celo Sepolia (11142220) |
+| Deploy | Vercel (frontend) · Celoscan (contract verify) |
 
 ---
 
-## Struktur repo (rencana)
+## Repo structure
 
 ```
 xikomu/
-├── contracts/        # Foundry project (AutoSaveVault.sol, tests, deploy script)
-├── keeper/           # Keeper bot (cron executor)
-├── web/              # Next.js mini-app (web + MiniPay views)
-├── README.md
-└── PRD.md            # Product Requirements — baca ini sebelum coding
+├── contracts/        # Foundry: XikomuFlip.sol (game) + tests + deploy scripts
+├── frontend/         # Next.js MiniPay app: landing + /app game
+└── README.md · PRD.md
 ```
+
+> Legacy: `contracts/src/AutoSaveVault.sol` and `keeper/` are from an earlier
+> auto-save concept and are **superseded** by the game. They remain for history.
 
 ---
 
-## Quickstart (akan diisi saat scaffold)
+## Quickstart
 
 ```bash
 # Smart contract
-cd contracts && forge build && forge test
-
-# Keeper
-cd keeper && npm i && npm run dev
+cd contracts && forge build && forge test            # 17 game tests
 
 # Frontend
-cd web && npm i && npm run dev
+cd frontend && npm install && npm run dev            # http://localhost:3000
 ```
 
 ---
 
 ## Status
 
-🚧 In development — target deploy SC + FE ke Celo sebelum 22 Juni 2026.
+🚧 In development — targeting Celo **Mainnet** deploy before 22 Jun 2026.
 
-## Lisensi
+## License
 
-MIT (open source — syarat Proof of Ship).
+MIT (open source — Proof of Ship requirement).
