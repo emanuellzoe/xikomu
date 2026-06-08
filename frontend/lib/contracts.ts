@@ -3,9 +3,14 @@ import { celo, celoAlfajores, celoSepolia } from "wagmi/chains";
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000" as const;
 
-/** Stablecoin per chain. Celo Sepolia uses a deployed test token (set via env). */
+/**
+ * Chip token per chain — what players deposit/cash out of the Flip game.
+ * Mainnet runs a FULL CELO build: the token is native CELO via its GoldToken
+ * ERC20 (18 decimals), NOT cUSD. The var name is kept as CUSD for compatibility.
+ * Celo Sepolia uses a deployed test token (set via env).
+ */
 export const CUSD: Record<number, Address> = {
-  [celo.id]: "0x765DE816845861e75A25fCA122bb6898B8B1282a",
+  [celo.id]: "0x471EcE3750Da237f93B8E339c536989b8978a438", // CELO (GoldToken)
   [celoAlfajores.id]: "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1",
   [celoSepolia.id]: (process.env.NEXT_PUBLIC_CUSD_SEPOLIA as Address) || ZERO_ADDRESS,
 };
@@ -53,12 +58,9 @@ export function isConfigured(chainId: number): boolean {
 }
 
 export function isFlipConfigured(chainId: number): boolean {
+  // Native CELO game — only the game address is needed (no token).
   const f = FLIP[chainId];
-  const c = CUSD[chainId];
-  return (
-    !!f && f.toLowerCase() !== ZERO_ADDRESS &&
-    !!c && c.toLowerCase() !== ZERO_ADDRESS
-  );
+  return !!f && f.toLowerCase() !== ZERO_ADDRESS;
 }
 
 export const MIN_BET = 10_000_000_000_000_000n; // 0.01 cUSD
@@ -85,7 +87,7 @@ export const erc20Abi = [
 ] as const;
 
 export const flipAbi = [
-  { type: "function", name: "buyCredits", stateMutability: "nonpayable", inputs: [{ name: "amount", type: "uint256" }], outputs: [] },
+  { type: "function", name: "buyCredits", stateMutability: "payable", inputs: [], outputs: [] },
   { type: "function", name: "cashOut", stateMutability: "nonpayable", inputs: [{ name: "amount", type: "uint256" }], outputs: [] },
   { type: "function", name: "flip", stateMutability: "nonpayable", inputs: [{ name: "bet", type: "uint256" }, { name: "choiceHeads", type: "bool" }], outputs: [{ name: "won", type: "bool" }, { name: "resultHeads", type: "bool" }] },
   { type: "function", name: "chips", stateMutability: "view", inputs: [{ name: "", type: "address" }], outputs: [{ name: "", type: "uint256" }] },
