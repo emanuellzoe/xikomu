@@ -66,6 +66,23 @@ export function isFlipConfigured(chainId: number): boolean {
 export const MIN_BET = 10_000_000_000_000_000n; // 0.01 cUSD
 export const MAX_BET = 5_000_000_000_000_000_000n; // 5 cUSD
 
+// Payout math, mirrors XikomuFlip: a win returns 1.95x, so net winnings the
+// house must pay is bet * (195 - 100) / 100 = bet * 0.95.
+export const PAYOUT_NUM = 195n;
+export const PAYOUT_DEN = 100n;
+
+/** Net CELO the house pays out on a winning `bet` (bet * 0.95). */
+export function netWin(bet: bigint): bigint {
+  return (bet * PAYOUT_NUM) / PAYOUT_DEN - bet;
+}
+
+/** Largest bet whose win the house pool can currently cover. */
+export function maxBetForHouse(house: bigint): bigint {
+  // bet * 0.95 <= house  =>  bet <= house * 100 / 95
+  const max = (house * PAYOUT_DEN) / (PAYOUT_NUM - PAYOUT_DEN);
+  return max > MAX_BET ? MAX_BET : max;
+}
+
 export const vaultAbi = [
   { type: "function", name: "createPlan", stateMutability: "nonpayable", inputs: [{ name: "amount", type: "uint128" }, { name: "interval", type: "uint64" }], outputs: [] },
   { type: "function", name: "cancelPlan", stateMutability: "nonpayable", inputs: [], outputs: [] },
