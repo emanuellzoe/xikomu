@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
 
-const TITLE = "Xikomu Flip | Coin-flip game on Celo";
+const TITLE = "Xikomu — Automatic savings on Celo";
 const DESCRIPTION =
-  "Pick a side, flip a coin, win 1.95×. Buy chips with CELO, play in one on-chain transaction, cash out anytime — a game on Celo.";
+  "Set a savings plan once and let an on-chain keeper move cUSD into your vault on schedule. Non-custodial, withdraw anytime — right inside MiniPay.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -14,15 +14,15 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     url: "https://xikomu.vercel.app",
-    siteName: "Xikomu Flip",
-    images: ["/og.png"],
+    siteName: "Xikomu",
+    images: ["/logo.png"],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/og.png"],
+    images: ["/logo.png"],
   },
   // talent.app project ownership verification.
   other: {
