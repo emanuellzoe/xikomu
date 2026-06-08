@@ -123,7 +123,7 @@
 /* Tick "Pop and Spin" Animation */
 @keyframes checkPop {
   0% { transform: scale(0) rotate(-90deg); opacity: 0; filter: blur(4px); }
-  45% { transform: scale(1.4) rotate(15deg); opacity: 1; filter: blur(0px); color: #D2754E; }
+  45% { transform: scale(1.4) rotate(15deg); opacity: 1; filter: blur(0px); color: #FF8A4D; }
   75% { transform: scale(0.85) rotate(-5deg); color: #FF5E00; }
   100% { transform: scale(1) rotate(0deg); opacity: 1; color: #FF5E00; }
 }

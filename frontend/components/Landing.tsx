@@ -7,7 +7,7 @@ import { landingHtml } from "./landingHtml";
  * Landing page ported from the Casa Flow static template.
  * Markup is injected verbatim (display:contents keeps nav/main/footer as
  * direct flex children of <body>); the original scroll/animation script
- * runs here in a post-mount effect. Colors are themed to Claude orange.
+ * runs here in a post-mount effect. Colors match the in-app orange (#FF5E00).
  */
 export default function Landing() {
   useEffect(() => {
@@ -63,22 +63,22 @@ export default function Landing() {
       if (el) ctaObserver.observe(el);
     });
 
-    // Financing slider
+    // Winnings projection slider: net CELO from N winning 1-CELO flips at 1.95x.
     const slider = document.getElementById("finance-slider") as HTMLInputElement | null;
     const monthsDisplay = document.getElementById("months-display");
     const completionPrice = document.getElementById("completion-price");
-    const dailyAmount = 1; // cUSD saved per day in the projection
+    const netPerWin = 0.95; // 1.95x payout on a 1 CELO bet = +0.95 CELO net
     const onSlider = (e: Event) => {
-      const months = parseInt((e.target as HTMLInputElement).value);
+      const wins = parseInt((e.target as HTMLInputElement).value);
       if (!monthsDisplay || !completionPrice) return;
-      if (months === 0) {
-        monthsDisplay.textContent = "0 MONTHS";
-        completionPrice.textContent = "0 cUSD";
+      if (wins === 0) {
+        monthsDisplay.textContent = "0 WINS";
+        completionPrice.textContent = "0 CELO";
       } else {
-        monthsDisplay.textContent = months === 1 ? "1 MONTH" : `${months} MONTHS`;
-        const projected = dailyAmount * 30 * months;
+        monthsDisplay.textContent = wins === 1 ? "1 WIN" : `${wins} WINS`;
+        const projected = netPerWin * wins;
         completionPrice.textContent =
-          projected.toLocaleString(undefined, { maximumFractionDigits: 0 }) + " cUSD";
+          projected.toLocaleString(undefined, { maximumFractionDigits: 0 }) + " CELO";
       }
     };
     if (slider) slider.addEventListener("input", onSlider);
