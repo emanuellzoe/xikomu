@@ -191,10 +191,11 @@ export default function FlipGamePage() {
     <div className="min-h-screen w-full bg-[#FAFAF8] flex flex-col">
       <header className="sticky top-0 z-40 bg-[#FAFAF8]/80 backdrop-blur-md border-b border-stone-200/60">
         <div className="max-w-2xl mx-auto px-5 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-1">
-            <span className="text-[#E8A07E] font-light tracking-widest text-xl uppercase">Xiko</span>
-            <span className="text-[#C96442] font-normal text-xl tracking-tight -ml-1">mu</span>
-            <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-[#C96442]/10 text-[#A84F2E] font-medium">Flip</span>
+          <Link href="/" className="flex items-center gap-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Xikomu" className="w-7 h-7" />
+            <span className="font-playfair text-xl text-[#2C2B29] tracking-tight">Xikomu</span>
+            <span className="ml-0.5 text-xs px-2 py-0.5 rounded-full bg-[#FF5E00]/10 text-[#CC4B00] font-medium">Flip</span>
           </Link>
           {mounted && isConnected ? (
             <div className="flex items-center gap-1.5 sm:gap-2">
@@ -257,7 +258,7 @@ export default function FlipGamePage() {
               {/* Choose side */}
               <div className="grid grid-cols-2 gap-3 mt-4">
                 <button onClick={() => setChoiceHeads(true)}
-                  className={`flex items-center justify-center gap-2 rounded-2xl py-3 border-2 transition-all ${choiceHeads ? "border-[#C96442] bg-[#C96442]/5" : "border-stone-200 hover:border-stone-300"}`}>
+                  className={`flex items-center justify-center gap-2 rounded-2xl py-3 border-2 transition-all ${choiceHeads ? "border-[#FF5E00] bg-[#FF5E00]/5" : "border-stone-200 hover:border-stone-300"}`}>
                   <CoinMini heads /> <span className="font-medium text-stone-800">Heads</span>
                 </button>
                 <button onClick={() => setChoiceHeads(false)}
@@ -281,14 +282,14 @@ export default function FlipGamePage() {
 
               {/* Custom amount */}
               <input inputMode="decimal" value={bet} onChange={(e) => setBet(e.target.value)}
-                className="w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-lg text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#C96442]/40"
+                className="w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-lg text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#FF5E00]/40"
                 placeholder="0.10" />
               <p className="text-xs text-stone-400 mt-1.5 mb-4 font-light">
                 Min {fmt(MIN_BET)} · Max {fmt(MAX_BET)} CELO{chips ? ` · you have ${fmt(chips)} chips` : ""}
               </p>
 
               <button onClick={doFlip} disabled={!configured || busy || !betValid}
-                className="w-full bg-[#C96442] text-white rounded-full py-4 text-lg font-medium hover:bg-[#A84F2E] transition-colors disabled:opacity-40 shadow-[0_6px_16px_rgba(201,100,66,0.35)]">
+                className="w-full bg-[#FF5E00] text-white rounded-full py-4 text-lg font-medium hover:bg-[#CC4B00] transition-colors disabled:opacity-40 shadow-[0_6px_16px_rgba(255, 94, 0,0.35)]">
                 {flipping
                   ? "Flipping…"
                   : betWei === 0n
@@ -313,7 +314,7 @@ export default function FlipGamePage() {
               </div>
               <div className="flex gap-2">
                 <input inputMode="decimal" value={buyAmt} onChange={(e) => setBuyAmt(e.target.value)}
-                  className="flex-1 rounded-xl border border-stone-200 bg-white px-4 py-3 text-lg text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#C96442]/40"
+                  className="flex-1 rounded-xl border border-stone-200 bg-white px-4 py-3 text-lg text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#FF5E00]/40"
                   placeholder="1.00" />
                 <PrimaryBtn disabled={!configured || busy} onClick={doBuy}>
                   {busy && lastAction === "buy" ? "Confirming…" : "Buy chips"}
@@ -363,8 +364,8 @@ export default function FlipGamePage() {
 /* ---------- coin visuals (Heads = orange, Tails = gray) ---------- */
 function Coin({ heads }: { heads: boolean }) {
   return heads ? (
-    <div className="w-full h-full rounded-full flex items-center justify-center text-white shadow-[0_10px_30px_-6px_rgba(201,100,66,0.6)] border-4 border-[#E8A07E]"
-      style={{ background: "radial-gradient(circle at 35% 30%, #E8A07E, #C96442 60%, #A84F2E)" }}>
+    <div className="w-full h-full rounded-full flex items-center justify-center text-white shadow-[0_10px_30px_-6px_rgba(255, 94, 0,0.6)] border-4 border-[#FF8A4D]"
+      style={{ background: "radial-gradient(circle at 35% 30%, #FF8A4D, #FF5E00 60%, #CC4B00)" }}>
       <span className="font-playfair text-5xl">H</span>
     </div>
   ) : (
@@ -380,7 +381,7 @@ function CoinMini({ heads }: { heads: boolean }) {
       className="inline-flex w-6 h-6 rounded-full items-center justify-center text-[11px] font-bold text-white border"
       style={
         heads
-          ? { background: "radial-gradient(circle at 35% 30%, #E8A07E, #C96442)", borderColor: "#E8A07E" }
+          ? { background: "radial-gradient(circle at 35% 30%, #FF8A4D, #FF5E00)", borderColor: "#FF8A4D" }
           : { background: "radial-gradient(circle at 35% 30%, #D6D3D1, #78716C)", borderColor: "#D6D3D1" }
       }
     >
@@ -394,7 +395,7 @@ function ChipIcon() {
   // Poker chip — represents in-game chips.
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="shrink-0" aria-hidden>
-      <circle cx="12" cy="12" r="10" fill="#C96442" />
+      <circle cx="12" cy="12" r="10" fill="#FF5E00" />
       <circle cx="12" cy="12" r="6.2" fill="none" stroke="#FAFAF8" strokeWidth="1.6" strokeDasharray="2.6 2.2" />
       <circle cx="12" cy="12" r="2.4" fill="#FAFAF8" />
     </svg>
@@ -418,7 +419,7 @@ function Card({ children, compact }: { children: React.ReactNode; compact?: bool
 function PrimaryBtn({ children, full, ...p }: React.ButtonHTMLAttributes<HTMLButtonElement> & { full?: boolean }) {
   return (
     <button {...p}
-      className={`${full ? "w-full" : ""} justify-center bg-[#C96442] text-white rounded-full px-7 py-3 font-normal hover:bg-[#A84F2E] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_4px_12px_rgba(201,100,66,0.3)]`}>
+      className={`${full ? "w-full" : ""} justify-center bg-[#FF5E00] text-white rounded-full px-7 py-3 font-normal hover:bg-[#CC4B00] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_4px_12px_rgba(255, 94, 0,0.3)]`}>
       {children}
     </button>
   );
@@ -448,7 +449,7 @@ function ConnectCard() {
         <button
           disabled={isPending || !injected}
           onClick={() => injected && connect({ connector: injected })}
-          className="bg-[#C96442] text-white rounded-full px-8 py-4 text-lg font-normal hover:bg-[#A84F2E] transition-colors disabled:opacity-50 shadow-[0_4px_12px_rgba(201,100,66,0.3)]">
+          className="bg-[#FF5E00] text-white rounded-full px-8 py-4 text-lg font-normal hover:bg-[#CC4B00] transition-colors disabled:opacity-50 shadow-[0_4px_12px_rgba(255, 94, 0,0.3)]">
           {isPending ? "Connecting…" : "Connect Wallet"}
         </button>
         <p className="text-xs text-stone-400 mt-4 font-light">In MiniPay this connects automatically.</p>

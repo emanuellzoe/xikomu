@@ -2,10 +2,28 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
 
+const TITLE = "Xikomu Flip | Coin-flip game on Celo";
+const DESCRIPTION =
+  "Pick a side, flip a coin, win 1.95×. Buy chips with CELO, play in one on-chain transaction, cash out anytime — a game on Celo.";
+
 export const metadata: Metadata = {
-  title: "Xikomu Flip | Coin-flip game on Celo",
-  description:
-    "Pick a side, flip a coin, win 1.95×. Buy chips with CELO, play in one on-chain transaction, cash out anytime — a MiniPay mini-app on Celo.",
+  title: TITLE,
+  description: DESCRIPTION,
+  metadataBase: new URL("https://xikomu.vercel.app"),
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "https://xikomu.vercel.app",
+    siteName: "Xikomu Flip",
+    images: ["/og.png"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/og.png"],
+  },
   // talent.app project ownership verification.
   other: {
     "talentapp:project_verification":

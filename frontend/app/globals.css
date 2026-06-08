@@ -52,7 +52,7 @@
   height: 18px;
   width: 18px;
   border-radius: 50%;
-  background: #C96442;
+  background: #FF5E00;
   cursor: pointer;
   -webkit-appearance: none;
   margin-top: -6px;
@@ -67,25 +67,25 @@
   outline: none;
 }
 #finance-slider:focus::-webkit-slider-thumb {
-  box-shadow: 0 0 0 3px rgba(201, 100, 66, 0.25);
+  box-shadow: 0 0 0 3px rgba(255, 94, 0, 0.25);
 }
 
 /* Elegant Hero Flow Animation */
 @keyframes elegantFlow {
   0%, 100% {
     transform: translate3d(0, 0, 0) scale(1) skewX(0deg) rotate(0deg);
-    color: #C96442;
+    color: #FF5E00;
     text-shadow: 0px 0px 0px transparent;
   }
   40% {
     transform: translate3d(2px, -4px, 0) scale(1.02, 0.98) skewX(-5deg) rotate(1deg);
-    color: #E8A07E;
+    color: #FF8A4D;
     text-shadow: 4px 8px 16px rgba(232, 160, 126, 0.4);
   }
   75% {
     transform: translate3d(-1px, 2px, 0) scale(0.98, 1.02) skewX(3deg) rotate(-1deg);
-    color: #A84F2E;
-    text-shadow: -2px -4px 8px rgba(201, 100, 66, 0.15);
+    color: #CC4B00;
+    text-shadow: -2px -4px 8px rgba(255, 94, 0, 0.15);
   }
 }
 .hero-flow {
@@ -108,9 +108,9 @@
   transform: translateY(0) scale(1);
 }
 @keyframes pulseSoft {
-  0% { box-shadow: 0 0 0 0 rgba(201, 100, 66, 0.4); transform: scale(1); }
-  70% { box-shadow: 0 0 0 15px rgba(201, 100, 66, 0); transform: scale(1.02); }
-  100% { box-shadow: 0 0 0 0 rgba(201, 100, 66, 0); transform: scale(1); }
+  0% { box-shadow: 0 0 0 0 rgba(255, 94, 0, 0.4); transform: scale(1); }
+  70% { box-shadow: 0 0 0 15px rgba(255, 94, 0, 0); transform: scale(1.02); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 94, 0, 0); transform: scale(1); }
 }
 .btn-pulse {
   animation: pulseSoft 2.5s infinite;
@@ -124,8 +124,8 @@
 @keyframes checkPop {
   0% { transform: scale(0) rotate(-90deg); opacity: 0; filter: blur(4px); }
   45% { transform: scale(1.4) rotate(15deg); opacity: 1; filter: blur(0px); color: #D2754E; }
-  75% { transform: scale(0.85) rotate(-5deg); color: #C96442; }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; color: #C96442; }
+  75% { transform: scale(0.85) rotate(-5deg); color: #FF5E00; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; color: #FF5E00; }
 }
 .tick-item iconify-icon {
   opacity: 0;
@@ -162,10 +162,10 @@
   transition: all 0.5s ease;
 }
 .milestone.active .milestone-dot {
-  background-color: #C96442;
-  border-color: #C96442;
+  background-color: #FF5E00;
+  border-color: #FF5E00;
   color: white;
-  box-shadow: 0 0 0 8px rgba(201, 100, 66, 0.15);
+  box-shadow: 0 0 0 8px rgba(255, 94, 0, 0.15);
   transform: scale(1.25);
 }
 .milestone.active .milestone-dot iconify-icon {
@@ -176,9 +176,9 @@
   transform: translateX(0) scale(1);
 }
 .milestone.active .milestone-badge {
-  background-color: #C96442;
+  background-color: #FF5E00;
   color: white;
-  box-shadow: 0 4px 6px -1px rgba(201, 100, 66, 0.3);
+  box-shadow: 0 4px 6px -1px rgba(255, 94, 0, 0.3);
 }
 
 /* Card Swing Animation */
@@ -205,9 +205,9 @@
   left: -2px;
   width: 5px;
   height: 5px;
-  background: #C96442;
+  background: #FF5E00;
   border-radius: 50%;
-  box-shadow: 0 0 10px 3px rgba(201, 100, 66, 0.6);
+  box-shadow: 0 0 10px 3px rgba(255, 94, 0, 0.6);
   opacity: 0;
   transition: opacity 0.2s ease;
 }
