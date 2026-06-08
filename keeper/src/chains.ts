@@ -1,5 +1,5 @@
 import { defineChain, type Chain } from "viem";
-import { celo, celoAlfajores } from "viem/chains";
+import { celo, celoAlfajores, celoSepolia } from "viem/chains";
 
 /// Local Foundry/anvil node for end-to-end testing.
 export const anvil = defineChain({
@@ -9,7 +9,7 @@ export const anvil = defineChain({
   rpcUrls: { default: { http: ["http://127.0.0.1:8545"] } },
 });
 
-export type ChainName = "celo" | "alfajores" | "local";
+export type ChainName = "celo" | "alfajores" | "sepolia" | "local";
 
 export function resolveChain(name: ChainName): Chain {
   switch (name) {
@@ -17,9 +17,11 @@ export function resolveChain(name: ChainName): Chain {
       return celo;
     case "alfajores":
       return celoAlfajores;
+    case "sepolia":
+      return celoSepolia;
     case "local":
       return anvil;
     default:
-      throw new Error(`Unknown CHAIN "${name}" (use celo | alfajores | local)`);
+      throw new Error(`Unknown CHAIN "${name}" (use celo | alfajores | sepolia | local)`);
   }
 }

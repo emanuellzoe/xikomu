@@ -14,12 +14,15 @@ import {
   useWriteContract,
   usePublicClient,
 } from "wagmi";
-import { celo, celoAlfajores } from "wagmi/chains";
+import { celo, celoSepolia } from "wagmi/chains";
 import { formatUnits, parseUnits, maxUint256, parseAbiItem, type Address } from "viem";
 import {
+  CHAIN_LABEL,
   CUSD,
   CUSD_DECIMALS,
+  EXPLORER,
   START_BLOCK,
+  SUPPORTED_CHAIN_IDS,
   VAULT,
   ZERO_ADDRESS,
   erc20Abi,
@@ -81,7 +84,7 @@ export default function AppPage() {
   const { switchChain } = useSwitchChain();
   const publicClient = usePublicClient();
 
-  const supported = chainId === celo.id || chainId === celoAlfajores.id;
+  const supported = SUPPORTED_CHAIN_IDS.includes(chainId);
   const configured = supported && isConfigured(chainId);
   const vault = (supported ? VAULT[chainId] : ZERO_ADDRESS) as Address;
   const cusd = (supported ? CUSD[chainId] : ZERO_ADDRESS) as Address;
@@ -176,7 +179,7 @@ export default function AppPage() {
   useEffect(() => { loadHistory(); }, [address, chainId, configured]); // eslint-disable-line
 
   const busy = writing || confirming;
-  const explorer = chainId === celo.id ? "https://celoscan.io" : "https://alfajores.celoscan.io";
+  const explorer = EXPLORER[chainId] ?? "https://celoscan.io";
 
   // ---------- render ----------
   return (
@@ -191,7 +194,7 @@ export default function AppPage() {
           {mounted && isConnected ? (
             <div className="flex items-center gap-2">
               <span className="hidden sm:inline text-xs font-medium px-2.5 py-1 rounded-full bg-stone-100 border border-stone-200 text-stone-600">
-                {chainId === celo.id ? "Celo" : chainId === celoAlfajores.id ? "Alfajores" : "Unsupported"}
+                {CHAIN_LABEL[chainId] ?? "Unsupported"}
               </span>
               <span className="text-sm font-mono px-3 py-1.5 rounded-full bg-white border border-stone-200 text-stone-700">{shortAddr(address)}</span>
               <button onClick={() => disconnect()} className="text-sm text-stone-500 hover:text-stone-900 transition-colors px-2">Exit</button>
@@ -209,16 +212,15 @@ export default function AppPage() {
             <p className="text-stone-500 mb-6 text-base font-light">Switch to Celo to use Xikomu.</p>
             <div className="flex gap-3">
               <PrimaryBtn onClick={() => switchChain({ chainId: celo.id })}>Switch to Celo</PrimaryBtn>
-              <GhostBtn onClick={() => switchChain({ chainId: celoAlfajores.id })}>Use Alfajores</GhostBtn>
+              <GhostBtn onClick={() => switchChain({ chainId: celoSepolia.id })}>Use Celo Sepolia</GhostBtn>
             </div>
           </Card>
         ) : (
           <div className="flex flex-col gap-5">
             {!configured && (
               <div className="rounded-2xl border border-amber-200 bg-amber-50 text-amber-800 px-5 py-4 text-sm font-light">
-                The AutoSaveVault contract isn&apos;t configured for this network yet. Deploy it and set
-                <code className="mx-1 px-1 rounded bg-amber-100">NEXT_PUBLIC_VAULT_{chainId === celo.id ? "CELO" : "ALFAJORES"}</code>
-                to enable saving.
+                Contracts aren&apos;t configured for {CHAIN_LABEL[chainId] ?? "this network"} yet. Deploy AutoSaveVault and set the
+                <code className="mx-1 px-1 rounded bg-amber-100">NEXT_PUBLIC_VAULT_*</code> (and test-token) env vars to enable saving.
               </div>
             )}
 
