@@ -1,0 +1,22 @@
+{
+  "name": "xikomu-flip-stacks",
+  "version": "1.0.0",
+  "description": "Xikomu Lucky Flip — native-STX coin-flip game on Stacks (Clarity)",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:report": "vitest run -- --coverage --costs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@stacks/clarinet-sdk": "^3.9.0",
+    "@stacks/transactions": "^7.4.0",
+    "@stacks/wallet-sdk": "^7.4.0",
+    "vitest-environment-clarinet": "^3.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.6"
+  }
+}
