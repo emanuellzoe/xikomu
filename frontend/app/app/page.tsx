@@ -359,19 +359,32 @@ export default function FlipGamePage() {
 
             {/* History */}
             <Card>
-              <h2 className="font-playfair text-xl text-[#2C2B29] mb-3">Recent flips</h2>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="font-playfair text-xl text-[#2C2B29]">Recent flips</h2>
+                {history.length > 0 && (
+                  <span className="text-xs text-stone-400 font-light">{history.length} shown</span>
+                )}
+              </div>
               {history.length === 0 ? (
-                <p className="text-stone-400 font-light text-sm">No flips yet.</p>
+                <div className="flex flex-col items-center text-center py-6">
+                  <div className="w-10 h-10 mb-2 opacity-60"><Coin heads /></div>
+                  <p className="text-stone-400 font-light text-sm">No flips yet — your results show up here.</p>
+                </div>
               ) : (
-                <ul className="divide-y divide-stone-100">
+                <ul className="space-y-1">
                   {history.map((h, i) => (
-                    <li key={i} className="flex items-center justify-between py-2.5">
-                      <span className="flex items-center gap-2 text-stone-700">
-                        <CoinMini heads={h.resultHeads} /> {h.resultHeads ? "Heads" : "Tails"}
-                      </span>
+                    <li key={i}>
                       <a href={`${explorer}/tx/${h.tx}`} target="_blank" rel="noreferrer"
-                        className={`font-medium ${h.won ? "text-emerald-600" : "text-stone-400"} hover:underline`}>
-                        {h.won ? "Won" : "Lost"} · {fmt(h.bet)} CELO
+                        className="flex items-center justify-between py-2.5 px-2 -mx-2 rounded-xl hover:bg-stone-50 transition-colors">
+                        <span className="flex items-center gap-2 text-stone-700">
+                          <CoinMini heads={h.resultHeads} /> {h.resultHeads ? "Heads" : "Tails"}
+                        </span>
+                        <span className="flex items-center gap-2">
+                          <span className="text-stone-400 text-sm">{fmt(h.bet)} CELO</span>
+                          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${h.won ? "bg-emerald-50 text-emerald-600" : "bg-stone-100 text-stone-500"}`}>
+                            {h.won ? "Won" : "Lost"}
+                          </span>
+                        </span>
                       </a>
                     </li>
                   ))}
