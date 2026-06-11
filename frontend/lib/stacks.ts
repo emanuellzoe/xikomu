@@ -91,3 +91,42 @@ export const getTotalChips = () => readUint("get-total-chips");
 export const buyCreditsArgs = (micro: bigint) => [Cl.uint(micro)];
 export const flipArgs = (bet: bigint, heads: boolean) => [Cl.uint(bet), Cl.bool(heads)];
 export const cashOutArgs = (micro: bigint) => [Cl.uint(micro)];
+
+// ---- transactions (confirmation polling via Hiro API) --------------------
+
+export interface HiroTx {
+  tx_status?: string;
+  tx_result?: { repr?: string };
+  tx_id?: string;
+}
+
+export async function fetchTx(txid: string): Promise<HiroTx | null> {
+  const id = txid.startsWith("0x") ? txid : `0x${txid}`;
+  const r = await fetch(`${HIRO_API}/extended/v1/tx/${id}`);
+  if (!r.ok) return null;
+  return (await r.json()) as HiroTx;
+}
+
+/** Resolve once the tx is confirmed; throw on abort/timeout. */
+export async function waitForTx(
+  txid: string,
+  { tries = 40, intervalMs = 3000 }: { tries?: number; intervalMs?: number } = {},
+): Promise<HiroTx> {
+  for (let i = 0; i < tries; i++) {
+    const tx = await fetchTx(txid);
+    const s = tx?.tx_status;
+    if (s === "success") return tx as HiroTx;
+    if (s && s.startsWith("abort")) throw new Error(tx?.tx_result?.repr ?? "transaction failed");
+    await new Promise((res) => setTimeout(res, intervalMs));
+  }
+  throw new Error("confirmation timed out");
+}
+
+/** Parse a flip tx result repr, e.g. "(ok (tuple (result-heads false) (won true)))". */
+export function parseFlipResult(repr?: string): { won: boolean; resultHeads: boolean } | null {
+  if (!repr || !/won/.test(repr)) return null;
+  return {
+    won: /\(won (true|false)\)/.exec(repr)?.[1] === "true",
+    resultHeads: /\(result-heads (true|false)\)/.exec(repr)?.[1] === "true",
+  };
+}
