@@ -228,11 +228,11 @@ export default function FlipGamePage() {
             <div className="flex items-center gap-1.5 sm:gap-2">
               {configured && (
                 <span title="Your chips" className="flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-full bg-white border border-stone-200 text-stone-700">
-                  <ChipIcon /> {fmt(chips)}
+                  <ChipIcon /> {chips === undefined ? <Sk /> : fmt(chips)}
                 </span>
               )}
               <span title="Wallet CELO" className="flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-full bg-white border border-stone-200 text-stone-700">
-                <CeloIcon /> {fmt(walletBal)}
+                <CeloIcon /> {walletBal === undefined ? <Sk /> : fmt(walletBal)}
               </span>
               <span className="hidden sm:inline text-sm font-mono px-3 py-1.5 rounded-full bg-white border border-stone-200 text-stone-700">{shortAddr(address)}</span>
               <button onClick={() => disconnect()} className="text-sm text-stone-500 hover:text-stone-900 transition-colors px-1.5 sm:px-2">Exit</button>
@@ -265,8 +265,13 @@ export default function FlipGamePage() {
             {/* The coin */}
             <Card>
               <div className="flex flex-col items-center py-2">
-                <div className="[perspective:800px] mb-5">
-                  <div className={`w-36 h-36 ${flipping ? "coin-flipping" : "coin-settle"}`}>
+                <div className="[perspective:800px] mb-5 relative">
+                  {result?.won && !flipping && <Confetti />}
+                  <div
+                    className={`w-36 h-36 ${flipping ? "coin-flipping" : "coin-settle"} ${
+                      result?.won && !flipping ? "coin-win" : ""
+                    }`}
+                  >
                     <Coin heads={flipping ? coinFace : result ? result.resultHeads : coinFace} />
                   </div>
                 </div>
@@ -316,7 +321,7 @@ export default function FlipGamePage() {
               </p>
 
               <button onClick={doFlip} disabled={!configured || busy || !betValid}
-                className="w-full bg-[#FF5E00] text-white rounded-full py-4 text-lg font-medium hover:bg-[#CC4B00] transition-colors disabled:opacity-40 shadow-[0_6px_16px_rgba(255, 94, 0,0.35)]">
+                className="w-full bg-[#FF5E00] text-white rounded-full py-4 text-lg font-medium hover:bg-[#CC4B00] transition-colors disabled:opacity-40 shadow-brand-lg">
                 {flipping
                   ? "Flipping…"
                   : betWei === 0n
@@ -354,19 +359,32 @@ export default function FlipGamePage() {
 
             {/* History */}
             <Card>
-              <h2 className="font-playfair text-xl text-[#2C2B29] mb-3">Recent flips</h2>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="font-playfair text-xl text-[#2C2B29]">Recent flips</h2>
+                {history.length > 0 && (
+                  <span className="text-xs text-stone-400 font-light">{history.length} shown</span>
+                )}
+              </div>
               {history.length === 0 ? (
-                <p className="text-stone-400 font-light text-sm">No flips yet.</p>
+                <div className="flex flex-col items-center text-center py-6">
+                  <div className="w-10 h-10 mb-2 opacity-60"><Coin heads /></div>
+                  <p className="text-stone-400 font-light text-sm">No flips yet — your results show up here.</p>
+                </div>
               ) : (
-                <ul className="divide-y divide-stone-100">
+                <ul className="space-y-1">
                   {history.map((h, i) => (
-                    <li key={i} className="flex items-center justify-between py-2.5">
-                      <span className="flex items-center gap-2 text-stone-700">
-                        <CoinMini heads={h.resultHeads} /> {h.resultHeads ? "Heads" : "Tails"}
-                      </span>
+                    <li key={i}>
                       <a href={`${explorer}/tx/${h.tx}`} target="_blank" rel="noreferrer"
-                        className={`font-medium ${h.won ? "text-emerald-600" : "text-stone-400"} hover:underline`}>
-                        {h.won ? "Won" : "Lost"} · {fmt(h.bet)} CELO
+                        className="flex items-center justify-between py-2.5 px-2 -mx-2 rounded-xl hover:bg-stone-50 transition-colors">
+                        <span className="flex items-center gap-2 text-stone-700">
+                          <CoinMini heads={h.resultHeads} /> {h.resultHeads ? "Heads" : "Tails"}
+                        </span>
+                        <span className="flex items-center gap-2">
+                          <span className="text-stone-400 text-sm">{fmt(h.bet)} CELO</span>
+                          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${h.won ? "bg-emerald-50 text-emerald-600" : "bg-stone-100 text-stone-500"}`}>
+                            {h.won ? "Won" : "Lost"}
+                          </span>
+                        </span>
                       </a>
                     </li>
                   ))}
@@ -381,7 +399,7 @@ export default function FlipGamePage() {
             )}
 
             <p className="text-center text-xs text-stone-400 font-light">
-              House pool: {fmt(house)} CELO · provably on-chain, low-stakes fun.
+              House pool: {house === undefined ? <Sk w="w-10" /> : fmt(house)} CELO · provably on-chain, low-stakes fun.
             </p>
           </div>
         )}
@@ -390,18 +408,57 @@ export default function FlipGamePage() {
   );
 }
 
+/* ---------- win confetti (predefined pieces — no randomness/hydration drift) ---------- */
+const CONFETTI = [
+  { left: "6%", color: "#FF5E00", delay: "0s" },
+  { left: "20%", color: "#10B981", delay: ".04s" },
+  { left: "33%", color: "#FF8A4D", delay: ".10s" },
+  { left: "46%", color: "#FBBF24", delay: ".02s" },
+  { left: "58%", color: "#10B981", delay: ".12s" },
+  { left: "70%", color: "#FF5E00", delay: ".06s" },
+  { left: "84%", color: "#FBBF24", delay: ".09s" },
+  { left: "94%", color: "#FF8A4D", delay: ".14s" },
+];
+function Confetti() {
+  return (
+    <div className="pointer-events-none absolute inset-0 flex justify-center" aria-hidden>
+      <div className="relative w-36 h-36">
+        {CONFETTI.map((c, i) => (
+          <span
+            key={i}
+            className="confetti-piece"
+            style={{ left: c.left, background: c.color, animationDelay: c.delay }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ---------- coin visuals (Heads = orange, Tails = gray) ---------- */
 function Coin({ heads }: { heads: boolean }) {
   return heads ? (
-    <div className="w-full h-full rounded-full flex items-center justify-center text-white shadow-[0_10px_30px_-6px_rgba(255, 94, 0,0.6)] border-4 border-[#FF8A4D]"
+    <div className="relative overflow-hidden w-full h-full rounded-full flex items-center justify-center text-white shadow-coin border-4 border-[#FF8A4D]"
       style={{ background: "radial-gradient(circle at 35% 30%, #FF8A4D, #FF5E00 60%, #CC4B00)" }}>
-      <span className="font-playfair text-5xl">H</span>
+      <CoinShine />
+      <span className="font-playfair text-5xl relative">H</span>
     </div>
   ) : (
-    <div className="w-full h-full rounded-full flex items-center justify-center text-stone-700 shadow-[0_10px_30px_-6px_rgba(0,0,0,0.25)] border-4 border-stone-300"
+    <div className="relative overflow-hidden w-full h-full rounded-full flex items-center justify-center text-stone-700 shadow-coin-gray border-4 border-stone-300"
       style={{ background: "radial-gradient(circle at 35% 30%, #E7E5E4, #A8A29E 60%, #78716C)" }}>
-      <span className="font-playfair text-5xl text-white">T</span>
+      <CoinShine />
+      <span className="font-playfair text-5xl text-white relative">T</span>
     </div>
+  );
+}
+function CoinShine() {
+  // Soft glossy highlight in the top-left for a minted-coin feel.
+  return (
+    <span
+      className="pointer-events-none absolute -top-2 -left-1 w-20 h-20 rounded-full opacity-60"
+      style={{ background: "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.85), rgba(255,255,255,0) 60%)" }}
+      aria-hidden
+    />
   );
 }
 function CoinMini({ heads }: { heads: boolean }) {
@@ -417,6 +474,11 @@ function CoinMini({ heads }: { heads: boolean }) {
       {heads ? "H" : "T"}
     </span>
   );
+}
+
+/* ---------- skeleton (shown while an on-chain read is still loading) ---------- */
+function Sk({ w = "w-8" }: { w?: string }) {
+  return <span className={`skeleton h-3 ${w} align-middle`} aria-hidden />;
 }
 
 /* ---------- balance icons ---------- */
@@ -443,12 +505,12 @@ function CeloIcon() {
 
 /* ---------- UI atoms ---------- */
 function Card({ children, compact }: { children: React.ReactNode; compact?: boolean }) {
-  return <div className={`bg-white rounded-[1.75rem] border border-stone-200 shadow-[0_20px_40px_-24px_rgba(0,0,0,0.12)] ${compact ? "p-5" : "p-6 sm:p-7"}`}>{children}</div>;
+  return <div className={`bg-white rounded-[1.75rem] border border-stone-200 shadow-card ${compact ? "p-5" : "p-6 sm:p-7"}`}>{children}</div>;
 }
 function PrimaryBtn({ children, full, ...p }: React.ButtonHTMLAttributes<HTMLButtonElement> & { full?: boolean }) {
   return (
     <button {...p}
-      className={`${full ? "w-full" : ""} justify-center bg-[#FF5E00] text-white rounded-full px-7 py-3 font-normal hover:bg-[#CC4B00] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_4px_12px_rgba(255, 94, 0,0.3)]`}>
+      className={`${full ? "w-full" : ""} justify-center bg-[#FF5E00] text-white rounded-full px-7 py-3 font-normal hover:bg-[#CC4B00] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-brand`}>
       {children}
     </button>
   );
@@ -473,16 +535,40 @@ function ConnectCard() {
             <Coin heads />
           </div>
         </div>
+        <span className="inline-block text-xs font-medium px-3 py-1 rounded-full bg-[#FF5E00]/10 text-[#CC4B00] mb-4">
+          Win 1.95× · one on-chain flip
+        </span>
         <h1 className="font-playfair text-4xl text-[#2C2B29] mb-3">Xikomu Lucky Flip</h1>
-        <p className="text-stone-500 font-light mb-8">Connect your wallet, pick Heads or Tails, and flip to win 1.95× in CELO.</p>
+        <p className="text-stone-500 font-light mb-7">Connect your wallet, pick Heads or Tails, and flip to win 1.95× in CELO.</p>
+
+        {/* how it works */}
+        <div className="flex items-center justify-center gap-2 mb-8 text-sm text-stone-500">
+          <Step n={1} label="Pick a side" />
+          <span className="text-stone-300">→</span>
+          <Step n={2} label="Flip" />
+          <span className="text-stone-300">→</span>
+          <Step n={3} label="Win 1.95×" />
+        </div>
+
         <button
           disabled={isPending || !injected}
           onClick={() => injected && connect({ connector: injected })}
-          className="bg-[#FF5E00] text-white rounded-full px-8 py-4 text-lg font-normal hover:bg-[#CC4B00] transition-colors disabled:opacity-50 shadow-[0_4px_12px_rgba(255, 94, 0,0.3)]">
+          className="bg-[#FF5E00] text-white rounded-full px-8 py-4 text-lg font-normal hover:bg-[#CC4B00] transition-colors disabled:opacity-50 shadow-brand">
           {isPending ? "Connecting…" : "Connect Wallet"}
         </button>
         <p className="text-xs text-stone-400 mt-4 font-light">In MiniPay this connects automatically.</p>
       </div>
     </div>
+  );
+}
+
+function Step({ n, label }: { n: number; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className="inline-flex w-5 h-5 items-center justify-center rounded-full bg-stone-100 text-stone-600 text-xs font-medium">
+        {n}
+      </span>
+      <span className="font-light">{label}</span>
+    </span>
   );
 }
