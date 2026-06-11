@@ -371,6 +371,19 @@ export default function StacksFlipPage() {
               House pool: {house === undefined ? <Sk w="w-10" /> : fmtStx(house)} STX · Clarity contract on
               Stacks testnet.
             </p>
+            <div className="flex items-center justify-center gap-4 text-xs">
+              <a
+                href={`${EXPLORER}/txid/${FLIP_ID}?chain=testnet`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#5546FF] hover:underline"
+              >
+                View contract ↗
+              </a>
+              <Link href="/app" className="text-stone-400 hover:text-stone-700 transition-colors">
+                Play on Celo →
+              </Link>
+            </div>
           </div>
         )}
       </main>
