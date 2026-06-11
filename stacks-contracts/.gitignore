@@ -1,0 +1,9 @@
+node_modules/
+.cache/
+settings/Testnet.toml
+settings/Mainnet.toml
+coverage/
+costs-reports.json
+*.log
+.DS_Store
+history.txt

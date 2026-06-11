@@ -1,0 +1,25 @@
+[project]
+name = 'xikomu-flip-stacks'
+description = 'Xikomu Lucky Flip — a native-STX coin-flip game on Stacks (Clarity port of XikomuFlip.sol)'
+authors = []
+telemetry = false
+cache_dir = './.cache'
+requirements = []
+
+[contracts.xikomu-flip]
+path = 'contracts/xikomu-flip.clar'
+clarity_version = 2
+epoch = 2.1
+
+[repl.analysis]
+passes = ['check_checker']
+
+[repl.analysis.check_checker]
+strict = false
+trusted_sender = true
+trusted_caller = true
+callee_filter = true
+
+[repl.remote_data]
+enabled = false
+api_url = 'https://api.hiro.so'
