@@ -510,8 +510,21 @@ function ConnectCard() {
             <Coin heads />
           </div>
         </div>
+        <span className="inline-block text-xs font-medium px-3 py-1 rounded-full bg-[#FF5E00]/10 text-[#CC4B00] mb-4">
+          Win 1.95× · one on-chain flip
+        </span>
         <h1 className="font-playfair text-4xl text-[#2C2B29] mb-3">Xikomu Lucky Flip</h1>
-        <p className="text-stone-500 font-light mb-8">Connect your wallet, pick Heads or Tails, and flip to win 1.95× in CELO.</p>
+        <p className="text-stone-500 font-light mb-7">Connect your wallet, pick Heads or Tails, and flip to win 1.95× in CELO.</p>
+
+        {/* how it works */}
+        <div className="flex items-center justify-center gap-2 mb-8 text-sm text-stone-500">
+          <Step n={1} label="Pick a side" />
+          <span className="text-stone-300">→</span>
+          <Step n={2} label="Flip" />
+          <span className="text-stone-300">→</span>
+          <Step n={3} label="Win 1.95×" />
+        </div>
+
         <button
           disabled={isPending || !injected}
           onClick={() => injected && connect({ connector: injected })}
@@ -521,5 +534,16 @@ function ConnectCard() {
         <p className="text-xs text-stone-400 mt-4 font-light">In MiniPay this connects automatically.</p>
       </div>
     </div>
+  );
+}
+
+function Step({ n, label }: { n: number; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className="inline-flex w-5 h-5 items-center justify-center rounded-full bg-stone-100 text-stone-600 text-xs font-medium">
+        {n}
+      </span>
+      <span className="font-light">{label}</span>
+    </span>
   );
 }
