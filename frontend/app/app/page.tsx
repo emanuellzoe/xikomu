@@ -265,8 +265,13 @@ export default function FlipGamePage() {
             {/* The coin */}
             <Card>
               <div className="flex flex-col items-center py-2">
-                <div className="[perspective:800px] mb-5">
-                  <div className={`w-36 h-36 ${flipping ? "coin-flipping" : "coin-settle"}`}>
+                <div className="[perspective:800px] mb-5 relative">
+                  {result?.won && !flipping && <Confetti />}
+                  <div
+                    className={`w-36 h-36 ${flipping ? "coin-flipping" : "coin-settle"} ${
+                      result?.won && !flipping ? "coin-win" : ""
+                    }`}
+                  >
                     <Coin heads={flipping ? coinFace : result ? result.resultHeads : coinFace} />
                   </div>
                 </div>
@@ -386,6 +391,33 @@ export default function FlipGamePage() {
           </div>
         )}
       </main>
+    </div>
+  );
+}
+
+/* ---------- win confetti (predefined pieces — no randomness/hydration drift) ---------- */
+const CONFETTI = [
+  { left: "6%", color: "#FF5E00", delay: "0s" },
+  { left: "20%", color: "#10B981", delay: ".04s" },
+  { left: "33%", color: "#FF8A4D", delay: ".10s" },
+  { left: "46%", color: "#FBBF24", delay: ".02s" },
+  { left: "58%", color: "#10B981", delay: ".12s" },
+  { left: "70%", color: "#FF5E00", delay: ".06s" },
+  { left: "84%", color: "#FBBF24", delay: ".09s" },
+  { left: "94%", color: "#FF8A4D", delay: ".14s" },
+];
+function Confetti() {
+  return (
+    <div className="pointer-events-none absolute inset-0 flex justify-center" aria-hidden>
+      <div className="relative w-36 h-36">
+        {CONFETTI.map((c, i) => (
+          <span
+            key={i}
+            className="confetti-piece"
+            style={{ left: c.left, background: c.color, animationDelay: c.delay }}
+          />
+        ))}
+      </div>
     </div>
   );
 }
