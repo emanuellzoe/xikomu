@@ -2,15 +2,16 @@
 
 > Mini-app for **Xikomu Lucky Flip** — a coin-flip game, now **multi-chain**.
 
-Next.js (App Router) frontend with three surfaces:
+Next.js (App Router) frontend with two surfaces:
 - **Landing (`/`)** — marketing page, Claude-orange theme.
-- **Game · Celo (`/app`)** — wagmi + viem; native-CELO flip, MiniPay-ready.
-- **Game · Stacks (`/stacks`)** — `@stacks/connect` (Xverse/Leather); native-STX
-  flip against the `xikomu-flip` **Clarity** contract on Stacks testnet.
+- **Game (`/app`)** — one page, a header **Celo / Stacks** toggle picks the chain:
+  - **Celo** — wagmi + viem; native-CELO flip, MiniPay-ready.
+  - **Stacks** — `@stacks/connect` (Xverse/Leather); native-STX flip against the
+    `xikomu-flip` **Clarity** contract on Stacks testnet.
 
-Both game surfaces share the same UX (animated coin, Heads/Tails, win 1.95×, buy
+Both engines sit behind the same UI (animated coin, Heads/Tails, win 1.95×, buy
 chips, cash out, recent flips) over the same rules — one on Solidity/Celo, one on
-Clarity/Stacks.
+Clarity/Stacks. One deploy, one URL.
 
 Backends: `XikomuFlip` (Solidity, `contracts/`) and `xikomu-flip` (Clarity,
 `stacks-contracts/`).
