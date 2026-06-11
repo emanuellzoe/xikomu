@@ -228,11 +228,11 @@ export default function FlipGamePage() {
             <div className="flex items-center gap-1.5 sm:gap-2">
               {configured && (
                 <span title="Your chips" className="flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-full bg-white border border-stone-200 text-stone-700">
-                  <ChipIcon /> {fmt(chips)}
+                  <ChipIcon /> {chips === undefined ? <Sk /> : fmt(chips)}
                 </span>
               )}
               <span title="Wallet CELO" className="flex items-center gap-1.5 text-sm font-medium px-2.5 py-1 rounded-full bg-white border border-stone-200 text-stone-700">
-                <CeloIcon /> {fmt(walletBal)}
+                <CeloIcon /> {walletBal === undefined ? <Sk /> : fmt(walletBal)}
               </span>
               <span className="hidden sm:inline text-sm font-mono px-3 py-1.5 rounded-full bg-white border border-stone-200 text-stone-700">{shortAddr(address)}</span>
               <button onClick={() => disconnect()} className="text-sm text-stone-500 hover:text-stone-900 transition-colors px-1.5 sm:px-2">Exit</button>
@@ -386,7 +386,7 @@ export default function FlipGamePage() {
             )}
 
             <p className="text-center text-xs text-stone-400 font-light">
-              House pool: {fmt(house)} CELO · provably on-chain, low-stakes fun.
+              House pool: {house === undefined ? <Sk w="w-10" /> : fmt(house)} CELO · provably on-chain, low-stakes fun.
             </p>
           </div>
         )}
@@ -449,6 +449,11 @@ function CoinMini({ heads }: { heads: boolean }) {
       {heads ? "H" : "T"}
     </span>
   );
+}
+
+/* ---------- skeleton (shown while an on-chain read is still loading) ---------- */
+function Sk({ w = "w-8" }: { w?: string }) {
+  return <span className={`skeleton h-3 ${w} align-middle`} aria-hidden />;
 }
 
 /* ---------- balance icons ---------- */
