@@ -23,7 +23,8 @@ import {
   EXPLORER,
   type FlipHistoryItem,
 } from "@/lib/stacks";
-import { useStacksWallet, useFlipData } from "./hooks";
+import { ChainToggle, type Chain } from "@/components/ChainToggle";
+import { useStacksWallet, useFlipData } from "./stacksHooks";
 import styles from "./stacks.module.css";
 
 const BET_PCTS = [10, 25, 50, 100];
@@ -49,7 +50,7 @@ async function callContract(functionName: string, functionArgs: ClarityValue[]):
   return txid;
 }
 
-export default function StacksFlipPage() {
+export default function StacksFlip({ chain, setChain }: { chain: Chain; setChain: (c: Chain) => void }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -163,14 +164,14 @@ export default function StacksFlipPage() {
     <div className="min-h-screen w-full bg-[#FAFAF8] flex flex-col">
       <header className="sticky top-0 z-40 bg-[#FAFAF8]/80 backdrop-blur-md border-b border-stone-200/60">
         <div className="max-w-2xl mx-auto px-5 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Xikomu" className="w-7 h-7" />
-            <span className="font-playfair text-xl text-[#2C2B29] tracking-tight">Xikomu</span>
-            <span className="ml-0.5 text-xs px-2 py-0.5 rounded-full bg-[#5546FF]/10 text-[#5546FF] font-medium">
-              Stacks
-            </span>
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.png" alt="Xikomu" className="w-7 h-7" />
+              <span className="font-playfair text-xl text-[#2C2B29] tracking-tight">Xikomu</span>
+            </Link>
+            <ChainToggle value={chain} onChange={setChain} />
+          </div>
           {mounted && address ? (
             <div className="flex items-center gap-1.5 sm:gap-2">
               <span
@@ -371,7 +372,7 @@ export default function StacksFlipPage() {
               House pool: {house === undefined ? <Sk w="w-10" /> : fmtStx(house)} STX · Clarity contract on
               Stacks testnet.
             </p>
-            <div className="flex items-center justify-center gap-4 text-xs">
+            <div className="flex items-center justify-center text-xs">
               <a
                 href={`${EXPLORER}/txid/${FLIP_ID}?chain=testnet`}
                 target="_blank"
@@ -380,9 +381,6 @@ export default function StacksFlipPage() {
               >
                 View contract ↗
               </a>
-              <Link href="/app" className="text-stone-400 hover:text-stone-700 transition-colors">
-                Play on Celo →
-              </Link>
             </div>
           </div>
         )}
