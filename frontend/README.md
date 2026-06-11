@@ -1,15 +1,24 @@
 # Xikomu — Frontend
 
-> MiniPay mini-app for **Xikomu Lucky Flip**: a cUSD coin-flip game on Celo.
+> Mini-app for **Xikomu Lucky Flip** — a coin-flip game, now **multi-chain**.
 
-Next.js (App Router) frontend with two surfaces:
+Next.js (App Router) frontend with three surfaces:
 - **Landing (`/`)** — marketing page, Claude-orange theme.
-- **Game (`/app`)** — connect wallet, buy chips, flip **Heads (orange)** / **Tails (gray)**, win 1.95×, cash out anytime, recent flips.
+- **Game · Celo (`/app`)** — wagmi + viem; native-CELO flip, MiniPay-ready.
+- **Game · Stacks (`/stacks`)** — `@stacks/connect` (Xverse/Leather); native-STX
+  flip against the `xikomu-flip` **Clarity** contract on Stacks testnet.
 
-Backend = `XikomuFlip` smart contract (repo: [`xikomu`](https://github.com/emanuellzoe/xikomu) `contracts/`).
+Both game surfaces share the same UX (animated coin, Heads/Tails, win 1.95×, buy
+chips, cash out, recent flips) over the same rules — one on Solidity/Celo, one on
+Clarity/Stacks.
+
+Backends: `XikomuFlip` (Solidity, `contracts/`) and `xikomu-flip` (Clarity,
+`stacks-contracts/`).
 
 ## Stack
-Next.js 14 · TypeScript · wagmi v2 + viem · Tailwind · Vercel · Celo (Mainnet 42220 + Celo Sepolia 11142220).
+Next.js 14 · TypeScript · Tailwind · Vercel.
+- **Celo:** wagmi v2 + viem · Celo Mainnet 42220 + Celo Sepolia 11142220.
+- **Stacks:** @stacks/connect + @stacks/transactions · Stacks testnet.
 
 ## Run
 ```bash
@@ -18,13 +27,15 @@ npm run dev   # http://localhost:3000
 ```
 
 ## Config (after contract deploy)
-Create `.env.local`:
+Create `.env.local` (see [`.env.example`](./.env.example)):
 ```bash
+# Celo (/app)
 NEXT_PUBLIC_FLIP_CELO=0x...          # XikomuFlip on mainnet
 NEXT_PUBLIC_START_BLOCK=<deploy block>
-# testnet (optional):
-# NEXT_PUBLIC_FLIP_SEPOLIA=0x...
-# NEXT_PUBLIC_CUSD_SEPOLIA=0x...     # TestUSD on Sepolia
+
+# Stacks (/stacks)
+NEXT_PUBLIC_STX_FLIP_ADDRESS=ST20RVFS6R3ZXJ01NZVV3FHKTQXRG4NY3WMQYWZK2
+NEXT_PUBLIC_STX_FLIP_NAME=xikomu-flip
 ```
 
 ## Docs
