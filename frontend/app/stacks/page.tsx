@@ -19,6 +19,9 @@ import {
   maxBetForHouse,
   waitForTx,
   parseFlipResult,
+  getFlipHistory,
+  EXPLORER,
+  type FlipHistoryItem,
 } from "@/lib/stacks";
 import { useStacksWallet, useFlipData } from "./hooks";
 import styles from "./stacks.module.css";
@@ -60,6 +63,22 @@ export default function StacksFlipPage() {
   const [coinFace, setCoinFace] = useState(true);
   const [busy, setBusy] = useState<Busy>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [history, setHistory] = useState<FlipHistoryItem[]>([]);
+
+  async function loadHistory(addr: string | null) {
+    if (!addr) {
+      setHistory([]);
+      return;
+    }
+    try {
+      setHistory(await getFlipHistory(addr));
+    } catch {
+      setHistory([]);
+    }
+  }
+  useEffect(() => {
+    loadHistory(address);
+  }, [address]);
 
   const betMicro = useMemo(() => {
     try {
@@ -115,6 +134,7 @@ export default function StacksFlipPage() {
         setCoinFace(r.resultHeads);
       }
       await refresh();
+      loadHistory(address);
     } catch (e) {
       setError(errMsg(e));
     } finally {
@@ -298,6 +318,51 @@ export default function StacksFlipPage() {
               <p className="text-xs text-stone-400 mt-3 font-light">
                 1 STX = 1 chip. Cash out is always available.
               </p>
+            </Card>
+
+            {/* History */}
+            <Card>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="font-playfair text-xl text-[#2C2B29]">Recent flips</h2>
+                {history.length > 0 && (
+                  <span className="text-xs text-stone-400 font-light">{history.length} shown</span>
+                )}
+              </div>
+              {history.length === 0 ? (
+                <div className="flex flex-col items-center text-center py-6">
+                  <div className="w-10 h-10 mb-2 opacity-60">
+                    <Coin heads />
+                  </div>
+                  <p className="text-stone-400 font-light text-sm">No flips yet — your results show up here.</p>
+                </div>
+              ) : (
+                <ul className="space-y-1">
+                  {history.map((h) => (
+                    <li key={h.txid}>
+                      <a
+                        href={`${EXPLORER}/txid/${h.txid}?chain=testnet`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center justify-between py-2.5 px-2 -mx-2 rounded-xl hover:bg-stone-50 transition-colors"
+                      >
+                        <span className="flex items-center gap-2 text-stone-700">
+                          <CoinMini heads={h.resultHeads} /> {h.resultHeads ? "Heads" : "Tails"}
+                        </span>
+                        <span className="flex items-center gap-2">
+                          <span className="text-stone-400 text-sm">{fmtStx(h.bet)} STX</span>
+                          <span
+                            className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                              h.won ? "bg-emerald-50 text-emerald-600" : "bg-stone-100 text-stone-500"
+                            }`}
+                          >
+                            {h.won ? "Won" : "Lost"}
+                          </span>
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </Card>
 
             {error && <p className="text-sm text-red-500 font-light px-1">{error}</p>}

@@ -130,3 +130,50 @@ export function parseFlipResult(repr?: string): { won: boolean; resultHeads: boo
     resultHeads: /\(result-heads (true|false)\)/.exec(repr)?.[1] === "true",
   };
 }
+
+export interface FlipHistoryItem {
+  txid: string;
+  won: boolean;
+  resultHeads: boolean;
+  bet: bigint;
+}
+
+/** Recent successful `flip` calls by `address` against this contract, newest first. */
+export async function getFlipHistory(address: string, limit = 12): Promise<FlipHistoryItem[]> {
+  const r = await fetch(`${HIRO_API}/extended/v1/address/${address}/transactions?limit=50`);
+  if (!r.ok) return [];
+  const data = (await r.json()) as { results?: unknown[] };
+  const items: FlipHistoryItem[] = [];
+  for (const entry of data.results ?? []) {
+    const tx = ((entry as { tx?: unknown }).tx ?? entry) as {
+      tx_id?: string;
+      tx_type?: string;
+      tx_status?: string;
+      tx_result?: { repr?: string };
+      contract_call?: {
+        contract_id?: string;
+        function_name?: string;
+        function_args?: { repr?: string }[];
+      };
+    };
+    const cc = tx.contract_call;
+    if (
+      tx.tx_type !== "contract_call" ||
+      tx.tx_status !== "success" ||
+      cc?.contract_id !== FLIP_ID ||
+      cc?.function_name !== "flip"
+    )
+      continue;
+    const parsed = parseFlipResult(tx.tx_result?.repr);
+    if (!parsed || !tx.tx_id) continue;
+    let bet = 0n;
+    try {
+      bet = BigInt((cc.function_args?.[0]?.repr ?? "u0").replace(/^u/, ""));
+    } catch {
+      /* keep 0 */
+    }
+    items.push({ txid: tx.tx_id, ...parsed, bet });
+    if (items.length >= limit) break;
+  }
+  return items;
+}
