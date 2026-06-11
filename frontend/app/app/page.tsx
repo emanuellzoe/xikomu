@@ -316,7 +316,7 @@ export default function FlipGamePage() {
               </p>
 
               <button onClick={doFlip} disabled={!configured || busy || !betValid}
-                className="w-full bg-[#FF5E00] text-white rounded-full py-4 text-lg font-medium hover:bg-[#CC4B00] transition-colors disabled:opacity-40 shadow-[0_6px_16px_rgba(255, 94, 0,0.35)]">
+                className="w-full bg-[#FF5E00] text-white rounded-full py-4 text-lg font-medium hover:bg-[#CC4B00] transition-colors disabled:opacity-40 shadow-brand-lg">
                 {flipping
                   ? "Flipping…"
                   : betWei === 0n
@@ -393,12 +393,12 @@ export default function FlipGamePage() {
 /* ---------- coin visuals (Heads = orange, Tails = gray) ---------- */
 function Coin({ heads }: { heads: boolean }) {
   return heads ? (
-    <div className="w-full h-full rounded-full flex items-center justify-center text-white shadow-[0_10px_30px_-6px_rgba(255, 94, 0,0.6)] border-4 border-[#FF8A4D]"
+    <div className="w-full h-full rounded-full flex items-center justify-center text-white shadow-coin border-4 border-[#FF8A4D]"
       style={{ background: "radial-gradient(circle at 35% 30%, #FF8A4D, #FF5E00 60%, #CC4B00)" }}>
       <span className="font-playfair text-5xl">H</span>
     </div>
   ) : (
-    <div className="w-full h-full rounded-full flex items-center justify-center text-stone-700 shadow-[0_10px_30px_-6px_rgba(0,0,0,0.25)] border-4 border-stone-300"
+    <div className="w-full h-full rounded-full flex items-center justify-center text-stone-700 shadow-coin-gray border-4 border-stone-300"
       style={{ background: "radial-gradient(circle at 35% 30%, #E7E5E4, #A8A29E 60%, #78716C)" }}>
       <span className="font-playfair text-5xl text-white">T</span>
     </div>
@@ -443,12 +443,12 @@ function CeloIcon() {
 
 /* ---------- UI atoms ---------- */
 function Card({ children, compact }: { children: React.ReactNode; compact?: boolean }) {
-  return <div className={`bg-white rounded-[1.75rem] border border-stone-200 shadow-[0_20px_40px_-24px_rgba(0,0,0,0.12)] ${compact ? "p-5" : "p-6 sm:p-7"}`}>{children}</div>;
+  return <div className={`bg-white rounded-[1.75rem] border border-stone-200 shadow-card ${compact ? "p-5" : "p-6 sm:p-7"}`}>{children}</div>;
 }
 function PrimaryBtn({ children, full, ...p }: React.ButtonHTMLAttributes<HTMLButtonElement> & { full?: boolean }) {
   return (
     <button {...p}
-      className={`${full ? "w-full" : ""} justify-center bg-[#FF5E00] text-white rounded-full px-7 py-3 font-normal hover:bg-[#CC4B00] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_4px_12px_rgba(255, 94, 0,0.3)]`}>
+      className={`${full ? "w-full" : ""} justify-center bg-[#FF5E00] text-white rounded-full px-7 py-3 font-normal hover:bg-[#CC4B00] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-brand`}>
       {children}
     </button>
   );
@@ -478,7 +478,7 @@ function ConnectCard() {
         <button
           disabled={isPending || !injected}
           onClick={() => injected && connect({ connector: injected })}
-          className="bg-[#FF5E00] text-white rounded-full px-8 py-4 text-lg font-normal hover:bg-[#CC4B00] transition-colors disabled:opacity-50 shadow-[0_4px_12px_rgba(255, 94, 0,0.3)]">
+          className="bg-[#FF5E00] text-white rounded-full px-8 py-4 text-lg font-normal hover:bg-[#CC4B00] transition-colors disabled:opacity-50 shadow-brand">
           {isPending ? "Connecting…" : "Connect Wallet"}
         </button>
         <p className="text-xs text-stone-400 mt-4 font-light">In MiniPay this connects automatically.</p>
