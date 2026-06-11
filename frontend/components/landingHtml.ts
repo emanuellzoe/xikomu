@@ -32,7 +32,7 @@ export const landingHtml = String.raw`
             <div class="flex-1 w-full z-10 relative">
                 <div class="inline-flex gap-2 bg-white/50 border-stone-200 border rounded-full mb-8 pt-1 pr-3 pb-1 pl-3 backdrop-blur-sm gap-x-2 gap-y-2 items-center">
                     <span class="w-2 h-2 rounded-full bg-[#FF8A4D]"></span>
-                    <span class="text-base font-normal text-stone-600">Provably fair coin flips on Celo</span>
+                    <span class="text-base font-normal text-stone-600">Provably fair coin flips on Celo &amp; Stacks</span>
                 </div>
 
                 <h1 id="hero-heading" class="lg:text-8xl leading-[1.05] text-6xl tracking-tight mb-8 flex flex-col font-normal">
@@ -41,7 +41,7 @@ export const landingHtml = String.raw`
                     <span class="cta-bounce-enter block font-playfair italic text-[#FFB380]">Xikomu.</span>
                 </h1>
 
-                <p class="leading-relaxed text-2xl font-light text-stone-500 font-montserrat max-w-2xl mb-10">Call Heads or Tails, bet CELO, and win 1.95&times; on every correct flip. Provably on-chain, low-stakes fun &mdash; right inside MiniPay.</p>
+                <p class="leading-relaxed text-2xl font-light text-stone-500 font-montserrat max-w-2xl mb-10">Call Heads or Tails, bet CELO or STX, and win 1.95&times; on every correct flip. Provably on-chain, low-stakes fun &mdash; in MiniPay or any Stacks wallet.</p>
 
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                     <a href="/app" class="text-center hover:bg-[#CC4B00] transition-all sm:w-auto text-xl font-normal text-white bg-[#FF5E00] w-full rounded-full pt-4 pr-8 pb-4 pl-8 shadow-xl">Play Now</a>
