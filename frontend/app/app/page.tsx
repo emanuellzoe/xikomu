@@ -425,15 +425,27 @@ function Confetti() {
 /* ---------- coin visuals (Heads = orange, Tails = gray) ---------- */
 function Coin({ heads }: { heads: boolean }) {
   return heads ? (
-    <div className="w-full h-full rounded-full flex items-center justify-center text-white shadow-coin border-4 border-[#FF8A4D]"
+    <div className="relative overflow-hidden w-full h-full rounded-full flex items-center justify-center text-white shadow-coin border-4 border-[#FF8A4D]"
       style={{ background: "radial-gradient(circle at 35% 30%, #FF8A4D, #FF5E00 60%, #CC4B00)" }}>
-      <span className="font-playfair text-5xl">H</span>
+      <CoinShine />
+      <span className="font-playfair text-5xl relative">H</span>
     </div>
   ) : (
-    <div className="w-full h-full rounded-full flex items-center justify-center text-stone-700 shadow-coin-gray border-4 border-stone-300"
+    <div className="relative overflow-hidden w-full h-full rounded-full flex items-center justify-center text-stone-700 shadow-coin-gray border-4 border-stone-300"
       style={{ background: "radial-gradient(circle at 35% 30%, #E7E5E4, #A8A29E 60%, #78716C)" }}>
-      <span className="font-playfair text-5xl text-white">T</span>
+      <CoinShine />
+      <span className="font-playfair text-5xl text-white relative">T</span>
     </div>
+  );
+}
+function CoinShine() {
+  // Soft glossy highlight in the top-left for a minted-coin feel.
+  return (
+    <span
+      className="pointer-events-none absolute -top-2 -left-1 w-20 h-20 rounded-full opacity-60"
+      style={{ background: "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.85), rgba(255,255,255,0) 60%)" }}
+      aria-hidden
+    />
   );
 }
 function CoinMini({ heads }: { heads: boolean }) {
