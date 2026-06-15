@@ -35,7 +35,7 @@ XikomuFlip.sol  (Celo Mainnet, verified)
 
 A win pays **1.95×** (your stake back + 0.95× profit); a losing bet goes to the house
 pool. The ~5% edge keeps the pool solvent so the game can keep running. Randomness is
-on-chain entropy (low-stakes; bets capped by `MAX_BET`). Full spec in **[PRD.md](./PRD.md)**.
+on-chain entropy (low-stakes; bets capped by `MAX_BET`).
 
 ---
 
@@ -68,7 +68,7 @@ on-chain entropy (low-stakes; bets capped by `MAX_BET`). Full spec in **[PRD.md]
 xikomu/
 ├── contracts/        # Foundry: XikomuFlip.sol (game) + tests + deploy scripts
 ├── frontend/         # Next.js app: Lucky Flip landing + /app game
-└── README.md · PRD.md
+└── README.md
 ```
 
 > Legacy: `contracts/src/AutoSaveVault.sol` and `keeper/` are from an earlier

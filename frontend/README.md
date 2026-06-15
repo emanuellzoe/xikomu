@@ -40,7 +40,7 @@ NEXT_PUBLIC_STX_FLIP_NAME=xikomu-flip
 ```
 
 ## Docs
-Full spec in [PRD.md](./PRD.md) and the repo root [PRD.md](../PRD.md).
+See the repo root [README.md](../README.md) for the full product + contract overview.
 
 ## License
 MIT
