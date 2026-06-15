@@ -12,30 +12,35 @@ const ITEMS: { id: Tab; label: string; icon: ReactNode }[] = [
   { id: "riwayat", label: "Riwayat", icon: <HistoryIcon /> },
 ];
 
-/** Bottom tab bar (orange active state) for the in-app Home/Profile/Riwayat views. */
+/**
+ * Floating, icon-only, oval nav (transparent + blurred).
+ * - Mobile: a horizontal pill pinned bottom-center.
+ * - Desktop (lg+): a vertical pill pinned to the left, vertically centered.
+ * Orange filled circle marks the active tab. Labels live in aria-label / title.
+ */
 export function BottomNav({ active, onChange }: { active: Tab; onChange: (t: Tab) => void }) {
   return (
-    <nav className="sticky bottom-0 z-40 border-t border-stone-200/70 bg-[#FAFAF8]/90 backdrop-blur-md">
-      <div className="max-w-2xl mx-auto px-4 flex items-stretch justify-around">
+    <nav
+      aria-label="Primary"
+      className="fixed z-50 bottom-5 left-1/2 -translate-x-1/2 lg:bottom-auto lg:left-5 lg:top-1/2 lg:translate-x-0 lg:-translate-y-1/2"
+    >
+      <div className="flex flex-row lg:flex-col gap-1 p-1.5 rounded-full border border-white/40 bg-white/40 backdrop-blur-xl shadow-[0_12px_32px_-12px_rgba(0,0,0,0.3)]">
         {ITEMS.map((it) => {
           const on = active === it.id;
           return (
             <button
               key={it.id}
               onClick={() => onChange(it.id)}
+              aria-label={it.label}
               aria-current={on ? "page" : undefined}
-              className={`flex-1 flex flex-col items-center gap-1 py-2.5 transition-colors ${
-                on ? "text-[#FF5E00]" : "text-stone-400 hover:text-stone-600"
+              title={it.label}
+              className={`flex items-center justify-center w-11 h-11 rounded-full transition-colors ${
+                on
+                  ? "bg-[#FF5E00] text-white shadow-[0_4px_14px_rgba(255,94,0,0.45)]"
+                  : "text-stone-500 hover:text-stone-800 hover:bg-white/60"
               }`}
             >
-              <span
-                className={`flex items-center justify-center w-11 h-7 rounded-full transition-colors ${
-                  on ? "bg-[#FF5E00]/10" : ""
-                }`}
-              >
-                {it.icon}
-              </span>
-              <span className="text-[11px] font-medium">{it.label}</span>
+              {it.icon}
             </button>
           );
         })}
