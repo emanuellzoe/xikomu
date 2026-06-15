@@ -13,3 +13,6 @@ contracts/broadcast/
 .env
 .env.local
 **/.env
+
+# automated activity artifact
+activity.log
