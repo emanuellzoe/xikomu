@@ -226,8 +226,7 @@ export default function CeloFlip({ chain, setChain }: { chain: Chain; setChain: 
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="Xikomu" className="w-7 h-7" />
-              <span className="font-playfair text-xl text-[#2C2B29] tracking-tight">Xikomu</span>
+              <img src="/logo.png" alt="Xikomu" className="w-8 h-8" />
             </Link>
             <ChainToggle value={chain} onChange={setChain} />
           </div>
