@@ -71,9 +71,6 @@ xikomu/
 └── README.md · PRD.md
 ```
 
-> Legacy: `contracts/src/AutoSaveVault.sol` and `keeper/` are from an earlier
-> auto-save concept and are **superseded** by the game. They remain for history.
-
 ---
 
 ## Quickstart
