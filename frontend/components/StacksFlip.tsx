@@ -198,7 +198,7 @@ export default function StacksFlip({ chain, setChain }: { chain: Chain; setChain
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-2xl mx-auto px-5 py-8">
+      <main className="flex-1 w-full max-w-2xl mx-auto px-5 pt-8 pb-28 lg:pb-8">
         {!mounted ? null : !address ? (
           <ConnectCard onConnect={connect} connecting={connecting} />
         ) : (
