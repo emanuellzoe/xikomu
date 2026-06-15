@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
 
-const TITLE = "Xikomu — Automatic savings on Celo";
+const TITLE = "Xikomu — Lucky Flip on Celo";
 const DESCRIPTION =
-  "Set a savings plan once and let an on-chain keeper move cUSD into your vault on schedule. Non-custodial, withdraw anytime — right inside MiniPay.";
+  "A coin-flip game on Celo. Pick a side, flip, win 1.95× — one on-chain tx, no approval. Cash out anytime, right inside MiniPay.";
 
 export const metadata: Metadata = {
   title: TITLE,
