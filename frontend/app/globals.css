@@ -344,3 +344,15 @@
 .result-pop {
   animation: resultPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+
+/* Hero coin float (landing) */
+@keyframes coinFloat {
+  0%, 100% { transform: rotate(6deg) translateY(0); }
+  50% { transform: rotate(6deg) translateY(-14px); }
+}
+.coin-float { animation: coinFloat 4s ease-in-out infinite; }
+@keyframes coinFloatSlow {
+  0%, 100% { transform: rotate(-12deg) translateY(0); }
+  50% { transform: rotate(-12deg) translateY(-10px); }
+}
+.coin-float-slow { animation: coinFloatSlow 5s ease-in-out infinite; }
