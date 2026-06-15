@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ChainToggle, type Chain } from "@/components/ChainToggle";
+import { BottomNav, type Tab } from "@/components/BottomNav";
 import {
   useAccount,
   useBalance,
@@ -56,6 +57,9 @@ type HistoryItem = { resultHeads: boolean; won: boolean; bet: bigint; tx: string
 export default function CeloFlip({ chain, setChain }: { chain: Chain; setChain: (c: Chain) => void }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+
+  // Which in-app surface is showing: Home (play), Profile, or Riwayat (history).
+  const [tab, setTab] = useState<Tab>("home");
 
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
@@ -257,7 +261,9 @@ export default function CeloFlip({ chain, setChain }: { chain: Chain; setChain: 
             </div>
           </Card>
         ) : (
-          <div className="flex flex-col gap-5">
+          <>
+            {tab === "home" && (
+            <div className="flex flex-col gap-5">
             {!configured && (
               <div className="rounded-2xl border border-amber-200 bg-amber-50 text-amber-800 px-5 py-4 text-sm font-light">
                 The game isn&apos;t configured for {CHAIN_LABEL[chainId] ?? "this network"} yet. Deploy XikomuFlip and set
@@ -360,6 +366,32 @@ export default function CeloFlip({ chain, setChain }: { chain: Chain; setChain: 
               <p className="text-xs text-stone-400 mt-3 font-light">1 CELO = 1 chip. Cash out is always available.</p>
             </Card>
 
+            {writeError && (
+              <p className="text-sm text-red-500 font-light px-1">
+                {(writeError as { shortMessage?: string }).shortMessage ?? "Transaction failed."}
+              </p>
+            )}
+
+            <p className="text-center text-xs text-stone-400 font-light">
+              House pool: {house === undefined ? <Sk w="w-10" /> : fmt(house)} CELO · provably on-chain, low-stakes fun.
+            </p>
+            </div>
+            )}
+
+            {tab === "profile" && (
+              <ProfileTab
+                address={address}
+                chips={chips}
+                walletBal={walletBal}
+                house={house}
+                explorer={explorer}
+                flip={flip}
+                onExit={() => disconnect()}
+              />
+            )}
+
+            {tab === "riwayat" && (
+            <div className="flex flex-col gap-5">
             {/* History */}
             <Card>
               <div className="flex items-center justify-between mb-3">
@@ -394,19 +426,13 @@ export default function CeloFlip({ chain, setChain }: { chain: Chain; setChain: 
                 </ul>
               )}
             </Card>
-
-            {writeError && (
-              <p className="text-sm text-red-500 font-light px-1">
-                {(writeError as { shortMessage?: string }).shortMessage ?? "Transaction failed."}
-              </p>
+            </div>
             )}
-
-            <p className="text-center text-xs text-stone-400 font-light">
-              House pool: {house === undefined ? <Sk w="w-10" /> : fmt(house)} CELO · provably on-chain, low-stakes fun.
-            </p>
-          </div>
+          </>
         )}
       </main>
+
+      {mounted && isConnected && supported && <BottomNav active={tab} onChange={setTab} />}
     </div>
   );
 }
@@ -524,6 +550,81 @@ function GhostBtn({ children, ...p }: React.ButtonHTMLAttributes<HTMLButtonEleme
       className="justify-center bg-white text-stone-700 rounded-full px-6 py-3 font-normal border border-stone-200 hover:border-stone-300 hover:bg-stone-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
       {children}
     </button>
+  );
+}
+
+/* ---------- Profile tab: wallet + balances at a glance ---------- */
+function ProfileTab({
+  address,
+  chips,
+  walletBal,
+  house,
+  explorer,
+  flip,
+  onExit,
+}: {
+  address?: Address;
+  chips?: bigint;
+  walletBal?: bigint;
+  house?: bigint;
+  explorer: string;
+  flip: Address;
+  onExit: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-5">
+      <Card>
+        <div className="flex items-center gap-4 mb-6">
+          <div
+            className="w-14 h-14 rounded-full flex items-center justify-center text-white text-xl font-playfair shrink-0 shadow-coin"
+            style={{ background: "radial-gradient(circle at 35% 30%, #FF8A4D, #FF5E00 60%, #CC4B00)" }}
+          >
+            {address ? address.slice(2, 4).toUpperCase() : "?"}
+          </div>
+          <div className="min-w-0">
+            <p className="font-playfair text-xl text-[#2C2B29] leading-tight">Your wallet</p>
+            <p className="text-stone-500 font-mono text-sm truncate">{shortAddr(address)}</p>
+          </div>
+        </div>
+        <dl className="space-y-3">
+          <StatRow label="Chips" value={chips === undefined ? "…" : fmt(chips)} icon={<ChipIcon />} />
+          <StatRow label="Wallet CELO" value={walletBal === undefined ? "…" : fmt(walletBal)} icon={<CeloIcon />} />
+          <StatRow label="House pool" value={house === undefined ? "…" : `${fmt(house)} CELO`} />
+        </dl>
+      </Card>
+
+      <Card>
+        <ProfileLink href={`${explorer}/address/${address}`}>View your address</ProfileLink>
+        <ProfileLink href={`${explorer}/address/${flip}`}>View game contract</ProfileLink>
+        <button
+          onClick={onExit}
+          className="mt-3 w-full justify-center bg-white text-stone-700 rounded-full px-6 py-3 font-normal border border-stone-200 hover:border-stone-300 hover:bg-stone-50 transition-colors"
+        >
+          Disconnect
+        </button>
+      </Card>
+    </div>
+  );
+}
+function StatRow({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between">
+      <dt className="text-stone-500 font-light flex items-center gap-2">{icon}{label}</dt>
+      <dd className="text-[#2C2B29] font-medium">{value}</dd>
+    </div>
+  );
+}
+function ProfileLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="flex items-center justify-between py-2.5 text-stone-700 hover:text-[#FF5E00] transition-colors"
+    >
+      <span>{children}</span>
+      <span aria-hidden>↗</span>
+    </a>
   );
 }
 

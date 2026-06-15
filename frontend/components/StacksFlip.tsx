@@ -24,6 +24,7 @@ import {
   type FlipHistoryItem,
 } from "@/lib/stacks";
 import { ChainToggle, type Chain } from "@/components/ChainToggle";
+import { BottomNav, type Tab } from "@/components/BottomNav";
 import { useStacksWallet, useFlipData } from "./stacksHooks";
 import styles from "./stacks.module.css";
 
@@ -56,6 +57,9 @@ export default function StacksFlip({ chain, setChain }: { chain: Chain; setChain
 
   const { address, connecting, connect, disconnect } = useStacksWallet();
   const { chips, house, refresh } = useFlipData(address);
+
+  // Which in-app surface is showing: Home (play), Profile, or Riwayat (history).
+  const [tab, setTab] = useState<Tab>("home");
 
   const [choiceHeads, setChoiceHeads] = useState(true);
   const [bet, setBet] = useState("0.1");
@@ -198,7 +202,9 @@ export default function StacksFlip({ chain, setChain }: { chain: Chain; setChain
         {!mounted ? null : !address ? (
           <ConnectCard onConnect={connect} connecting={connecting} />
         ) : (
-          <div className="flex flex-col gap-5">
+          <>
+            {tab === "home" && (
+            <div className="flex flex-col gap-5">
             {/* The coin */}
             <Card>
               <div className="flex flex-col items-center py-2">
@@ -321,6 +327,36 @@ export default function StacksFlip({ chain, setChain }: { chain: Chain; setChain
               </p>
             </Card>
 
+            {error && <p className="text-sm text-red-500 font-light px-1">{error}</p>}
+
+            <p className="text-center text-xs text-stone-400 font-light">
+              House pool: {house === undefined ? <Sk w="w-10" /> : fmtStx(house)} STX · Clarity contract on
+              Stacks testnet.
+            </p>
+            <div className="flex items-center justify-center text-xs">
+              <a
+                href={`${EXPLORER}/txid/${FLIP_ID}?chain=testnet`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#5546FF] hover:underline"
+              >
+                View contract ↗
+              </a>
+            </div>
+            </div>
+            )}
+
+            {tab === "profile" && (
+              <ProfileTab
+                address={address}
+                chips={chips}
+                house={house}
+                onExit={disconnect}
+              />
+            )}
+
+            {tab === "riwayat" && (
+            <div className="flex flex-col gap-5">
             {/* History */}
             <Card>
               <div className="flex items-center justify-between mb-3">
@@ -365,26 +401,13 @@ export default function StacksFlip({ chain, setChain }: { chain: Chain; setChain
                 </ul>
               )}
             </Card>
-
-            {error && <p className="text-sm text-red-500 font-light px-1">{error}</p>}
-
-            <p className="text-center text-xs text-stone-400 font-light">
-              House pool: {house === undefined ? <Sk w="w-10" /> : fmtStx(house)} STX · Clarity contract on
-              Stacks testnet.
-            </p>
-            <div className="flex items-center justify-center text-xs">
-              <a
-                href={`${EXPLORER}/txid/${FLIP_ID}?chain=testnet`}
-                target="_blank"
-                rel="noreferrer"
-                className="text-[#5546FF] hover:underline"
-              >
-                View contract ↗
-              </a>
             </div>
-          </div>
+            )}
+          </>
         )}
       </main>
+
+      {mounted && address && <BottomNav active={tab} onChange={setTab} />}
     </div>
   );
 }
@@ -503,6 +526,80 @@ function GhostBtn(p: React.ButtonHTMLAttributes<HTMLButtonElement>) {
       {...p}
       className="justify-center bg-white text-stone-700 rounded-full px-6 py-3 font-normal border border-stone-200 hover:border-stone-300 hover:bg-stone-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
     />
+  );
+}
+
+/* ---------- Profile tab: wallet + balances at a glance ---------- */
+function ProfileTab({
+  address,
+  chips,
+  house,
+  onExit,
+}: {
+  address: string | null;
+  chips?: bigint;
+  house?: bigint;
+  onExit: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-5">
+      <Card>
+        <div className="flex items-center gap-4 mb-6">
+          <div
+            className="w-14 h-14 rounded-full flex items-center justify-center text-white text-xl font-playfair shrink-0"
+            style={{
+              background: "radial-gradient(circle at 35% 30%, #FF8A4D, #FF5E00 60%, #CC4B00)",
+              boxShadow: "0 12px 30px -6px rgba(255, 94, 0, 0.55)",
+            }}
+          >
+            {address ? address.slice(0, 2).toUpperCase() : "?"}
+          </div>
+          <div className="min-w-0">
+            <p className="font-playfair text-xl text-[#2C2B29] leading-tight">Your wallet</p>
+            <p className="text-stone-500 font-mono text-sm truncate">{shortAddr(address ?? "")}</p>
+          </div>
+        </div>
+        <dl className="space-y-3">
+          <StatRow label="Chips" value={chips === undefined ? "…" : fmtStx(chips)} icon={<ChipIcon />} />
+          <StatRow label="House pool" value={house === undefined ? "…" : `${fmtStx(house)} STX`} />
+        </dl>
+      </Card>
+
+      <Card>
+        <a
+          href={`${EXPLORER}/address/${address}?chain=testnet`}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center justify-between py-2.5 text-stone-700 hover:text-[#FF5E00] transition-colors"
+        >
+          <span>View your address</span>
+          <span aria-hidden>↗</span>
+        </a>
+        <a
+          href={`${EXPLORER}/txid/${FLIP_ID}?chain=testnet`}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center justify-between py-2.5 text-stone-700 hover:text-[#FF5E00] transition-colors"
+        >
+          <span>View game contract</span>
+          <span aria-hidden>↗</span>
+        </a>
+        <button
+          onClick={onExit}
+          className="mt-3 w-full justify-center bg-white text-stone-700 rounded-full px-6 py-3 font-normal border border-stone-200 hover:border-stone-300 hover:bg-stone-50 transition-colors"
+        >
+          Disconnect
+        </button>
+      </Card>
+    </div>
+  );
+}
+function StatRow({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between">
+      <dt className="text-stone-500 font-light flex items-center gap-2">{icon}{label}</dt>
+      <dd className="text-[#2C2B29] font-medium">{value}</dd>
+    </div>
   );
 }
 
