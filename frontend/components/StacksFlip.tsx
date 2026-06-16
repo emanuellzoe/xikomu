@@ -25,18 +25,14 @@ import {
 } from "@/lib/stacks";
 import { ChainToggle, type Chain } from "@/components/ChainToggle";
 import { BottomNav, type Tab } from "@/components/BottomNav";
+import { Alert } from "@/components/Alert";
+import { describeTxError, type TxErrorInfo } from "@/lib/txError";
 import { useStacksWallet, useFlipData } from "./stacksHooks";
 import styles from "./stacks.module.css";
 
 const BET_PCTS = [10, 25, 50, 100];
 
 type Busy = "idle" | "buy" | "flip" | "cashout";
-
-function errMsg(e: unknown): string {
-  const m = e instanceof Error ? e.message : String(e);
-  if (/cancel|reject|denied/i.test(m)) return "Cancelled in wallet.";
-  return m.length > 120 ? "Transaction failed." : m;
-}
 
 async function callContract(functionName: string, functionArgs: ClarityValue[]): Promise<string> {
   const res = await request("stx_callContract", {
@@ -67,7 +63,7 @@ export default function StacksFlip({ chain, setChain }: { chain: Chain; setChain
   const [result, setResult] = useState<{ won: boolean; resultHeads: boolean } | null>(null);
   const [coinFace, setCoinFace] = useState(true);
   const [busy, setBusy] = useState<Busy>("idle");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<TxErrorInfo | null>(null);
   const [history, setHistory] = useState<FlipHistoryItem[]>([]);
 
   async function loadHistory(addr: string | null) {
@@ -109,6 +105,7 @@ export default function StacksFlip({ chain, setChain }: { chain: Chain; setChain
   }
 
   async function doBuy() {
+    if (anyBusy) return;
     const micro = toMicro(buyAmt || "0");
     if (micro <= 0n) return;
     setError(null);
@@ -118,13 +115,14 @@ export default function StacksFlip({ chain, setChain }: { chain: Chain; setChain
       await waitForTx(txid);
       await refresh();
     } catch (e) {
-      setError(errMsg(e));
+      setError(describeTxError(e));
     } finally {
       setBusy("idle");
     }
   }
 
   async function doFlip() {
+    if (anyBusy) return;
     if (!betValid) return;
     setError(null);
     setResult(null);
@@ -141,13 +139,14 @@ export default function StacksFlip({ chain, setChain }: { chain: Chain; setChain
       await refresh();
       loadHistory(address);
     } catch (e) {
-      setError(errMsg(e));
+      setError(describeTxError(e));
     } finally {
       setBusy("idle");
     }
   }
 
   async function doCashOut() {
+    if (anyBusy) return;
     if (!chips || chips <= 0n) return;
     setError(null);
     setBusy("cashout");
@@ -156,7 +155,7 @@ export default function StacksFlip({ chain, setChain }: { chain: Chain; setChain
       await waitForTx(txid);
       await refresh();
     } catch (e) {
-      setError(errMsg(e));
+      setError(describeTxError(e));
     } finally {
       setBusy("idle");
     }
@@ -204,6 +203,11 @@ export default function StacksFlip({ chain, setChain }: { chain: Chain; setChain
           <>
             {tab === "home" && (
             <div className="flex flex-col gap-5">
+            {anyBusy && (
+              <Alert variant="info" title="Transaction in progress">
+                Confirm it in your wallet and wait for it to finish before starting another.
+              </Alert>
+            )}
             {/* The coin */}
             <Card>
               <div className="flex flex-col items-center py-2">
@@ -326,7 +330,11 @@ export default function StacksFlip({ chain, setChain }: { chain: Chain; setChain
               </p>
             </Card>
 
-            {error && <p className="text-sm text-red-500 font-light px-1">{error}</p>}
+            {error && (
+              <Alert variant="error" title={error.title} onClose={() => setError(null)}>
+                {error.message}
+              </Alert>
+            )}
 
             <p className="text-center text-xs text-stone-400 font-light">
               House pool: {house === undefined ? <Sk w="w-10" /> : fmtStx(house)} STX · Clarity contract on
