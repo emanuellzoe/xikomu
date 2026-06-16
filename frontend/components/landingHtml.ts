@@ -1,6 +1,8 @@
 // Landing markup for Xikomu Lucky Flip (built on the Casa Flow template structure).
 // Copy is themed to the coin-flip game; colors match the in-app orange (#FF5E00).
-// IMAGE elements (<img src>) and animations are kept verbatim as placeholders.
+// Real on-chain figures (flips / players / win rate) come from ONCHAIN_STATS.
+import { ONCHAIN_STATS } from "@/lib/onchainStats";
+
 export const landingHtml = String.raw`
     <!-- Navigation -->
     <nav class="fixed top-0 w-full z-50 bg-[#FAFAFA]/80 backdrop-blur-md border-b border-stone-200/50">
@@ -66,6 +68,25 @@ export const landingHtml = String.raw`
                     </div>
                 </div>
             </div>
+        </section>
+
+        <!-- Real on-chain stats -->
+        <section class="border-y border-stone-200 bg-white relative z-20">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8 pt-14 pb-6 grid grid-cols-1 sm:grid-cols-3 gap-10 text-center">
+                <div>
+                    <div class="text-5xl lg:text-6xl font-playfair text-[#FF5E00] tracking-tight">${ONCHAIN_STATS.flips.toLocaleString()}</div>
+                    <div class="text-xs uppercase tracking-[0.18em] text-stone-500 mt-3 font-montserrat">On-chain flips</div>
+                </div>
+                <div>
+                    <div class="text-5xl lg:text-6xl font-playfair text-[#2C2B29] tracking-tight">${ONCHAIN_STATS.uniquePlayers.toLocaleString()}</div>
+                    <div class="text-xs uppercase tracking-[0.18em] text-stone-500 mt-3 font-montserrat">Players who flipped</div>
+                </div>
+                <div>
+                    <div class="text-5xl lg:text-6xl font-playfair text-[#2C2B29] tracking-tight">${ONCHAIN_STATS.winRatePct}%</div>
+                    <div class="text-xs uppercase tracking-[0.18em] text-stone-500 mt-3 font-montserrat">Win rate &middot; fair 50/50</div>
+                </div>
+            </div>
+            <p class="text-center text-xs text-stone-400 pb-10 font-light px-6">Real on-chain data from <a href="${ONCHAIN_STATS.explorer}" target="_blank" rel="noreferrer" class="text-[#FF5E00] hover:underline">XikomuFlip on Celo</a> &middot; a provably fair 50/50 coin paying 1.95&times; &middot; verifiable on Celoscan (block ${ONCHAIN_STATS.block.toLocaleString()}).</p>
         </section>
 
         <!-- Trust Marquee Section -->
