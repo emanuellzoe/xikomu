@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Xikomu — Live On-chain Activity</title>
+  <style>
+    :root { --orange:#FF5E00; --orange-soft:#FF8A4D; --ink:#2C2B29; --bg:#FAFAF8; --muted:#78716C; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 40px 20px 80px; }
+    .head { display:flex; align-items:center; gap:14px; margin-bottom:6px; }
+    .dot { width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--orange-soft),var(--orange) 60%,#CC4B00);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700; }
+    h1 { font-size: 28px; margin: 0; letter-spacing:-0.5px; }
+    .sub { color:var(--muted); margin: 4px 0 28px; font-weight:300; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; }
+    .card { background:#fff; border:1px solid #E7E5E4; border-radius:20px; padding:18px 20px; box-shadow:0 16px 30px -22px rgba(0,0,0,.18); }
+    .card .label { font-size:12px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); }
+    .card .val { font-size:26px; font-weight:600; margin-top:6px; }
+    .card .val.orange { color:var(--orange); }
+    h2 { font-size:18px; margin:34px 0 12px; }
+    table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #E7E5E4; border-radius:20px; overflow:hidden; }
+    th,td { text-align:left; padding:12px 14px; font-size:14px; border-bottom:1px solid #F1EFEE; }
+    th { font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); }
+    tr:last-child td { border-bottom:0; }
+    .pill { font-size:11px; font-weight:600; padding:2px 9px; border-radius:999px; }
+    .won { background:#ECFDF5; color:#059669; }
+    .lost { background:#F5F5F4; color:#78716C; }
+    a { color:var(--orange); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    .note { margin-top:22px; font-size:13px; color:var(--muted); background:#FFF7F2; border:1px solid #FFE2D1; border-radius:14px; padding:12px 16px; }
+    .mono { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+    .empty { padding:24px; text-align:center; color:var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="head">
+      <div class="dot">H</div>
+      <h1>Xikomu — Live On-chain Activity</h1>
+    </div>
+    <p class="sub" id="sub">Loading real on-chain data…</p>
+
+    <div class="grid" id="cards"></div>
+
+    <h2>Recent flips <span class="mono" style="font-weight:400;color:var(--muted)" id="recentMeta"></span></h2>
+    <div id="recentWrap"></div>
+
+    <div class="note" id="note"></div>
+  </div>
+
+  <script src="stats.js"></script>
+  <script>
+    const s = window.XIKOMU_STATS;
+    const $ = (id) => document.getElementById(id);
+    if (!s) {
+      $("sub").textContent = "No data yet — run `npm run report` in update/ to generate it.";
+    } else {
+      const t = s.totals;
+      $("sub").innerHTML = `Contract <a class="mono" href="${s.explorer}" target="_blank" rel="noreferrer">${s.contract}</a> · ${s.chain} · block ${s.generatedAtBlock.toLocaleString()}`;
+      const cards = [
+        ["Total flips", t.flips.toLocaleString(), true],
+        ["Unique players", t.uniquePlayers.toLocaleString(), false],
+        ["Volume wagered", t.totalWageredCELO + " CELO", false],
+        ["Win rate", t.winRatePct + "%", false],
+        ["Chips bought", t.creditsBoughtCELO + " CELO", false],
+        ["House pool", t.housePoolCELO + " CELO", false],
+      ];
+      $("cards").innerHTML = cards.map(([l, v, o]) =>
+        `<div class="card"><div class="label">${l}</div><div class="val ${o ? "orange" : ""}">${v}</div></div>`
+      ).join("");
+
+      $("recentMeta").textContent = `(${s.recent.length} of ${t.flips})`;
+      if (!s.recent.length) {
+        $("recentWrap").innerHTML = `<div class="card empty">No flips on-chain yet — they'll appear here once real players flip.</div>`;
+      } else {
+        $("recentWrap").innerHTML = `<table><thead><tr>
+            <th>When</th><th>Player</th><th>Call → Result</th><th>Bet</th><th>Outcome</th><th>Tx</th>
+          </tr></thead><tbody>` + s.recent.map((r) => `<tr>
+            <td>${r.time ? r.time.replace("T"," ").replace(".000Z","") : "block " + r.block}</td>
+            <td class="mono">${r.player.slice(0,6)}…${r.player.slice(-4)}</td>
+            <td>${r.choice} → ${r.result}</td>
+            <td>${r.betCELO} CELO</td>
+            <td><span class="pill ${r.won ? "won" : "lost"}">${r.won ? "Won +" + r.payoutCELO : "Lost"}</span></td>
+            <td><a href="${r.explorer}" target="_blank" rel="noreferrer">verify ↗</a></td>
+          </tr>`).join("") + `</tbody></table>`;
+      }
+      $("note").textContent = s.note;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "xikomu-update",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Honest on-chain activity log + dashboard for Xikomu Lucky Flip (real events only).",
+  "scripts": {
+    "report": "node activity-report.mjs"
+  },
+  "dependencies": {
+    "viem": "^2.21.0"
+  }
+}

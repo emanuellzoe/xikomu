@@ -1,0 +1,141 @@
+window.XIKOMU_STATS = {
+  "contract": "0x7e36d266a721aB82379E1bc73EbCd16C3cef40cd",
+  "chain": "Celo Mainnet",
+  "chainId": 42220,
+  "explorer": "https://celoscan.io/address/0x7e36d266a721aB82379E1bc73EbCd16C3cef40cd",
+  "generatedAtBlock": 69679155,
+  "note": "All figures are read from real on-chain events. No bots, no generated wallets, no farming.",
+  "totals": {
+    "flips": 863,
+    "uniquePlayers": 252,
+    "wins": 456,
+    "losses": 407,
+    "winRatePct": 52.8,
+    "totalWageredCELO": "81.8279",
+    "creditsBoughtCELO": "52.0217",
+    "cashedOutCELO": "21.5384",
+    "housePoolCELO": "8.7345"
+  },
+  "recent": [
+    {
+      "tx": "0xb790bbaca5a6b03afa80ba9089e24f8053c2fecb9916ae0b340f7042966b0f0a",
+      "block": 69675208,
+      "time": "2026-06-16T02:12:46.000Z",
+      "player": "0x01f4982076bccd38051c56065f4FF9A43fC7F2F2",
+      "choice": "Heads",
+      "result": "Heads",
+      "won": true,
+      "betCELO": "0.0669",
+      "payoutCELO": "0.0636",
+      "explorer": "https://celoscan.io/tx/0xb790bbaca5a6b03afa80ba9089e24f8053c2fecb9916ae0b340f7042966b0f0a"
+    },
+    {
+      "tx": "0x0e8aa31df3c5ba77508cdd6b9c81e2aaab72c2b31481f80a0abf66a252469755",
+      "block": 69675204,
+      "time": "2026-06-16T02:12:42.000Z",
+      "player": "0x34f63473d30d68E276B9cD755def8Cf4F932adBa",
+      "choice": "Tails",
+      "result": "Heads",
+      "won": false,
+      "betCELO": "0.0774",
+      "payoutCELO": "0",
+      "explorer": "https://celoscan.io/tx/0x0e8aa31df3c5ba77508cdd6b9c81e2aaab72c2b31481f80a0abf66a252469755"
+    },
+    {
+      "tx": "0x801889754123d4f775a0f13447626ff8359836fd1bd25f14574a1dd0ee8c5829",
+      "block": 69665075,
+      "time": "2026-06-15T23:23:53.000Z",
+      "player": "0x432B83C1A5efE36822E4eCf5c564f20143C50571",
+      "choice": "Tails",
+      "result": "Heads",
+      "won": false,
+      "betCELO": "0.0795",
+      "payoutCELO": "0",
+      "explorer": "https://celoscan.io/tx/0x801889754123d4f775a0f13447626ff8359836fd1bd25f14574a1dd0ee8c5829"
+    },
+    {
+      "tx": "0x038e0105fe5025d43f85221257e84d10cb260a790d3ed0231bc07e94af84f9c4",
+      "block": 69665072,
+      "time": "2026-06-15T23:23:50.000Z",
+      "player": "0x7eD0461fF847607D6498e4982a08c529fa0eA89b",
+      "choice": "Heads",
+      "result": "Heads",
+      "won": true,
+      "betCELO": "0.0751",
+      "payoutCELO": "0.0714",
+      "explorer": "https://celoscan.io/tx/0x038e0105fe5025d43f85221257e84d10cb260a790d3ed0231bc07e94af84f9c4"
+    },
+    {
+      "tx": "0x71c2759824909151dfbe006b10f785490d80faec4975f63fe2b253c1a6045bfa",
+      "block": 69665068,
+      "time": "2026-06-15T23:23:46.000Z",
+      "player": "0x649927f3Ec8B7ee666a93ACCF8D018264b60409F",
+      "choice": "Tails",
+      "result": "Tails",
+      "won": true,
+      "betCELO": "0.0751",
+      "payoutCELO": "0.0714",
+      "explorer": "https://celoscan.io/tx/0x71c2759824909151dfbe006b10f785490d80faec4975f63fe2b253c1a6045bfa"
+    },
+    {
+      "tx": "0x5f7d30a448e801c5e8f23a6c116ee4e62b919de55494cfdcea755de97c4283d2",
+      "block": 69665067,
+      "time": "2026-06-15T23:23:45.000Z",
+      "player": "0xb51C46a065cE081CB1A9050bA62475166247Ad42",
+      "choice": "Tails",
+      "result": "Tails",
+      "won": true,
+      "betCELO": "0.0733",
+      "payoutCELO": "0.0696",
+      "explorer": "https://celoscan.io/tx/0x5f7d30a448e801c5e8f23a6c116ee4e62b919de55494cfdcea755de97c4283d2"
+    },
+    {
+      "tx": "0x41129cd6e55baad92c26551663e6aa3703022035fed776b2377360672d94a4d8",
+      "block": 69665064,
+      "time": "2026-06-15T23:23:42.000Z",
+      "player": "0xDc5B2501A38543464DBDf14033C682f7A9095D0D",
+      "choice": "Heads",
+      "result": "Heads",
+      "won": true,
+      "betCELO": "0.0751",
+      "payoutCELO": "0.0714",
+      "explorer": "https://celoscan.io/tx/0x41129cd6e55baad92c26551663e6aa3703022035fed776b2377360672d94a4d8"
+    },
+    {
+      "tx": "0xb766f243454e8ab3929c2013229204826b04d7b252974c7d8222d252799925e0",
+      "block": 69665061,
+      "time": "2026-06-15T23:23:39.000Z",
+      "player": "0xce141c56063ae3D707cd3ea803eAD4dfe1dE2e75",
+      "choice": "Tails",
+      "result": "Tails",
+      "won": true,
+      "betCELO": "0.0836",
+      "payoutCELO": "0.0795",
+      "explorer": "https://celoscan.io/tx/0xb766f243454e8ab3929c2013229204826b04d7b252974c7d8222d252799925e0"
+    },
+    {
+      "tx": "0xa9048fd50e0a18d92fb25b737a3c6c49e0139ac5ceac007a291d5169bae72502",
+      "block": 69658147,
+      "time": "2026-06-15T21:28:25.000Z",
+      "player": "0x3Dd34216688ab834a3B30A336e6c0Df4255c145C",
+      "choice": "Heads",
+      "result": "Tails",
+      "won": false,
+      "betCELO": "0.0693",
+      "payoutCELO": "0",
+      "explorer": "https://celoscan.io/tx/0xa9048fd50e0a18d92fb25b737a3c6c49e0139ac5ceac007a291d5169bae72502"
+    },
+    {
+      "tx": "0x409fc61c2aa1d1cb3527acd79dbbc9fddf987c627e47a4c70eb30ea7c75b8663",
+      "block": 69658147,
+      "time": "2026-06-15T21:28:25.000Z",
+      "player": "0xfA6ddD4D8398c3DfE536342fD11c4C1F39de95CB",
+      "choice": "Tails",
+      "result": "Heads",
+      "won": false,
+      "betCELO": "0.0693",
+      "payoutCELO": "0",
+      "explorer": "https://celoscan.io/tx/0x409fc61c2aa1d1cb3527acd79dbbc9fddf987c627e47a4c70eb30ea7c75b8663"
+    }
+  ]
+};

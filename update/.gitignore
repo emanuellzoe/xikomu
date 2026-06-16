@@ -1,0 +1,5 @@
+node_modules/
+
+# The root .gitignore blocks any "activity.log" (it kept the old *fabricated*
+# one out). This one is the real, on-chain-verifiable log, so re-include it.
+!activity.log
