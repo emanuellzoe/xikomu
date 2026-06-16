@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ChainToggle, type Chain } from "@/components/ChainToggle";
 import { BottomNav, type Tab } from "@/components/BottomNav";
+import { Alert } from "@/components/Alert";
+import { describeTxError } from "@/lib/txError";
 import {
   useAccount,
   useBalance,
@@ -173,23 +175,31 @@ export default function CeloFlip({ chain, setChain }: { chain: Chain; setChain: 
     reset();
   }, [confirmed, receipt]); // eslint-disable-line
 
+  // Clear any leftover state from the last tx before starting a new one — a
+  // stale error / hash from a previous attempt could otherwise block the retry.
   function doBuy() {
+    if (busy) return;
     let amt: bigint;
     try { amt = parseUnits(buyAmt || "0", CUSD_DECIMALS); } catch { return; }
     if (amt <= 0n) return;
+    reset();
     setLastAction("buy");
     // Native CELO: send value, no token approval.
     writeContract({ address: flip, abi: flipAbi, functionName: "buyCredits", value: amt });
   }
   function doFlip() {
+    if (busy) return;
     if (betWei < MIN_BET || betWei > MAX_BET) return;
+    reset();
     setResult(null);
     setLastAction("flip");
     setCoinFace(choiceHeads);
     writeContract({ address: flip, abi: flipAbi, functionName: "flip", args: [betWei, choiceHeads] });
   }
   function doCashOut() {
+    if (busy) return;
     if (!chips || chips <= 0n) return;
+    reset();
     setLastAction("cashout");
     writeContract({ address: flip, abi: flipAbi, functionName: "cashOut", args: [chips] });
   }
@@ -268,6 +278,18 @@ export default function CeloFlip({ chain, setChain }: { chain: Chain; setChain: 
                 The game isn&apos;t configured for {CHAIN_LABEL[chainId] ?? "this network"} yet. Deploy XikomuFlip and set
                 <code className="mx-1 px-1 rounded bg-amber-100">NEXT_PUBLIC_FLIP_*</code> to play.
               </div>
+            )}
+
+            {configured && walletBal === 0n && (
+              <Alert variant="warning" title="No CELO for gas">
+                Your wallet has 0 CELO. You need a little CELO to pay gas before you can flip, buy chips, or cash out.
+              </Alert>
+            )}
+
+            {busy && (
+              <Alert variant="info" title="Transaction in progress">
+                Confirm it in your wallet and wait for it to finish before starting another.
+              </Alert>
             )}
 
             {/* The coin */}
@@ -365,11 +387,10 @@ export default function CeloFlip({ chain, setChain }: { chain: Chain; setChain: 
               <p className="text-xs text-stone-400 mt-3 font-light">1 CELO = 1 chip. Cash out is always available.</p>
             </Card>
 
-            {writeError && (
-              <p className="text-sm text-red-500 font-light px-1">
-                {(writeError as { shortMessage?: string }).shortMessage ?? "Transaction failed."}
-              </p>
-            )}
+            {writeError && (() => {
+              const e = describeTxError(writeError);
+              return <Alert variant="error" title={e.title} onClose={() => reset()}>{e.message}</Alert>;
+            })()}
 
             <p className="text-center text-xs text-stone-400 font-light">
               House pool: {house === undefined ? <Sk w="w-10" /> : fmt(house)} CELO · provably on-chain, low-stakes fun.
