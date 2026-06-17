@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { landingHtml } from "./landingHtml";
-import { initCoin3D } from "@/lib/coin3d";
 
 /**
  * Landing page ported from the Casa Flow static template.
@@ -19,11 +18,20 @@ export default function Landing() {
     const mapRange = (val: number, inMin: number, inMax: number, outMin: number, outMax: number) =>
       outMin + ((clamp(val, inMin, inMax) - inMin) / (inMax - inMin)) * (outMax - outMin);
 
-    // 3D HEAD/TAIL coin (Three.js): mount on the hero <canvas>. Disposed below.
-    // Landing uses the decorative defaults (auto-spin + drag/click-to-flip).
-    let coin: ReturnType<typeof initCoin3D> | undefined;
-    const coinCanvas = document.getElementById("coin3d") as HTMLCanvasElement | null;
-    if (coinCanvas) coin = initCoin3D(coinCanvas);
+    // SVG draw loop on hover
+    const svgWrapper = document.getElementById("svg-wrapper");
+    let loopInterval: ReturnType<typeof setInterval> | undefined;
+    const onSvgEnter = () => {
+      if (!svgWrapper) return;
+      const restart = () => { svgWrapper.innerHTML = svgWrapper.innerHTML; };
+      restart();
+      loopInterval = setInterval(restart, 3200);
+    };
+    const onSvgLeave = () => { if (loopInterval) clearInterval(loopInterval); };
+    if (svgWrapper) {
+      svgWrapper.addEventListener("mouseenter", onSvgEnter);
+      svgWrapper.addEventListener("mouseleave", onSvgLeave);
+    }
 
     // Staggered reveal
     const ctaObserver = new IntersectionObserver(
@@ -237,7 +245,11 @@ export default function Landing() {
     return () => {
       running = false;
       cancelAnimationFrame(rafId);
-      coin?.dispose();
+      if (loopInterval) clearInterval(loopInterval);
+      if (svgWrapper) {
+        svgWrapper.removeEventListener("mouseenter", onSvgEnter);
+        svgWrapper.removeEventListener("mouseleave", onSvgLeave);
+      }
       if (slider) slider.removeEventListener("input", onSlider);
       if (onResize) window.removeEventListener("resize", onResize);
       ctaObserver.disconnect();

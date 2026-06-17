@@ -55,10 +55,17 @@ export const landingHtml = String.raw`
             <div class="flex-1 w-full max-w-lg lg:max-w-none relative aspect-square lg:aspect-[4/3] flex items-center justify-center">
                 <div class="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" style="background-image: linear-gradient(to right, rgba(231, 229, 228, 0.4) 1px, transparent 1px), linear-gradient(to bottom, rgba(231, 229, 228, 0.4) 1px, transparent 1px); background-size: 4rem 4rem;"></div>
 
-                <div class="relative w-full h-full flex items-center justify-center">
-                    <div class="absolute w-72 h-72 rounded-full bg-[#FF8A4D]/20 blur-3xl pointer-events-none"></div>
-                    <!-- 3D HEAD/TAIL coin: auto-spins, drag to orbit, click to flip (see lib/coin3d.ts) -->
-                    <canvas id="coin3d" class="relative w-full h-full" style="cursor:grab" title="Drag to spin · click to flip"></canvas>
+                <div id="svg-wrapper" class="relative w-full h-full flex items-center justify-center cursor-crosshair">
+                    <div class="relative w-full h-full flex items-center justify-center">
+                        <div class="absolute w-72 h-72 rounded-full bg-[#FF8A4D]/20 blur-3xl"></div>
+                        <div class="coin-float-slow absolute w-36 h-36 lg:w-44 lg:h-44 rounded-full flex items-center justify-center border-4 border-stone-300" style="left: 28%; top: 44%; background: radial-gradient(circle at 35% 30%, #E7E5E4, #A8A29E 60%, #78716C); box-shadow: 0 18px 40px -10px rgba(0,0,0,0.25);">
+                            <span class="font-playfair text-5xl lg:text-6xl text-white">T</span>
+                        </div>
+                        <div class="coin-float relative w-52 h-52 lg:w-64 lg:h-64 rounded-full flex items-center justify-center border-4 border-[#FF8A4D]" style="background: radial-gradient(circle at 35% 30%, #FF8A4D, #FF5E00 60%, #CC4B00); box-shadow: 0 24px 50px -12px rgba(255, 94, 0, 0.55);">
+                            <span class="pointer-events-none absolute -top-3 -left-2 w-28 h-28 rounded-full opacity-60" style="background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.85), rgba(255,255,255,0) 60%);"></span>
+                            <span class="font-playfair text-8xl lg:text-9xl text-white relative">H</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
