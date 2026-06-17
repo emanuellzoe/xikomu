@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import Coin3D from "@/components/Coin3D";
 import { BottomNav, type Tab } from "@/components/BottomNav";
 import { Alert } from "@/components/Alert";
 import { describeTxError } from "@/lib/txError";
@@ -293,15 +294,16 @@ export default function CeloFlip() {
             {/* The coin */}
             <Card>
               <div className="flex flex-col items-center py-2">
-                <div className="[perspective:800px] mb-5 relative">
+                <div className="mb-5 relative w-44 h-44 flex items-center justify-center">
                   {result?.won && !flipping && <Confetti />}
-                  <div
-                    className={`w-36 h-36 ${flipping ? "coin-flipping" : "coin-settle"} ${
-                      result?.won && !flipping ? "coin-win" : ""
-                    }`}
-                  >
-                    <Coin heads={flipping ? coinFace : result ? result.resultHeads : coinFace} />
-                  </div>
+                  <div className="absolute w-32 h-32 rounded-full bg-[#FF8A4D]/20 blur-2xl pointer-events-none" />
+                  {/* 3D coin: tumbles while the flip tx is pending, then lands on the
+                      on-chain result and rests showing the last side. */}
+                  <Coin3D
+                    face={result ? result.resultHeads : coinFace}
+                    spinning={flipping}
+                    className="relative w-full h-full"
+                  />
                 </div>
 
                 {flipping ? (
