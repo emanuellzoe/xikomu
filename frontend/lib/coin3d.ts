@@ -1,13 +1,15 @@
 import * as THREE from "three";
 
-// 3D HEAD/TAIL coin for the landing hero. Ported from a standalone Three.js
-// sketch: procedural face + reeded-edge textures, auto-spin, drag-to-orbit, and
-// click-to-flip. Colors match the in-app orange (#FF5E00). The renderer is
-// transparent (alpha) so the coin floats on the light hero background.
+// 3D HEAD/TAIL coin used in two places:
+//   - landing hero: decorative — auto-spins, drag to orbit, click for a random flip;
+//   - in-game (CeloFlip): controlled — tumbles while a tx is pending, then lands on
+//     the real on-chain result and rests there showing the last side.
 //
-// initCoin3D(canvas) wires everything to an existing <canvas> and returns a
-// cleanup fn that cancels the loop, removes listeners, and disposes GPU
-// resources — call it on unmount to avoid WebGL context leaks.
+// Procedural face + reeded-edge textures; renderer is transparent (alpha) so the
+// coin floats on a light background. Colors match the in-app orange (#FF5E00).
+//
+// initCoin3D(canvas, opts) returns a handle: drive it with setSpinning / land /
+// setFace, and call dispose() on unmount to free the GL context + GPU resources.
 
 const C = {
   orange: "#FF5E00",
@@ -18,6 +20,28 @@ const C = {
   grayText: "#33302B",
   edge: "#E6B455",
 };
+
+export interface Coin3DOptions {
+  /** Continuous idle spin around Y when not flipping (landing). Default true. */
+  autoSpin?: boolean;
+  /** Drag-to-orbit + click-to-flip listeners (landing). Default true. */
+  interactive?: boolean;
+  /** Initial resting face: true = HEAD, false = TAIL. Default true. */
+  face?: boolean;
+}
+
+export interface Coin3DHandle {
+  /** Tumble continuously while a result is pending. */
+  setSpinning(on: boolean): void;
+  /** Decelerate and land on a specific side (true = HEAD). */
+  land(heads: boolean): void;
+  /** Snap to a side with no animation. */
+  setFace(heads: boolean): void;
+  dispose(): void;
+}
+
+// rotation.x convention: HEAD faces camera at multiples of 2π, TAIL at π + 2π·k.
+const faceMod = (heads: boolean) => (heads ? 0 : Math.PI);
 
 /** Canvas-drawn coin face (radial-shaded base, rim rings, dot ring, embossed label). */
 function faceTexture(label: string, bg: string, bgEdge: string, fg: string): THREE.CanvasTexture {
@@ -94,7 +118,10 @@ function edgeTexture(): THREE.CanvasTexture {
   return t;
 }
 
-export function initCoin3D(canvas: HTMLCanvasElement): () => void {
+export function initCoin3D(canvas: HTMLCanvasElement, opts: Coin3DOptions = {}): Coin3DHandle {
+  const autoSpinDefault = opts.autoSpin ?? true;
+  const interactive = opts.interactive ?? true;
+
   const scene = new THREE.Scene();
 
   const CAM_Z = 8;
@@ -120,6 +147,7 @@ export function initCoin3D(canvas: HTMLCanvasElement): () => void {
   const R = 2;
   const TH = 0.34;
   const coin = new THREE.Group();
+  coin.rotation.x = faceMod(opts.face ?? true);
 
   const edgeMap = edgeTexture();
   edgeMap.repeat.set(40, 1);
@@ -150,8 +178,9 @@ export function initCoin3D(canvas: HTMLCanvasElement): () => void {
 
   scene.add(coin);
 
-  // Interaction state
-  let autoSpin = true;
+  // --- state ---
+  let autoSpin = autoSpinDefault;
+  let tumbling = false; // fast continuous flip while a result is pending
   let dragging = false;
   let moved = false;
   let px = 0;
@@ -159,7 +188,6 @@ export function initCoin3D(canvas: HTMLCanvasElement): () => void {
   let velX = 0;
   let velY = 0;
 
-  // Flip animation state
   let flipping = false;
   let flipStart = 0;
   let flipFrom = 0;
@@ -167,6 +195,28 @@ export function initCoin3D(canvas: HTMLCanvasElement): () => void {
   let flipDur = 0;
   const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
+  // Build a target rotation.x that lands on `heads`, a few turns past `from`.
+  function targetFor(from: number, heads: boolean): number {
+    const mod = faceMod(heads);
+    const baseTurns = 6 + Math.floor(Math.random() * 4);
+    let t = Math.ceil(from / Math.PI) * Math.PI;
+    while (((t - mod) % (Math.PI * 2)) !== 0 || t < from + baseTurns * Math.PI) {
+      t += Math.PI;
+    }
+    return t;
+  }
+  function startFlip(heads: boolean) {
+    autoSpin = false;
+    tumbling = false;
+    flipFrom = coin.rotation.x;
+    flipTo = targetFor(flipFrom, heads);
+    coin.rotation.y %= Math.PI * 2;
+    flipStart = performance.now();
+    flipDur = 1400 + (flipTo - flipFrom) * 30;
+    flipping = true;
+  }
+
+  // --- interaction (landing only) ---
   function pt(e: MouseEvent | TouchEvent) {
     const t = "touches" in e ? e.touches[0] : e;
     return { x: t.clientX, y: t.clientY };
@@ -197,34 +247,19 @@ export function initCoin3D(canvas: HTMLCanvasElement): () => void {
   function up() {
     dragging = false;
   }
-  function flip() {
-    if (flipping) return;
-    autoSpin = false;
-    const heads = Math.random() < 0.5;
-    const baseTurns = 6 + Math.floor(Math.random() * 4);
-    const targetMod = heads ? 0 : Math.PI; // HEAD faces camera at rotX = 2πk; TAIL at π + 2πk
-    flipFrom = coin.rotation.x;
-    let t = Math.ceil(flipFrom / Math.PI) * Math.PI;
-    while (((t - targetMod) % (Math.PI * 2)) !== 0 || t < flipFrom + baseTurns * Math.PI) {
-      t += Math.PI;
-    }
-    flipTo = t;
-    coin.rotation.y %= Math.PI * 2;
-    flipStart = performance.now();
-    flipDur = 1500 + baseTurns * 60;
-    flipping = true;
-  }
   function onClick() {
-    if (!moved) flip(); // a click (not a drag) flips the coin
+    if (!moved && !flipping) startFlip(Math.random() < 0.5);
   }
 
-  canvas.addEventListener("mousedown", down);
-  window.addEventListener("mousemove", move);
-  window.addEventListener("mouseup", up);
-  canvas.addEventListener("touchstart", down, { passive: false });
-  canvas.addEventListener("touchmove", move, { passive: false });
-  canvas.addEventListener("touchend", up);
-  canvas.addEventListener("click", onClick);
+  if (interactive) {
+    canvas.addEventListener("mousedown", down);
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", up);
+    canvas.addEventListener("touchstart", down, { passive: false });
+    canvas.addEventListener("touchmove", move, { passive: false });
+    canvas.addEventListener("touchend", up);
+    canvas.addEventListener("click", onClick);
+  }
 
   // Size to the canvas's CSS box.
   function resize() {
@@ -244,12 +279,15 @@ export function initCoin3D(canvas: HTMLCanvasElement): () => void {
     if (flipping) {
       const t = Math.min(1, (now - flipStart) / flipDur);
       coin.rotation.x = flipFrom + (flipTo - flipFrom) * easeOutCubic(t);
-      coin.position.y = Math.sin(t * Math.PI) * 1.2; // hop
+      coin.position.y = Math.sin(t * Math.PI) * 1.0; // hop
       if (t >= 1) {
         flipping = false;
         coin.position.y = 0;
-        autoSpin = true; // resume idle spin after landing
+        coin.rotation.x = flipTo; // exact rest on the landed side
+        autoSpin = autoSpinDefault; // landing resumes idle spin; game rests
       }
+    } else if (tumbling) {
+      coin.rotation.x += 0.32; // fast end-over-end tumble while pending
     } else {
       if (autoSpin) coin.rotation.y += 0.012;
       if (!dragging) {
@@ -264,24 +302,43 @@ export function initCoin3D(canvas: HTMLCanvasElement): () => void {
   }
   rafId = requestAnimationFrame(tick);
 
-  return () => {
-    cancelAnimationFrame(rafId);
-    ro.disconnect();
-    canvas.removeEventListener("mousedown", down);
-    window.removeEventListener("mousemove", move);
-    window.removeEventListener("mouseup", up);
-    canvas.removeEventListener("touchstart", down);
-    canvas.removeEventListener("touchmove", move);
-    canvas.removeEventListener("touchend", up);
-    canvas.removeEventListener("click", onClick);
-    bodyGeo.dispose();
-    faceGeo.dispose();
-    edgeMat.dispose();
-    headMat.dispose();
-    tailMat.dispose();
-    edgeMap.dispose();
-    headTex.dispose();
-    tailTex.dispose();
-    renderer.dispose();
+  return {
+    setSpinning(on: boolean) {
+      tumbling = on;
+      if (on) {
+        autoSpin = false;
+        flipping = false;
+      }
+    },
+    land(heads: boolean) {
+      startFlip(heads);
+    },
+    setFace(heads: boolean) {
+      if (flipping || tumbling) return;
+      coin.rotation.x = faceMod(heads);
+      coin.position.y = 0;
+    },
+    dispose() {
+      cancelAnimationFrame(rafId);
+      ro.disconnect();
+      if (interactive) {
+        canvas.removeEventListener("mousedown", down);
+        window.removeEventListener("mousemove", move);
+        window.removeEventListener("mouseup", up);
+        canvas.removeEventListener("touchstart", down);
+        canvas.removeEventListener("touchmove", move);
+        canvas.removeEventListener("touchend", up);
+        canvas.removeEventListener("click", onClick);
+      }
+      bodyGeo.dispose();
+      faceGeo.dispose();
+      edgeMat.dispose();
+      headMat.dispose();
+      tailMat.dispose();
+      edgeMap.dispose();
+      headTex.dispose();
+      tailTex.dispose();
+      renderer.dispose();
+    },
   };
 }
