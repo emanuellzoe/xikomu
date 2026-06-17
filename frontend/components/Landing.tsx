@@ -18,17 +18,6 @@ export default function Landing() {
     const mapRange = (val: number, inMin: number, inMax: number, outMin: number, outMax: number) =>
       outMin + ((clamp(val, inMin, inMax) - inMin) / (inMax - inMin)) * (outMax - outMin);
 
-    // Lucide icons (loaded via <Script>); poll until available.
-    const tryLucide = () => {
-      const l = (window as unknown as { lucide?: { createIcons: () => void } }).lucide;
-      if (l) { l.createIcons(); return true; }
-      return false;
-    };
-    if (!tryLucide()) {
-      const iv = setInterval(() => { if (tryLucide()) clearInterval(iv); }, 200);
-      setTimeout(() => clearInterval(iv), 6000);
-    }
-
     // SVG draw loop on hover
     const svgWrapper = document.getElementById("svg-wrapper");
     let loopInterval: ReturnType<typeof setInterval> | undefined;

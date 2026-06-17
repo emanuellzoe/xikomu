@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -34,6 +35,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        {/* Iconify web component — renders every <iconify-icon> (Solar set) used
+            across the landing + game UI. Without this, icons show as empty boxes. */}
+        <Script
+          src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body
         className="bg-[#FAFAF8] text-stone-600 text-xl font-light antialiased min-h-screen flex flex-col relative overflow-x-hidden"
         style={{ fontFamily: "'Inter', sans-serif" }}
