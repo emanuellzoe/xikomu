@@ -1,13 +1,8 @@
 # Xikomu — Activity & Growth (`update/`)
 
-Honest, **on-chain-verifiable** analytics for Xikomu Lucky Flip — plus a growth
-plan. Everything here reads **real events** from the deployed `XikomuFlip`
-contract on Celo Mainnet. Nothing is generated, simulated, or padded.
-
-> ⚠️ This is the opposite of a spam/farming bot. There are **no generated
-> wallets, no auto-deposits, no cron tx-spam**. It only *reads* what real
-> players already did on-chain, and every row links to its Celoscan tx so
-> anyone can verify it.
+**On-chain-verifiable** analytics for Xikomu Lucky Flip — plus a growth plan.
+Everything here reads **real events** from the deployed `XikomuFlip` contract on
+Celo Mainnet, and every row links to its Celoscan tx so anyone can verify it.
 
 ## Contents
 
@@ -18,7 +13,7 @@ contract on Celo Mainnet. Nothing is generated, simulated, or padded.
 | `stats.json` | Aggregate metrics (real): total flips, unique players, volume, win rate, house pool |
 | `stats.js` | Same data as `window.XIKOMU_STATS`, so `dashboard.html` works offline (`file://`) |
 | `dashboard.html` | A static dashboard that renders `stats.js` (orange theme) |
-| `GROWTH.md` | A legit, no-farming growth plan |
+| `GROWTH.md` | A growth plan built on real, on-chain usage |
 
 ## Generate / refresh the data
 
@@ -45,6 +40,5 @@ folder: `npx serve update`.
 
 ## Why on-chain only
 
-Xikomu's own PRD says **"No bots/farming — real play only."** These numbers are
-meant to be checked: pick any row in `activity.log`, open it on
-[Celoscan](https://celoscan.io), and confirm it's a real transaction.
+These numbers are meant to be checked: pick any row in `activity.log`, open it
+on [Celoscan](https://celoscan.io), and confirm it's a real transaction.

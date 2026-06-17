@@ -4,7 +4,7 @@
 
 Xikomu Lucky Flip is an on-chain game on **Celo Mainnet**: buy chips with **native CELO**, flip a coin (**Heads** or **Tails**), and win **1.95×** your bet. Every flip is **one on-chain transaction** — fast, fair, and fun. No token approval, no custody.
 
-Built for **Celo Proof of Ship Season 2** (Games / x-to-earn).
+Built for **Celo** (Games / x-to-earn).
 
 - 🎮 **Play:** https://xikomu.vercel.app
 - 🔗 **Contract (verified):** [`0x7e36d266a721aB82379E1bc73EbCd16C3cef40cd`](https://celoscan.io/address/0x7e36d266a721aB82379E1bc73EbCd16C3cef40cd#code)
@@ -96,6 +96,4 @@ NEXT_PUBLIC_START_BLOCK=68997210
 
 ✅ **Live** — contract deployed & verified on Celo Mainnet, house funded, frontend on Vercel.
 
-## License
 
-MIT (open source — Proof of Ship requirement).
