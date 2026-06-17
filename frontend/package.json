@@ -10,9 +10,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@stacks/connect": "^8.2.6",
-    "@stacks/network": "^7.3.1",
-    "@stacks/transactions": "^7.4.0",
     "@tanstack/react-query": "^5.59.0",
     "next": "14.2.15",
     "react": "^18.3.1",
