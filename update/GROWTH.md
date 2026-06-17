@@ -1,15 +1,8 @@
-# Xikomu — Growth plan (no farming)
+# Xikomu — Growth plan
 
 Goal: grow **real** players and **real** on-chain activity for Xikomu Lucky
-Flip. Every tactic below produces genuine usage — no generated wallets, no
-tx-spam, no Sybil. That keeps the project clean for Proof of Ship and durable
-afterward.
-
-## Why no farming
-- The PRD's own rule: **"No bots/farming — real play only."**
-- Sybil wallet fleets and tx-spam are trivially detected by on-chain analytics
-  and can disqualify a submission.
-- Padded metrics don't convert to a real audience — they just create risk.
+Flip. Every tactic below produces genuine usage that's durable beyond Proof of
+Ship.
 
 ## Distribution
 - **MiniPay first.** It auto-connects, so the friction from "open" to "first
@@ -22,7 +15,7 @@ afterward.
 
 ## Retention
 - **Daily streak / free-chip nudge** (real, on-chain): a small once-a-day bonus
-  to bring players back — funded transparently from the house, not faked.
+  to bring players back — funded transparently from the house.
 - **Recent-flips & leaderboard** built from real `Flipped` events (this folder
   already reads them) — social proof that the game is alive.
 
@@ -39,5 +32,4 @@ afterward.
 
 ## Cadence
 Refresh the real snapshot as genuine activity accrues (e.g., daily), so the
-numbers stay current. The point is to reflect real growth — not to manufacture
-it.
+numbers stay current, reflecting real growth as it happens.
