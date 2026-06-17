@@ -20,9 +20,10 @@ export default function Landing() {
       outMin + ((clamp(val, inMin, inMax) - inMin) / (inMax - inMin)) * (outMax - outMin);
 
     // 3D HEAD/TAIL coin (Three.js): mount on the hero <canvas>. Disposed below.
-    let disposeCoin: (() => void) | undefined;
+    // Landing uses the decorative defaults (auto-spin + drag/click-to-flip).
+    let coin: ReturnType<typeof initCoin3D> | undefined;
     const coinCanvas = document.getElementById("coin3d") as HTMLCanvasElement | null;
-    if (coinCanvas) disposeCoin = initCoin3D(coinCanvas);
+    if (coinCanvas) coin = initCoin3D(coinCanvas);
 
     // Staggered reveal
     const ctaObserver = new IntersectionObserver(
@@ -236,7 +237,7 @@ export default function Landing() {
     return () => {
       running = false;
       cancelAnimationFrame(rafId);
-      disposeCoin?.();
+      coin?.dispose();
       if (slider) slider.removeEventListener("input", onSlider);
       if (onResize) window.removeEventListener("resize", onResize);
       ctaObserver.disconnect();
