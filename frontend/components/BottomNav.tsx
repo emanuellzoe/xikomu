@@ -2,8 +2,8 @@
 
 import type { ReactNode } from "react";
 
-// The three in-app surfaces shown after Launch App. Shared by the Celo and
-// Stacks game shells so both chains get the same Home / Profile / Riwayat nav.
+// The three in-app surfaces shown after Launch App: the Celo game shell uses
+// these for the same Home / Profile / Riwayat nav.
 export type Tab = "home" | "profile" | "riwayat";
 
 const ITEMS: { id: Tab; label: string; icon: ReactNode }[] = [

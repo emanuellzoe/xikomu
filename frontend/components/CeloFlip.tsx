@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ChainToggle, type Chain } from "@/components/ChainToggle";
 import { BottomNav, type Tab } from "@/components/BottomNav";
 import { Alert } from "@/components/Alert";
 import { describeTxError } from "@/lib/txError";
@@ -56,7 +55,7 @@ function shortAddr(a?: string): string {
 type FlipResult = { won: boolean; resultHeads: boolean; payout: bigint };
 type HistoryItem = { resultHeads: boolean; won: boolean; bet: bigint; tx: string };
 
-export default function CeloFlip({ chain, setChain }: { chain: Chain; setChain: (c: Chain) => void }) {
+export default function CeloFlip() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -238,7 +237,6 @@ export default function CeloFlip({ chain, setChain }: { chain: Chain; setChain: 
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logo.png" alt="Xikomu" className="w-8 h-8" />
             </Link>
-            <ChainToggle value={chain} onChange={setChain} />
           </div>
           {mounted && isConnected ? (
             <div className="flex items-center gap-1.5 sm:gap-2">
