@@ -365,12 +365,12 @@ export const landingHtml = String.raw`
                     <p class="text-lg text-stone-500 max-w-xs font-light">Provably fair coin flips on Celo.</p>
                 </div>
                 <div><h4 class="text-base font-normal text-stone-900 mb-4 tracking-tight">Product</h4><ul class="space-y-3 text-lg font-light text-stone-500"><li><a href="#features-section" class="hover:text-stone-900 transition-colors">Features</a></li><li><a href="#payment-section" class="hover:text-stone-900 transition-colors">How it Works</a></li></ul></div>
-                <div><h4 class="text-base font-normal text-stone-900 mb-4 tracking-tight">Project</h4><ul class="space-y-3 text-lg font-light text-stone-500"><li><a href="https://github.com/emanuellzoe/xikomu" class="hover:text-stone-900 transition-colors">GitHub</a></li><li><a href="#faq" class="hover:text-stone-900 transition-colors">FAQ</a></li></ul></div>
+                <div><h4 class="text-base font-normal text-stone-900 mb-4 tracking-tight">Project</h4><ul class="space-y-3 text-lg font-light text-stone-500"><li><a href="https://github.com/emanuellzoe/xikomu" target="_blank" rel="noopener noreferrer" class="hover:text-stone-900 transition-colors">GitHub</a></li><li><a href="#faq" class="hover:text-stone-900 transition-colors">FAQ</a></li></ul></div>
                 <div><h4 class="text-base font-normal text-stone-900 mb-4 tracking-tight">Legal</h4><ul class="space-y-3 text-lg font-light text-stone-500"><li><a href="#" class="hover:text-stone-900 transition-colors">Privacy Policy</a></li><li><a href="#" class="hover:text-stone-900 transition-colors">Terms of Service</a></li></ul></div>
             </div>
             <div class="border-t border-stone-200 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
                 <p class="text-lg font-light text-stone-400">&copy; 2026 Xikomu. All rights reserved.</p>
-                <div class="flex items-center gap-4 text-stone-400"><a href="#" class="hover:text-stone-900 transition-colors"><iconify-icon icon="ri:twitter-x-line" class="text-2xl"></iconify-icon></a><a href="#" class="hover:text-stone-900 transition-colors"><iconify-icon icon="ri:github-line" class="text-2xl"></iconify-icon></a></div>
+                <div class="flex items-center gap-4 text-stone-400"><a href="#" class="hover:text-stone-900 transition-colors"><iconify-icon icon="ri:twitter-x-line" class="text-2xl"></iconify-icon></a><a href="https://github.com/emanuellzoe/xikomu" target="_blank" rel="noopener noreferrer" aria-label="Xikomu on GitHub" class="hover:text-stone-900 transition-colors"><iconify-icon icon="ri:github-line" class="text-2xl"></iconify-icon></a></div>
             </div>
         </div>
     </footer>
