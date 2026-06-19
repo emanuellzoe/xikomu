@@ -90,6 +90,9 @@ export default function Landing() {
           card.style.transform = `rotateY(${index * faqTheta}deg) translateZ(${radius}px)`;
         });
       };
+      // Clickable position dots — one per card, so the wheel is easy to navigate.
+      const faqDotEls: HTMLElement[] = [];
+      const faqDots = document.getElementById("faq-dots");
       const updateFaqCarousel = () => {
         faqCarousel.style.transform = `rotateY(${faqAngle}deg)`;
         const normalized = ((faqAngle % 360) + 360) % 360;
@@ -99,7 +102,28 @@ export default function Landing() {
           if (idx === activeIdx) card.classList.add("is-active");
           else { card.classList.remove("is-active"); inner?.classList.remove("is-flipped"); }
         });
+        faqDotEls.forEach((dot, idx) => dot.classList.toggle("is-active", idx === activeIdx));
       };
+      // Rotate the wheel to a given card along the shortest path.
+      const goToFaqCard = (idx: number) => {
+        const targetAngle = -idx * faqTheta;
+        let shortest = (targetAngle - faqAngle) % 360;
+        if (shortest > 180) shortest -= 360;
+        if (shortest < -180) shortest += 360;
+        faqAngle += shortest;
+        updateFaqCarousel();
+      };
+      if (faqDots) {
+        faqCards.forEach((_, idx) => {
+          const dot = document.createElement("button");
+          dot.className = "faq-dot";
+          dot.type = "button";
+          dot.setAttribute("aria-label", `Show FAQ ${idx + 1}`);
+          dot.addEventListener("click", () => goToFaqCard(idx));
+          faqDots.appendChild(dot);
+          faqDotEls.push(dot);
+        });
+      }
       layoutFaqCards();
       updateFaqCarousel();
       onResize = layoutFaqCards;
@@ -109,12 +133,7 @@ export default function Landing() {
       faqCards.forEach((card, idx) => {
         card.addEventListener("click", () => {
           if (!card.classList.contains("is-active")) {
-            const targetAngle = -idx * faqTheta;
-            let shortest = (targetAngle - faqAngle) % 360;
-            if (shortest > 180) shortest -= 360;
-            if (shortest < -180) shortest += 360;
-            faqAngle += shortest;
-            updateFaqCarousel();
+            goToFaqCard(idx);
           } else {
             card.querySelector(".faq-card-inner")?.classList.toggle("is-flipped");
           }
