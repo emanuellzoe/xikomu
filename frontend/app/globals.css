@@ -266,6 +266,29 @@
 .pulse-glow-wheel {
   animation: pulseGlowWheel 4s infinite ease-in-out;
 }
+.faq-dots {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  justify-content: center;
+}
+.faq-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 9999px;
+  background: rgba(120, 113, 108, 0.3);
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  transition: width 0.45s cubic-bezier(0.25, 1, 0.5, 1), background 0.45s ease;
+}
+.faq-dot:hover {
+  background: rgba(255, 94, 0, 0.55);
+}
+.faq-dot.is-active {
+  width: 30px;
+  background: #ff5e00;
+}
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }

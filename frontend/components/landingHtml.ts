@@ -299,6 +299,8 @@ export const landingHtml = String.raw`
 
         <!-- FAQ Section -->
         <section id="faq" class="relative py-24 lg:py-32 bg-[#FAFAFA] border-t border-stone-200 overflow-hidden">
+            <div class="pointer-events-none absolute -top-24 -left-24 w-[26rem] h-[26rem] rounded-full bg-[#FF8A4D]/10 blur-3xl z-0"></div>
+            <div class="pointer-events-none absolute -bottom-24 -right-16 w-[30rem] h-[30rem] rounded-full bg-[#FF5E00]/5 blur-3xl z-0"></div>
             <div class="max-w-7xl mx-auto px-6 relative z-10 text-center mb-16 lg:mb-24">
                 <div class="inline-flex items-center justify-center gap-3 mb-6">
                     <div class="w-7 h-7 rounded-full border border-[#FF5E00] flex items-center justify-center text-[#FF5E00]"><span class="text-sm font-light mt-0.5">?</span></div>
@@ -350,7 +352,8 @@ export const landingHtml = String.raw`
                 </div>
             </div>
 
-            <div class="text-center mt-12 text-[#FF5E00] font-montserrat text-sm tracking-widest uppercase flex items-center justify-center gap-2 lg:hidden"><iconify-icon icon="solar:hand-swipe-linear" class="text-lg"></iconify-icon> Swipe to rotate</div>
+            <div id="faq-dots" class="faq-dots relative z-30 mt-10" aria-label="FAQ navigation"></div>
+            <div class="text-center mt-6 text-[#FF5E00] font-montserrat text-sm tracking-widest uppercase flex items-center justify-center gap-2 lg:hidden"><iconify-icon icon="solar:hand-swipe-linear" class="text-lg"></iconify-icon> Swipe to rotate</div>
         </section>
 
         <!-- CTA Section -->
