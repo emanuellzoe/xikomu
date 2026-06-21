@@ -3,7 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import { Providers } from "./providers";
 
-const TITLE = "Xikomu — Lucky Flip on Celo";
+const TITLE = "Xikomu";
 const DESCRIPTION =
   "A coin-flip game on Celo. Pick a side, flip, win 1.95× — one on-chain tx, no approval. Cash out anytime, right inside MiniPay.";
 
