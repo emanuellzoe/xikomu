@@ -208,19 +208,36 @@ export default function CeloFlip() {
   async function loadHistory() {
     if (!publicClient || !address || !configured) { setHistory([]); return; }
     try {
-      const logs = await publicClient.getLogs({
-        address: flip,
-        event: FLIPPED_EVENT,
-        args: { player: address },
-        fromBlock: START_BLOCK,
-      });
-      const items: HistoryItem[] = logs
-        .map((l) => {
+      // forno rejects eth_getLogs spans of ~10k+ blocks, so scanning from
+      // START_BLOCK in one call always fails (and hammers the same RPC the flip
+      // receipt poll uses). Walk backwards from the latest block in safe-sized
+      // windows, stopping once we have enough recent flips for this player.
+      const WINDOW = 5_000n;   // largest span forno accepts per call
+      const MAX_CHUNKS = 6;    // cap work: ~30k blocks back, then give up
+      const NEED = 12;
+      const latest = await publicClient.getBlockNumber();
+      const collected: { resultHeads: boolean; won: boolean; bet: bigint; tx: `0x${string}`; block: bigint; idx: number }[] = [];
+      let to = latest;
+      for (let i = 0; i < MAX_CHUNKS && to >= START_BLOCK && collected.length < NEED; i++) {
+        const from = to - WINDOW + 1n > START_BLOCK ? to - WINDOW + 1n : START_BLOCK;
+        const logs = await publicClient.getLogs({
+          address: flip,
+          event: FLIPPED_EVENT,
+          args: { player: address },
+          fromBlock: from,
+          toBlock: to,
+        });
+        for (const l of logs) {
           const a = (l as unknown as { args: { resultHeads: boolean; won: boolean; bet: bigint } }).args;
-          return { resultHeads: a.resultHeads, won: a.won, bet: a.bet, tx: l.transactionHash! };
-        })
-        .reverse()
-        .slice(0, 12);
+          collected.push({ resultHeads: a.resultHeads, won: a.won, bet: a.bet, tx: l.transactionHash!, block: l.blockNumber!, idx: l.logIndex! });
+        }
+        if (from === START_BLOCK) break;
+        to = from - 1n;
+      }
+      const items: HistoryItem[] = collected
+        .sort((a, b) => (a.block === b.block ? b.idx - a.idx : Number(b.block - a.block)))
+        .slice(0, NEED)
+        .map(({ resultHeads, won, bet, tx }) => ({ resultHeads, won, bet, tx }));
       setHistory(items);
     } catch { setHistory([]); }
   }
