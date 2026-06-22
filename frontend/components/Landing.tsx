@@ -10,6 +10,36 @@ import { landingHtml } from "./landingHtml";
  * runs here in a post-mount effect. Colors match the in-app orange (#FF5E00).
  */
 export default function Landing() {
+  // Refresh the hero stats with live on-chain data so the numbers stay current
+  // without a redeploy. The static markup ships ONCHAIN_STATS as the fallback.
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const res = await fetch("/api/stats");
+        if (!res.ok) return;
+        const s = await res.json();
+        if (cancelled || !s || typeof s.flips !== "number") return;
+
+        const setText = (id: string, text: string) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = text;
+        };
+        setText("stat-flips", s.flips.toLocaleString());
+        setText("stat-players", s.uniquePlayers.toLocaleString());
+        setText("stat-winrate", `${s.winRatePct}%`);
+        setText("stat-block", Number(s.block).toLocaleString());
+      } catch {
+        /* keep the static fallback numbers */
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     let rafId = 0;
     let running = true;

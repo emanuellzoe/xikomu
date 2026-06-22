@@ -74,19 +74,19 @@ export const landingHtml = String.raw`
         <section class="border-y border-stone-200 bg-white relative z-20">
             <div class="max-w-7xl mx-auto px-6 lg:px-8 pt-14 pb-6 grid grid-cols-1 sm:grid-cols-3 gap-10 text-center">
                 <div>
-                    <div class="text-5xl lg:text-6xl font-playfair text-[#FF5E00] tracking-tight">${ONCHAIN_STATS.flips.toLocaleString()}</div>
+                    <div id="stat-flips" class="text-5xl lg:text-6xl font-playfair text-[#FF5E00] tracking-tight">${ONCHAIN_STATS.flips.toLocaleString()}</div>
                     <div class="text-xs uppercase tracking-[0.18em] text-stone-500 mt-3 font-montserrat">On-chain flips</div>
                 </div>
                 <div>
-                    <div class="text-5xl lg:text-6xl font-playfair text-[#2C2B29] tracking-tight">${ONCHAIN_STATS.uniquePlayers.toLocaleString()}</div>
+                    <div id="stat-players" class="text-5xl lg:text-6xl font-playfair text-[#2C2B29] tracking-tight">${ONCHAIN_STATS.uniquePlayers.toLocaleString()}</div>
                     <div class="text-xs uppercase tracking-[0.18em] text-stone-500 mt-3 font-montserrat">Players who flipped</div>
                 </div>
                 <div>
-                    <div class="text-5xl lg:text-6xl font-playfair text-[#2C2B29] tracking-tight">${ONCHAIN_STATS.winRatePct}%</div>
+                    <div id="stat-winrate" class="text-5xl lg:text-6xl font-playfair text-[#2C2B29] tracking-tight">${ONCHAIN_STATS.winRatePct}%</div>
                     <div class="text-xs uppercase tracking-[0.18em] text-stone-500 mt-3 font-montserrat">Win rate &middot; fair 50/50</div>
                 </div>
             </div>
-            <p class="text-center text-xs text-stone-400 pb-10 font-light px-6">Real on-chain data from <a href="${ONCHAIN_STATS.explorer}" target="_blank" rel="noreferrer" class="text-[#FF5E00] hover:underline">XikomuFlip on Celo</a> &middot; a provably fair 50/50 coin paying 1.95&times; &middot; verifiable on Celoscan (block ${ONCHAIN_STATS.block.toLocaleString()}).</p>
+            <p class="text-center text-xs text-stone-400 pb-10 font-light px-6">Real on-chain data from <a href="${ONCHAIN_STATS.explorer}" target="_blank" rel="noreferrer" class="text-[#FF5E00] hover:underline">XikomuFlip on Celo</a> &middot; a provably fair 50/50 coin paying 1.95&times; &middot; verifiable on Celoscan (block <span id="stat-block">${ONCHAIN_STATS.block.toLocaleString()}</span>).</p>
         </section>
 
         <!-- Trust Marquee Section -->
