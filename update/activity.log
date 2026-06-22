@@ -1,13 +1,13 @@
-# Xikomu real on-chain activity — 10 most recent flips (of 863 total)
-# Contract 0x7e36d266a721aB82379E1bc73EbCd16C3cef40cd · generated at block 69679155
+# Xikomu real on-chain activity — 10 most recent flips (of 2518 total)
+# Contract 0x7e36d266a721aB82379E1bc73EbCd16C3cef40cd · generated at block 70259333
 # Verify any line on Celoscan.
-2026-06-16 02:12:46Z | 0x01f4…F2F2 | Heads→Heads WON +0.0636 | bet 0.0669 CELO | https://celoscan.io/tx/0xb790bbaca5a6b03afa80ba9089e24f8053c2fecb9916ae0b340f7042966b0f0a
-2026-06-16 02:12:42Z | 0x34f6…adBa | Tails→Heads lost | bet 0.0774 CELO | https://celoscan.io/tx/0x0e8aa31df3c5ba77508cdd6b9c81e2aaab72c2b31481f80a0abf66a252469755
-2026-06-15 23:23:53Z | 0x432B…0571 | Tails→Heads lost | bet 0.0795 CELO | https://celoscan.io/tx/0x801889754123d4f775a0f13447626ff8359836fd1bd25f14574a1dd0ee8c5829
-2026-06-15 23:23:50Z | 0x7eD0…A89b | Heads→Heads WON +0.0714 | bet 0.0751 CELO | https://celoscan.io/tx/0x038e0105fe5025d43f85221257e84d10cb260a790d3ed0231bc07e94af84f9c4
-2026-06-15 23:23:46Z | 0x6499…409F | Tails→Tails WON +0.0714 | bet 0.0751 CELO | https://celoscan.io/tx/0x71c2759824909151dfbe006b10f785490d80faec4975f63fe2b253c1a6045bfa
-2026-06-15 23:23:45Z | 0xb51C…Ad42 | Tails→Tails WON +0.0696 | bet 0.0733 CELO | https://celoscan.io/tx/0x5f7d30a448e801c5e8f23a6c116ee4e62b919de55494cfdcea755de97c4283d2
-2026-06-15 23:23:42Z | 0xDc5B…5D0D | Heads→Heads WON +0.0714 | bet 0.0751 CELO | https://celoscan.io/tx/0x41129cd6e55baad92c26551663e6aa3703022035fed776b2377360672d94a4d8
-2026-06-15 23:23:39Z | 0xce14…2e75 | Tails→Tails WON +0.0795 | bet 0.0836 CELO | https://celoscan.io/tx/0xb766f243454e8ab3929c2013229204826b04d7b252974c7d8222d252799925e0
-2026-06-15 21:28:25Z | 0x3Dd3…145C | Heads→Tails lost | bet 0.0693 CELO | https://celoscan.io/tx/0xa9048fd50e0a18d92fb25b737a3c6c49e0139ac5ceac007a291d5169bae72502
-2026-06-15 21:28:25Z | 0xfA6d…95CB | Tails→Heads lost | bet 0.0693 CELO | https://celoscan.io/tx/0x409fc61c2aa1d1cb3527acd79dbbc9fddf987c627e47a4c70eb30ea7c75b8663
+2026-06-22 20:02:48Z | 0x34b4…7F08 | Heads→Heads WON +0.1182 | bet 0.1244 CELO | https://celoscan.io/tx/0x34103317632aa0788264b532545250c18bbc4c679e0f318f544779fa21bc4b63
+2026-06-22 19:59:22Z | 0x34b4…7F08 | Heads→Tails lost | bet 0.4975 CELO | https://celoscan.io/tx/0x938aa8416ca0e14d34cd4feb96a8dc7092aaace501ce2a9de7c2792863b44cec
+2026-06-22 19:58:52Z | 0x34b4…7F08 | Heads→Heads WON +0.095 | bet 0.1 CELO | https://celoscan.io/tx/0xfc5b8367a6217eb305c1f8605baa1b80a0fcf7f03455438e6cd948ef6aca68e2
+2026-06-22 19:58:37Z | 0x34b4…7F08 | Heads→Tails lost | bet 0.1 CELO | https://celoscan.io/tx/0x1e8af97c3e58907376a46a087d5605d868a26f5cdec64b83eb2a6b86e097f4eb
+2026-06-22 19:03:21Z | 0x09a6…1726 | Tails→Tails WON +0.0095 | bet 0.01 CELO | https://celoscan.io/tx/0x74d6d52d62a3bbf97c2dbbde43a4f9b0580def3746addf60251070ca1c6b339e
+2026-06-22 19:03:18Z | 0x4ec9…c0E4 | Heads→Tails lost | bet 0.01 CELO | https://celoscan.io/tx/0xd618531331612b5478637acfb059de9b19ee3cb64eda56e908261a763423e7b5
+2026-06-22 19:03:17Z | 0xc96e…32B0 | Heads→Heads WON +0.0095 | bet 0.01 CELO | https://celoscan.io/tx/0xb24bb8e677ed1e9cd744aa7e399aa59f499b7797a9bc1584ec865f0b5e2d3653
+2026-06-22 19:03:16Z | 0x7d93…ed47 | Tails→Tails WON +0.0095 | bet 0.01 CELO | https://celoscan.io/tx/0x2110e9a456d36927ed0bdb6ddae5d660c31ae400dd89a61735f63a312b5de344
+2026-06-22 19:03:15Z | 0x7d43…C3cA | Heads→Heads WON +0.0095 | bet 0.01 CELO | https://celoscan.io/tx/0x253bb73774f1d44b151d1d7ea84c9b39e5d2edc45a4ec215f0d199a94af4fe38
+2026-06-22 19:03:15Z | 0xEDF0…Af59 | Heads→Heads WON +0.0095 | bet 0.01 CELO | https://celoscan.io/tx/0x5d3fd71d47a4d4b8672917107736d1f6922651f36d6a96a60c4f17dcb45897ff
