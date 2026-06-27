@@ -591,3 +591,4 @@
 - u-589: add utility (bg #ea580c, pad 589px)
 - u-590: add utility (bg #0d9488, pad 590px)
 - u-591: add utility (bg #2563eb, pad 591px)
+- u-592: add utility (bg #16a34a, pad 592px)
