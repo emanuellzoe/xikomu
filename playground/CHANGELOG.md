@@ -521,3 +521,4 @@
 - u-519: add utility (bg #ea580c, pad 519px)
 - u-520: add utility (bg #0d9488, pad 520px)
 - u-521: add utility (bg #2563eb, pad 521px)
+- u-522: add utility (bg #16a34a, pad 522px)
