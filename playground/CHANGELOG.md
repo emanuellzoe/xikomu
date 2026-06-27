@@ -585,3 +585,4 @@
 - u-583: add utility (bg #dc2626, pad 583px)
 - u-584: add utility (bg #d97706, pad 584px)
 - u-585: add utility (bg #7c3aed, pad 585px)
+- u-586: add utility (bg #0891b2, pad 586px)
