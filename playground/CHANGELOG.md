@@ -550,3 +550,8 @@
 - u-548: add utility (bg #65a30d, pad 548px)
 - u-549: add utility (bg #ea580c, pad 549px)
 - u-550: add utility (bg #0d9488, pad 550px)
+- u-551: add utility (bg #2563eb, pad 551px)
+- u-552: add utility (bg #16a34a, pad 552px)
+- u-553: add utility (bg #dc2626, pad 553px)
+- u-554: add utility (bg #d97706, pad 554px)
+- u-555: add utility (bg #7c3aed, pad 555px)
