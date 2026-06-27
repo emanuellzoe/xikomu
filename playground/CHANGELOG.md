@@ -500,3 +500,8 @@
 - u-498: add utility (bg #65a30d, pad 498px)
 - u-499: add utility (bg #ea580c, pad 499px)
 - u-500: add utility (bg #0d9488, pad 500px)
+- u-501: add utility (bg #2563eb, pad 501px)
+- u-502: add utility (bg #16a34a, pad 502px)
+- u-503: add utility (bg #dc2626, pad 503px)
+- u-504: add utility (bg #d97706, pad 504px)
+- u-505: add utility (bg #7c3aed, pad 505px)
