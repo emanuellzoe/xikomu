@@ -570,3 +570,8 @@
 - u-568: add utility (bg #65a30d, pad 568px)
 - u-569: add utility (bg #ea580c, pad 569px)
 - u-570: add utility (bg #0d9488, pad 570px)
+- u-571: add utility (bg #2563eb, pad 571px)
+- u-572: add utility (bg #16a34a, pad 572px)
+- u-573: add utility (bg #dc2626, pad 573px)
+- u-574: add utility (bg #d97706, pad 574px)
+- u-575: add utility (bg #7c3aed, pad 575px)
