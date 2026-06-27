@@ -580,3 +580,4 @@
 - u-578: add utility (bg #65a30d, pad 578px)
 - u-579: add utility (bg #ea580c, pad 579px)
 - u-580: add utility (bg #0d9488, pad 580px)
+- u-581: add utility (bg #2563eb, pad 581px)
