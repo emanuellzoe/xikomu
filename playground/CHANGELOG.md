@@ -560,3 +560,8 @@
 - u-558: add utility (bg #65a30d, pad 558px)
 - u-559: add utility (bg #ea580c, pad 559px)
 - u-560: add utility (bg #0d9488, pad 560px)
+- u-561: add utility (bg #2563eb, pad 561px)
+- u-562: add utility (bg #16a34a, pad 562px)
+- u-563: add utility (bg #dc2626, pad 563px)
+- u-564: add utility (bg #d97706, pad 564px)
+- u-565: add utility (bg #7c3aed, pad 565px)
