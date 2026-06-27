@@ -505,3 +505,4 @@
 - u-503: add utility (bg #dc2626, pad 503px)
 - u-504: add utility (bg #d97706, pad 504px)
 - u-505: add utility (bg #7c3aed, pad 505px)
+- u-506: add utility (bg #0891b2, pad 506px)
