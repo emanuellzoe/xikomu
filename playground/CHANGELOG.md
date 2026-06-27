@@ -520,3 +520,8 @@
 - u-518: add utility (bg #65a30d, pad 518px)
 - u-519: add utility (bg #ea580c, pad 519px)
 - u-520: add utility (bg #0d9488, pad 520px)
+- u-521: add utility (bg #2563eb, pad 521px)
+- u-522: add utility (bg #16a34a, pad 522px)
+- u-523: add utility (bg #dc2626, pad 523px)
+- u-524: add utility (bg #d97706, pad 524px)
+- u-525: add utility (bg #7c3aed, pad 525px)
