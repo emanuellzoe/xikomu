@@ -695,3 +695,8 @@
 - u-693: add utility (bg #dc2626, pad 693px)
 - u-694: add utility (bg #d97706, pad 694px)
 - u-695: add utility (bg #7c3aed, pad 695px)
+- u-696: add utility (bg #0891b2, pad 696px)
+- u-697: add utility (bg #db2777, pad 697px)
+- u-698: add utility (bg #65a30d, pad 698px)
+- u-699: add utility (bg #ea580c, pad 699px)
+- u-700: add utility (bg #0d9488, pad 700px)
