@@ -650,3 +650,8 @@
 - u-648: add utility (bg #65a30d, pad 648px)
 - u-649: add utility (bg #ea580c, pad 649px)
 - u-650: add utility (bg #0d9488, pad 650px)
+- u-651: add utility (bg #2563eb, pad 651px)
+- u-652: add utility (bg #16a34a, pad 652px)
+- u-653: add utility (bg #dc2626, pad 653px)
+- u-654: add utility (bg #d97706, pad 654px)
+- u-655: add utility (bg #7c3aed, pad 655px)
