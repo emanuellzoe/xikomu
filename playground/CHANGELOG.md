@@ -630,3 +630,8 @@
 - u-628: add utility (bg #65a30d, pad 628px)
 - u-629: add utility (bg #ea580c, pad 629px)
 - u-630: add utility (bg #0d9488, pad 630px)
+- u-631: add utility (bg #2563eb, pad 631px)
+- u-632: add utility (bg #16a34a, pad 632px)
+- u-633: add utility (bg #dc2626, pad 633px)
+- u-634: add utility (bg #d97706, pad 634px)
+- u-635: add utility (bg #7c3aed, pad 635px)
