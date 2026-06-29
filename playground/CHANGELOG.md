@@ -665,3 +665,8 @@
 - u-663: add utility (bg #dc2626, pad 663px)
 - u-664: add utility (bg #d97706, pad 664px)
 - u-665: add utility (bg #7c3aed, pad 665px)
+- u-666: add utility (bg #0891b2, pad 666px)
+- u-667: add utility (bg #db2777, pad 667px)
+- u-668: add utility (bg #65a30d, pad 668px)
+- u-669: add utility (bg #ea580c, pad 669px)
+- u-670: add utility (bg #0d9488, pad 670px)
