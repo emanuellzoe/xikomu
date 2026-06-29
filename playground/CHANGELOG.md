@@ -624,3 +624,4 @@
 - u-622: add utility (bg #16a34a, pad 622px)
 - u-623: add utility (bg #dc2626, pad 623px)
 - u-624: add utility (bg #d97706, pad 624px)
+- u-625: add utility (bg #7c3aed, pad 625px)
