@@ -604,3 +604,4 @@
 - u-602: add utility (bg #16a34a, pad 602px)
 - u-603: add utility (bg #dc2626, pad 603px)
 - u-604: add utility (bg #d97706, pad 604px)
+- u-605: add utility (bg #7c3aed, pad 605px)
