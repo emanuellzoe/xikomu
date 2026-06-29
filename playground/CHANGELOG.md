@@ -620,3 +620,8 @@
 - u-618: add utility (bg #65a30d, pad 618px)
 - u-619: add utility (bg #ea580c, pad 619px)
 - u-620: add utility (bg #0d9488, pad 620px)
+- u-621: add utility (bg #2563eb, pad 621px)
+- u-622: add utility (bg #16a34a, pad 622px)
+- u-623: add utility (bg #dc2626, pad 623px)
+- u-624: add utility (bg #d97706, pad 624px)
+- u-625: add utility (bg #7c3aed, pad 625px)
