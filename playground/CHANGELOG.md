@@ -750,3 +750,8 @@
 - u-748: add utility (bg #65a30d, pad 748px)
 - u-749: add utility (bg #ea580c, pad 749px)
 - u-750: add utility (bg #0d9488, pad 750px)
+- u-751: add utility (bg #2563eb, pad 751px)
+- u-752: add utility (bg #16a34a, pad 752px)
+- u-753: add utility (bg #dc2626, pad 753px)
+- u-754: add utility (bg #d97706, pad 754px)
+- u-755: add utility (bg #7c3aed, pad 755px)
