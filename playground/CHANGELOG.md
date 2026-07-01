@@ -739,3 +739,4 @@
 - u-737: add utility (bg #db2777, pad 737px)
 - u-738: add utility (bg #65a30d, pad 738px)
 - u-739: add utility (bg #ea580c, pad 739px)
+- u-740: add utility (bg #0d9488, pad 740px)
