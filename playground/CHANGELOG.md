@@ -715,3 +715,8 @@
 - u-713: add utility (bg #dc2626, pad 713px)
 - u-714: add utility (bg #d97706, pad 714px)
 - u-715: add utility (bg #7c3aed, pad 715px)
+- u-716: add utility (bg #0891b2, pad 716px)
+- u-717: add utility (bg #db2777, pad 717px)
+- u-718: add utility (bg #65a30d, pad 718px)
+- u-719: add utility (bg #ea580c, pad 719px)
+- u-720: add utility (bg #0d9488, pad 720px)
