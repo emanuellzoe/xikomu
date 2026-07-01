@@ -40,6 +40,56 @@ export default function Landing() {
     };
   }, []);
 
+  // Interactive hero coin: tap (or let it auto-flip) to spin and land on a
+  // random Heads/Tails. Transform accumulates so each flip keeps spinning
+  // forward; CSS eases the deceleration into a satisfying settle.
+  useEffect(() => {
+    const wrapper = document.getElementById("svg-wrapper");
+    const hint = document.getElementById("hero-coin-hint");
+    const result = document.getElementById("hero-coin-result");
+    let rotation = 0;
+    let flipping = false;
+    let autoTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const flip = () => {
+      const coin = document.getElementById("hero-coin");
+      if (!coin || flipping) return;
+      flipping = true;
+      const heads = Math.random() < 0.5;
+      const turns = 4 + Math.floor(Math.random() * 2); // 4–5 full spins
+      const aligned = rotation - (rotation % 360); // current heads-facing base
+      rotation = aligned + turns * 360 + (heads ? 0 : 180);
+      coin.style.transform = `rotateY(${rotation}deg)`;
+      if (hint) hint.style.opacity = "0";
+      if (result) result.style.opacity = "0";
+      setTimeout(() => {
+        if (result) {
+          result.textContent = heads ? "Heads" : "Tails";
+          result.style.color = heads ? "#FF5E00" : "#78716C";
+          result.style.opacity = "1";
+        }
+        flipping = false;
+      }, 1150);
+    };
+
+    const schedule = () => { autoTimer = setTimeout(tick, 4200); };
+    const tick = () => { flip(); schedule(); };
+    const onClick = (e: Event) => {
+      if (!(e.target as HTMLElement).closest("#hero-coin")) return;
+      if (autoTimer) clearTimeout(autoTimer);
+      flip();
+      schedule();
+    };
+
+    if (wrapper) wrapper.addEventListener("click", onClick);
+    schedule(); // start ambient auto-flips
+
+    return () => {
+      if (autoTimer) clearTimeout(autoTimer);
+      if (wrapper) wrapper.removeEventListener("click", onClick);
+    };
+  }, []);
+
   useEffect(() => {
     let rafId = 0;
     let running = true;
@@ -52,7 +102,9 @@ export default function Landing() {
     const svgWrapper = document.getElementById("svg-wrapper");
     let loopInterval: ReturnType<typeof setInterval> | undefined;
     const onSvgEnter = () => {
-      if (!svgWrapper) return;
+      // Only the legacy SVG draw-loop needs the innerHTML restart; skip it when
+      // the wrapper holds the interactive coin (resetting would wipe its state).
+      if (!svgWrapper || !svgWrapper.querySelector("svg")) return;
       const restart = () => { svgWrapper.innerHTML = svgWrapper.innerHTML; };
       restart();
       loopInterval = setInterval(restart, 3200);
@@ -102,88 +154,7 @@ export default function Landing() {
     };
     if (slider) slider.addEventListener("input", onSlider);
 
-    // FAQ 3D wheel
-    const faqCarousel = document.getElementById("faq-carousel");
-    const faqCards = Array.from(document.querySelectorAll<HTMLElement>(".faq-card-wrapper"));
-    const faqBtnPrev = document.getElementById("faq-prev");
-    const faqBtnNext = document.getElementById("faq-next");
-    const faqScene = document.querySelector(".faq-scene");
-    let onResize: (() => void) | undefined;
-    if (faqCarousel && faqCards.length > 0) {
-      let faqAngle = 0;
-      const faqNumCards = faqCards.length;
-      const faqTheta = 360 / faqNumCards;
-      const getFaqRadius = () => (window.innerWidth < 640 ? 250 : 380);
-      const layoutFaqCards = () => {
-        const radius = getFaqRadius();
-        faqCards.forEach((card, index) => {
-          card.style.transform = `rotateY(${index * faqTheta}deg) translateZ(${radius}px)`;
-        });
-      };
-      // Clickable position dots — one per card, so the wheel is easy to navigate.
-      const faqDotEls: HTMLElement[] = [];
-      const faqDots = document.getElementById("faq-dots");
-      const updateFaqCarousel = () => {
-        faqCarousel.style.transform = `rotateY(${faqAngle}deg)`;
-        const normalized = ((faqAngle % 360) + 360) % 360;
-        const activeIdx = Math.round((360 - normalized) / faqTheta) % faqNumCards;
-        faqCards.forEach((card, idx) => {
-          const inner = card.querySelector(".faq-card-inner");
-          if (idx === activeIdx) card.classList.add("is-active");
-          else { card.classList.remove("is-active"); inner?.classList.remove("is-flipped"); }
-        });
-        faqDotEls.forEach((dot, idx) => dot.classList.toggle("is-active", idx === activeIdx));
-      };
-      // Rotate the wheel to a given card along the shortest path.
-      const goToFaqCard = (idx: number) => {
-        const targetAngle = -idx * faqTheta;
-        let shortest = (targetAngle - faqAngle) % 360;
-        if (shortest > 180) shortest -= 360;
-        if (shortest < -180) shortest += 360;
-        faqAngle += shortest;
-        updateFaqCarousel();
-      };
-      if (faqDots) {
-        faqCards.forEach((_, idx) => {
-          const dot = document.createElement("button");
-          dot.className = "faq-dot";
-          dot.type = "button";
-          dot.setAttribute("aria-label", `Show FAQ ${idx + 1}`);
-          dot.addEventListener("click", () => goToFaqCard(idx));
-          faqDots.appendChild(dot);
-          faqDotEls.push(dot);
-        });
-      }
-      layoutFaqCards();
-      updateFaqCarousel();
-      onResize = layoutFaqCards;
-      window.addEventListener("resize", onResize);
-      faqBtnNext?.addEventListener("click", () => { faqAngle -= faqTheta; updateFaqCarousel(); });
-      faqBtnPrev?.addEventListener("click", () => { faqAngle += faqTheta; updateFaqCarousel(); });
-      faqCards.forEach((card, idx) => {
-        card.addEventListener("click", () => {
-          if (!card.classList.contains("is-active")) {
-            goToFaqCard(idx);
-          } else {
-            card.querySelector(".faq-card-inner")?.classList.toggle("is-flipped");
-          }
-        });
-      });
-      if (faqScene) {
-        let faqStartX = 0;
-        let faqIsDragging = false;
-        faqScene.addEventListener("touchstart", (e) => {
-          faqStartX = (e as TouchEvent).touches[0].clientX; faqIsDragging = true;
-        }, { passive: true } as AddEventListenerOptions);
-        faqScene.addEventListener("touchend", (e) => {
-          if (!faqIsDragging) return;
-          const diffX = faqStartX - (e as TouchEvent).changedTouches[0].clientX;
-          if (diffX > 50) { faqAngle -= faqTheta; updateFaqCarousel(); }
-          else if (diffX < -50) { faqAngle += faqTheta; updateFaqCarousel(); }
-          faqIsDragging = false;
-        });
-      }
-    }
+    // FAQ is a static <details> accordion now (see landingHtml) — no JS needed.
 
     // Scroll-driven animations
     const parallaxSection = document.getElementById("collections");
@@ -300,7 +271,6 @@ export default function Landing() {
         svgWrapper.removeEventListener("mouseleave", onSvgLeave);
       }
       if (slider) slider.removeEventListener("input", onSlider);
-      if (onResize) window.removeEventListener("resize", onResize);
       ctaObserver.disconnect();
     };
   }, []);

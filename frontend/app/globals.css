@@ -4,6 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smooth in-page navigation for anchor CTAs (How it works, footer links) */
+html { scroll-behavior: smooth; }
+
 /* Font helpers */
 .font-geist { font-family: 'Geist', sans-serif !important; }
 .font-montserrat { font-family: 'Montserrat', sans-serif !important; }
@@ -215,79 +218,33 @@
   opacity: 1;
 }
 
-/* FAQ 3D Wheel Styles */
-.faq-scene {
-  perspective: 1500px;
+/* Simple FAQ accordion (native <details>) */
+.faq-item {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
-.faq-carousel {
-  transform-style: preserve-3d;
-  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+.faq-item[open] {
+  border-color: rgba(255, 94, 0, 0.35);
+  box-shadow: 0 10px 30px -18px rgba(255, 94, 0, 0.45);
 }
-.faq-card-wrapper {
-  transform-style: preserve-3d;
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  transition: opacity 0.5s ease, filter 0.5s ease;
-}
-.faq-card-inner {
-  transform-style: preserve-3d;
-  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-  width: 100%; height: 100%;
-  position: relative;
-}
-.faq-card-front, .faq-card-back {
-  backface-visibility: hidden;
-  position: absolute;
-  inset: 0;
-}
-.faq-card-back {
-  transform: rotateY(180deg);
-}
-.faq-card-wrapper.is-active:hover .faq-card-inner,
-.faq-card-inner.is-flipped {
-  transform: rotateY(180deg);
-}
-.faq-card-wrapper:not(.is-active) {
-  opacity: 0.35;
-  filter: blur(2px);
+.faq-item > summary {
+  list-style: none;
   cursor: pointer;
 }
-.faq-card-wrapper.is-active {
-  opacity: 1;
-  filter: blur(0);
-  z-index: 20;
+.faq-item > summary::-webkit-details-marker {
+  display: none;
 }
-@keyframes pulseGlowWheel {
-  0% { box-shadow: 0 0 0 0 rgba(232, 160, 126, 0.1); }
-  50% { box-shadow: 0 0 30px 0 rgba(232, 160, 126, 0.3); }
-  100% { box-shadow: 0 0 0 0 rgba(232, 160, 126, 0.1); }
+.faq-chevron {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.pulse-glow-wheel {
-  animation: pulseGlowWheel 4s infinite ease-in-out;
+.faq-item[open] .faq-chevron {
+  transform: rotate(180deg);
 }
-.faq-dots {
-  display: flex;
-  gap: 0.6rem;
-  align-items: center;
-  justify-content: center;
+.faq-answer {
+  animation: faqReveal 0.35s ease;
 }
-.faq-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 9999px;
-  background: rgba(120, 113, 108, 0.3);
-  cursor: pointer;
-  border: none;
-  padding: 0;
-  transition: width 0.45s cubic-bezier(0.25, 1, 0.5, 1), background 0.45s ease;
-}
-.faq-dot:hover {
-  background: rgba(255, 94, 0, 0.55);
-}
-.faq-dot.is-active {
-  width: 30px;
-  background: #ff5e00;
+@keyframes faqReveal {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
@@ -379,3 +336,11 @@
   50% { transform: rotate(-12deg) translateY(-10px); }
 }
 .coin-float-slow { animation: coinFloatSlow 5s ease-in-out infinite; }
+
+/* Hero coin — interactive 3D flip (click or ambient auto-flip). The transform is
+   JS-driven (accumulating rotateY); this easing settle makes it spin fast then
+   decelerate onto a random Heads/Tails face. */
+.hero-coin {
+  transition: transform 1.15s cubic-bezier(0.15, 0.85, 0.25, 1);
+  will-change: transform;
+}
