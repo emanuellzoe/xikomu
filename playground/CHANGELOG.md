@@ -734,3 +734,4 @@
 - u-732: add utility (bg #16a34a, pad 732px)
 - u-733: add utility (bg #dc2626, pad 733px)
 - u-734: add utility (bg #d97706, pad 734px)
+- u-735: add utility (bg #7c3aed, pad 735px)
