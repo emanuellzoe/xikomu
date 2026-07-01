@@ -703,3 +703,4 @@
 - u-701: add utility (bg #2563eb, pad 701px)
 - u-702: add utility (bg #16a34a, pad 702px)
 - u-703: add utility (bg #dc2626, pad 703px)
+- u-704: add utility (bg #d97706, pad 704px)
