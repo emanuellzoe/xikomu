@@ -795,3 +795,8 @@
 - u-793: add utility (bg #dc2626, pad 793px)
 - u-794: add utility (bg #d97706, pad 794px)
 - u-795: add utility (bg #7c3aed, pad 795px)
+- u-796: add utility (bg #0891b2, pad 796px)
+- u-797: add utility (bg #db2777, pad 797px)
+- u-798: add utility (bg #65a30d, pad 798px)
+- u-799: add utility (bg #ea580c, pad 799px)
+- u-800: add utility (bg #0d9488, pad 800px)
