@@ -719,3 +719,4 @@
 - u-717: add utility (bg #db2777, pad 717px)
 - u-718: add utility (bg #65a30d, pad 718px)
 - u-719: add utility (bg #ea580c, pad 719px)
+- u-720: add utility (bg #0d9488, pad 720px)
