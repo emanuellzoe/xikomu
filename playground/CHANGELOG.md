@@ -768,3 +768,4 @@
 - u-766: add utility (bg #0891b2, pad 766px)
 - u-767: add utility (bg #db2777, pad 767px)
 - u-768: add utility (bg #65a30d, pad 768px)
+- u-769: add utility (bg #ea580c, pad 769px)
