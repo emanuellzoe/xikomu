@@ -787,3 +787,4 @@
 - u-785: add utility (bg #7c3aed, pad 785px)
 - u-786: add utility (bg #0891b2, pad 786px)
 - u-787: add utility (bg #db2777, pad 787px)
+- u-788: add utility (bg #65a30d, pad 788px)
