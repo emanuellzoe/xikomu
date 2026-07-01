@@ -13,7 +13,7 @@ export const landingHtml = String.raw`
 
             <div class="hidden md:flex items-center gap-8 text-lg font-light text-stone-500">
                 <a href="#features-section" class="hover:text-stone-900 transition-colors">Features</a>
-                <a href="#payment-section" class="hover:text-stone-900 transition-colors">How it Works</a>
+                <a href="#how-it-works" class="hover:text-stone-900 transition-colors">How it Works</a>
                 <a href="#faq" class="hover:text-stone-900 transition-colors">FAQ</a>
             </div>
 
@@ -47,7 +47,7 @@ export const landingHtml = String.raw`
 
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                     <a href="/app" class="text-center hover:bg-[#CC4B00] transition-all sm:w-auto text-xl font-normal text-white bg-[#FF5E00] w-full rounded-full pt-4 pr-8 pb-4 pl-8 shadow-xl">Play Now</a>
-                    <a href="#payment-section" class="sm:w-auto hover:text-stone-900 transition-colors flex hover:border-stone-200 text-xl font-normal text-stone-600 w-full border-transparent border rounded-full pt-4 pr-8 pb-4 pl-8 gap-x-2 gap-y-2 items-center justify-center">See How It Works</a>
+                    <a href="#how-it-works" class="sm:w-auto hover:text-stone-900 transition-colors flex hover:border-stone-200 text-xl font-normal text-stone-600 w-full border-transparent border rounded-full pt-4 pr-8 pb-4 pl-8 gap-x-2 gap-y-2 items-center justify-center">See How It Works</a>
                 </div>
             </div>
 
@@ -61,10 +61,19 @@ export const landingHtml = String.raw`
                         <div class="coin-float-slow absolute w-36 h-36 lg:w-44 lg:h-44 rounded-full flex items-center justify-center border-4 border-stone-300" style="left: 28%; top: 44%; background: radial-gradient(circle at 35% 30%, #E7E5E4, #A8A29E 60%, #78716C); box-shadow: 0 18px 40px -10px rgba(0,0,0,0.25);">
                             <span class="font-playfair text-5xl lg:text-6xl text-white">T</span>
                         </div>
-                        <div class="coin-float relative w-52 h-52 lg:w-64 lg:h-64 rounded-full flex items-center justify-center border-4 border-[#FF8A4D]" style="background: radial-gradient(circle at 35% 30%, #FF8A4D, #FF5E00 60%, #CC4B00); box-shadow: 0 24px 50px -12px rgba(255, 94, 0, 0.55);">
-                            <span class="pointer-events-none absolute -top-3 -left-2 w-28 h-28 rounded-full opacity-60" style="background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.85), rgba(255,255,255,0) 60%);"></span>
-                            <span class="font-playfair text-8xl lg:text-9xl text-white relative">H</span>
+                        <div class="coin-float relative w-52 h-52 lg:w-64 lg:h-64" style="perspective: 1200px;">
+                            <div id="hero-coin" class="hero-coin absolute inset-0 rounded-full" style="transform-style: preserve-3d; cursor: pointer;" role="button" tabindex="0" aria-label="Flip the coin">
+                                <div class="absolute inset-0 rounded-full flex items-center justify-center border-4 border-[#FF8A4D]" style="background: radial-gradient(circle at 35% 30%, #FF8A4D, #FF5E00 60%, #CC4B00); box-shadow: 0 24px 50px -12px rgba(255, 94, 0, 0.55); backface-visibility: hidden;">
+                                    <span class="pointer-events-none absolute -top-3 -left-2 w-28 h-28 rounded-full opacity-60" style="background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.85), rgba(255,255,255,0) 60%);"></span>
+                                    <span class="font-playfair text-8xl lg:text-9xl text-white relative">H</span>
+                                </div>
+                                <div class="absolute inset-0 rounded-full flex items-center justify-center border-4 border-stone-300" style="background: radial-gradient(circle at 35% 30%, #E7E5E4, #A8A29E 60%, #78716C); box-shadow: 0 18px 40px -10px rgba(0,0,0,0.25); backface-visibility: hidden; transform: rotateY(180deg);">
+                                    <span class="font-playfair text-8xl lg:text-9xl text-white">T</span>
+                                </div>
+                            </div>
                         </div>
+                        <div id="hero-coin-hint" class="absolute left-1/2 bottom-0 -translate-x-1/2 text-[0.7rem] uppercase tracking-[0.2em] text-stone-400 font-montserrat select-none pointer-events-none transition-opacity duration-300">Tap to flip</div>
+                        <div id="hero-coin-result" class="absolute left-1/2 bottom-0 -translate-x-1/2 text-base font-playfair tracking-wide opacity-0 select-none pointer-events-none transition-opacity duration-300"></div>
                     </div>
                 </div>
             </div>
@@ -112,6 +121,46 @@ export const landingHtml = String.raw`
                 <div class="flex items-center gap-2.5 text-stone-600"><iconify-icon icon="solar:routing-2-linear" class="text-[#FF5E00] text-xl" stroke-width="1.5"></iconify-icon><span class="text-[11px] sm:text-xs uppercase tracking-[0.15em] font-medium font-montserrat">Powered by CELO</span></div>
             </div>
         </div>
+
+        <!-- How it works — simple 3 steps -->
+        <section id="how-it-works" class="bg-white border-t border-stone-200 py-20 lg:py-28">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="text-center mb-14">
+                    <span class="uppercase text-xs font-semibold tracking-[0.2em] text-[#FF5E00] font-montserrat">How it works</span>
+                    <h2 class="text-4xl lg:text-5xl font-playfair text-[#2C2B29] tracking-tight mt-3">Flip in three simple steps</h2>
+                    <p class="text-lg text-stone-500 font-light max-w-xl mx-auto mt-4">No sign-up, no jargon. If you can call Heads or Tails, you can play.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-[#FAFAFA] border border-stone-200 rounded-3xl p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-12 h-12 rounded-2xl bg-[#FF5E00]/10 text-[#FF5E00] flex items-center justify-center"><iconify-icon icon="solar:wallet-linear" class="text-2xl"></iconify-icon></div>
+                            <span class="text-5xl font-playfair text-stone-200">1</span>
+                        </div>
+                        <h3 class="text-xl font-normal text-[#2C2B29] mb-2">Buy chips with CELO</h3>
+                        <p class="text-stone-500 font-light leading-relaxed">Top up in MiniPay and turn CELO into chips. 1 chip = 1 CELO &mdash; your funds, never locked.</p>
+                    </div>
+                    <div class="bg-[#FAFAFA] border border-stone-200 rounded-3xl p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-12 h-12 rounded-2xl bg-[#FF5E00]/10 text-[#FF5E00] flex items-center justify-center"><iconify-icon icon="solar:refresh-linear" class="text-2xl"></iconify-icon></div>
+                            <span class="text-5xl font-playfair text-stone-200">2</span>
+                        </div>
+                        <h3 class="text-xl font-normal text-[#2C2B29] mb-2">Call heads or tails</h3>
+                        <p class="text-stone-500 font-light leading-relaxed">Pick a side, set your bet, and flip. The on-chain contract settles instantly &mdash; a fair 50/50.</p>
+                    </div>
+                    <div class="bg-[#FAFAFA] border border-stone-200 rounded-3xl p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-12 h-12 rounded-2xl bg-[#FF5E00]/10 text-[#FF5E00] flex items-center justify-center"><iconify-icon icon="solar:cup-star-linear" class="text-2xl"></iconify-icon></div>
+                            <span class="text-5xl font-playfair text-stone-200">3</span>
+                        </div>
+                        <h3 class="text-xl font-normal text-[#2C2B29] mb-2">Win 1.95&times; &amp; cash out</h3>
+                        <p class="text-stone-500 font-light leading-relaxed">Win and your chips grow by 1.95&times;. Cash chips back to CELO anytime &mdash; instant, non-custodial.</p>
+                    </div>
+                </div>
+                <div class="text-center mt-12">
+                    <a href="/app" class="inline-flex items-center justify-center gap-2 rounded-full bg-[#FF5E00] px-8 py-3.5 text-lg font-normal text-white shadow-brand-lg hover:bg-[#CC4B00] transition-colors">Start flipping</a>
+                </div>
+            </div>
+        </section>
 
         <!-- Dynamic Card Deck Spread Section -->
         <section id="features-section" class="h-[250vh] relative bg-[#FAFAFA] border-t border-stone-200 z-10">
@@ -310,65 +359,70 @@ export const landingHtml = String.raw`
                 <p class="text-xl text-[#FF5E00] font-montserrat font-light max-w-3xl mx-auto leading-relaxed">Everything you need to know about Xikomu Lucky Flip &mdash; how it works, whether it is fair, how to cash out, and how to get started even if you are brand new to crypto.</p>
             </div>
 
-            <div class="faq-scene relative w-full max-w-6xl mx-auto h-[480px] sm:h-[550px] flex items-center justify-center">
-                <button id="faq-prev" class="absolute left-2 sm:left-10 z-50 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full border border-stone-200 flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-white transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-[#FF5E00]/50"><iconify-icon icon="solar:arrow-left-linear" class="text-2xl"></iconify-icon></button>
-                <button id="faq-next" class="absolute right-2 sm:right-10 z-50 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full border border-stone-200 flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-white transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-[#FF5E00]/50"><iconify-icon icon="solar:arrow-right-linear" class="text-2xl"></iconify-icon></button>
+            <div class="max-w-3xl mx-auto px-6 relative z-10 flex flex-col gap-4">
+                <details class="faq-item bg-white border border-stone-200 rounded-2xl px-6 shadow-sm" open>
+                    <summary class="flex items-center justify-between gap-4 py-5">
+                        <span class="font-playfair text-lg sm:text-xl text-[#2C2B29] text-left">How does the coin flip work?</span>
+                        <iconify-icon icon="solar:alt-arrow-down-linear" class="faq-chevron text-2xl text-[#FF5E00] shrink-0"></iconify-icon>
+                    </summary>
+                    <p class="faq-answer text-stone-600 font-montserrat font-light leading-relaxed pb-6">You buy chips with CELO, call Heads or Tails, and set a bet. The on-chain contract settles instantly &mdash; win and you receive 1.95&times; your bet in chips, ready to cash out anytime.</p>
+                </details>
 
-                <div id="faq-carousel" class="faq-carousel w-[280px] sm:w-[360px] h-[400px] sm:h-[480px] relative z-20">
-                    <div class="faq-card-wrapper group is-active">
-                        <div class="faq-card-inner">
-                            <div class="faq-card-front bg-white/60 backdrop-blur-xl border border-stone-200 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center p-8 text-center pulse-glow-wheel"><iconify-icon icon="solar:bolt-circle-linear" class="text-4xl text-[#FF8A4D] mb-6"></iconify-icon><h3 class="text-2xl sm:text-3xl font-playfair text-[#2C2B29] leading-snug">How does the coin flip work?</h3><div class="absolute bottom-6 text-xs text-[#FF5E00] font-montserrat tracking-widest uppercase flex items-center gap-2">Tap to reveal <iconify-icon icon="solar:refresh-linear" class="text-sm"></iconify-icon></div></div>
-                            <div class="faq-card-back bg-stone-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-end"><div class="absolute inset-0 z-0" style="background: radial-gradient(circle at 30% 25%, #FF8A4D, #CC4B00 55%, #161514);"></div><div class="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/80 to-stone-900/40 z-10"></div><div class="relative z-20 p-6 sm:p-8 h-full flex flex-col"><h4 class="text-xl font-playfair text-white mb-4 border-b border-white/20 pb-4 shrink-0">How it works</h4><div class="overflow-y-auto hide-scrollbar flex-1 pb-2"><p class="text-sm sm:text-base text-stone-200 font-montserrat font-light leading-relaxed">You buy chips with CELO, call Heads or Tails, and set a bet. The on-chain contract settles instantly &mdash; win and you receive 1.95&times; your bet in chips, ready to cash out anytime.</p></div></div></div>
-                        </div>
-                    </div>
+                <details class="faq-item bg-white border border-stone-200 rounded-2xl px-6 shadow-sm">
+                    <summary class="flex items-center justify-between gap-4 py-5">
+                        <span class="font-playfair text-lg sm:text-xl text-[#2C2B29] text-left">Is it fair? Can the house cheat?</span>
+                        <iconify-icon icon="solar:alt-arrow-down-linear" class="faq-chevron text-2xl text-[#FF5E00] shrink-0"></iconify-icon>
+                    </summary>
+                    <p class="faq-answer text-stone-600 font-montserrat font-light leading-relaxed pb-6">No. Xikomu runs on an immutable, open-source contract with a fixed 1.95&times; payout on a 50/50 flip. Every outcome is settled on-chain and verifiable on Celoscan &mdash; the house cannot tilt the odds.</p>
+                </details>
 
-                    <div class="faq-card-wrapper group">
-                        <div class="faq-card-inner">
-                            <div class="faq-card-front bg-white/60 backdrop-blur-xl border border-stone-200 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center p-8 text-center pulse-glow-wheel"><iconify-icon icon="solar:shield-check-linear" class="text-4xl text-[#FF8A4D] mb-6"></iconify-icon><h3 class="text-2xl sm:text-3xl font-playfair text-[#2C2B29] leading-snug">Is it fair? Can the house cheat?</h3><div class="absolute bottom-6 text-xs text-[#FF5E00] font-montserrat tracking-widest uppercase flex items-center gap-2">Tap to reveal <iconify-icon icon="solar:refresh-linear" class="text-sm"></iconify-icon></div></div>
-                            <div class="faq-card-back bg-stone-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-end"><div class="absolute inset-0 z-0" style="background: radial-gradient(circle at 30% 25%, #FF8A4D, #CC4B00 55%, #161514);"></div><div class="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/80 to-stone-900/40 z-10"></div><div class="relative z-20 p-6 sm:p-8 h-full flex flex-col"><h4 class="text-xl font-playfair text-white mb-4 border-b border-white/20 pb-4 shrink-0">Fairness</h4><div class="overflow-y-auto hide-scrollbar flex-1 pb-2"><p class="text-sm sm:text-base text-stone-200 font-montserrat font-light leading-relaxed">No. Xikomu runs on an immutable, open-source contract with a fixed 1.95&times; payout on a 50/50 flip. Every outcome is settled on-chain and verifiable on Celoscan &mdash; the house cannot tilt the odds.</p></div></div></div>
-                        </div>
-                    </div>
+                <details class="faq-item bg-white border border-stone-200 rounded-2xl px-6 shadow-sm">
+                    <summary class="flex items-center justify-between gap-4 py-5">
+                        <span class="font-playfair text-lg sm:text-xl text-[#2C2B29] text-left">Can I cash out my chips anytime?</span>
+                        <iconify-icon icon="solar:alt-arrow-down-linear" class="faq-chevron text-2xl text-[#FF5E00] shrink-0"></iconify-icon>
+                    </summary>
+                    <p class="faq-answer text-stone-600 font-montserrat font-light leading-relaxed pb-6">Yes. Cash out your chip balance back to CELO whenever you want &mdash; 1 chip = 1 CELO, and your funds are never locked. Play as much or as little as you like.</p>
+                </details>
 
-                    <div class="faq-card-wrapper group">
-                        <div class="faq-card-inner">
-                            <div class="faq-card-front bg-white/60 backdrop-blur-xl border border-stone-200 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center p-8 text-center pulse-glow-wheel"><iconify-icon icon="solar:refresh-linear" class="text-4xl text-[#FF8A4D] mb-6"></iconify-icon><h3 class="text-2xl sm:text-3xl font-playfair text-[#2C2B29] leading-snug">Can I cash out my chips anytime?</h3><div class="absolute bottom-6 text-xs text-[#FF5E00] font-montserrat tracking-widest uppercase flex items-center gap-2">Tap to reveal <iconify-icon icon="solar:refresh-linear" class="text-sm"></iconify-icon></div></div>
-                            <div class="faq-card-back bg-stone-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-end"><div class="absolute inset-0 z-0" style="background: radial-gradient(circle at 30% 25%, #FF8A4D, #CC4B00 55%, #161514);"></div><div class="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/80 to-stone-900/40 z-10"></div><div class="relative z-20 p-6 sm:p-8 h-full flex flex-col"><h4 class="text-xl font-playfair text-white mb-4 border-b border-white/20 pb-4 shrink-0">Flexibility</h4><div class="overflow-y-auto hide-scrollbar flex-1 pb-2"><p class="text-sm sm:text-base text-stone-200 font-montserrat font-light leading-relaxed">Yes. Cash out your chip balance back to CELO whenever you want &mdash; 1 chip = 1 CELO, and your funds are never locked. Play as much or as little as you like.</p></div></div></div>
-                        </div>
-                    </div>
+                <details class="faq-item bg-white border border-stone-200 rounded-2xl px-6 shadow-sm">
+                    <summary class="flex items-center justify-between gap-4 py-5">
+                        <span class="font-playfair text-lg sm:text-xl text-[#2C2B29] text-left">New to crypto? Can I still play?</span>
+                        <iconify-icon icon="solar:alt-arrow-down-linear" class="faq-chevron text-2xl text-[#FF5E00] shrink-0"></iconify-icon>
+                    </summary>
+                    <p class="faq-answer text-stone-600 font-montserrat font-light leading-relaxed pb-6">Absolutely. If you can call Heads or Tails, you can play. Xikomu runs inside MiniPay &mdash; no seed phrases to memorize, no exchanges, no jargon. Top up a little CELO, buy chips, and you are flipping in seconds.</p>
+                </details>
 
-                    <div class="faq-card-wrapper group">
-                        <div class="faq-card-inner">
-                            <div class="faq-card-front bg-white/60 backdrop-blur-xl border border-stone-200 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center p-8 text-center pulse-glow-wheel"><iconify-icon icon="solar:user-rounded-linear" class="text-4xl text-[#FF8A4D] mb-6"></iconify-icon><h3 class="text-2xl sm:text-3xl font-playfair text-[#2C2B29] leading-snug">New to crypto? Can I still play?</h3><div class="absolute bottom-6 text-xs text-[#FF5E00] font-montserrat tracking-widest uppercase flex items-center gap-2">Tap to reveal <iconify-icon icon="solar:refresh-linear" class="text-sm"></iconify-icon></div></div>
-                            <div class="faq-card-back bg-stone-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-end"><div class="absolute inset-0 z-0" style="background: radial-gradient(circle at 30% 25%, #FF8A4D, #CC4B00 55%, #161514);"></div><div class="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/80 to-stone-900/40 z-10"></div><div class="relative z-20 p-6 sm:p-8 h-full flex flex-col"><h4 class="text-xl font-playfair text-white mb-4 border-b border-white/20 pb-4 shrink-0">Beginner friendly</h4><div class="overflow-y-auto hide-scrollbar flex-1 pb-2"><p class="text-sm sm:text-base text-stone-200 font-montserrat font-light leading-relaxed">Absolutely. If you can call Heads or Tails, you can play. Xikomu runs inside MiniPay &mdash; no seed phrases to memorize, no exchanges, no jargon. Top up a little CELO, buy chips, and you are flipping in seconds.</p></div></div></div>
-                        </div>
-                    </div>
-
-                    <div class="faq-card-wrapper group">
-                        <div class="faq-card-inner">
-                            <div class="faq-card-front bg-white/60 backdrop-blur-xl border border-stone-200 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center p-8 text-center pulse-glow-wheel"><iconify-icon icon="solar:rocket-2-linear" class="text-4xl text-[#FF8A4D] mb-6"></iconify-icon><h3 class="text-2xl sm:text-3xl font-playfair text-[#2C2B29] leading-snug">How do I get started?</h3><div class="absolute bottom-6 text-xs text-[#FF5E00] font-montserrat tracking-widest uppercase flex items-center gap-2">Tap to reveal <iconify-icon icon="solar:refresh-linear" class="text-sm"></iconify-icon></div></div>
-                            <div class="faq-card-back bg-stone-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-end"><div class="absolute inset-0 z-0" style="background: radial-gradient(circle at 30% 25%, #FF8A4D, #CC4B00 55%, #161514);"></div><div class="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/80 to-stone-900/40 z-10"></div><div class="relative z-20 p-6 sm:p-8 h-full flex flex-col"><h4 class="text-xl font-playfair text-white mb-4 border-b border-white/20 pb-4 shrink-0">Get started in 3 steps</h4><div class="overflow-y-auto hide-scrollbar flex-1 pb-2"><p class="text-sm sm:text-base text-stone-200 font-montserrat font-light leading-relaxed">1. Open Xikomu in MiniPay and tap <span class="text-[#FF8A4D]">Play</span>. 2. Buy chips with CELO &mdash; 1 chip = 1 CELO. 3. Pick a side, set your bet, and flip. Winnings hit your chip balance instantly, ready to cash out anytime.</p></div></div></div>
-                        </div>
-                    </div>
-                </div>
+                <details class="faq-item bg-white border border-stone-200 rounded-2xl px-6 shadow-sm">
+                    <summary class="flex items-center justify-between gap-4 py-5">
+                        <span class="font-playfair text-lg sm:text-xl text-[#2C2B29] text-left">How do I get started?</span>
+                        <iconify-icon icon="solar:alt-arrow-down-linear" class="faq-chevron text-2xl text-[#FF5E00] shrink-0"></iconify-icon>
+                    </summary>
+                    <p class="faq-answer text-stone-600 font-montserrat font-light leading-relaxed pb-6">1. Open Xikomu in MiniPay and tap <span class="text-[#FF8A4D]">Play</span>. 2. Buy chips with CELO &mdash; 1 chip = 1 CELO. 3. Pick a side, set your bet, and flip. Winnings hit your chip balance instantly, ready to cash out anytime.</p>
+                </details>
             </div>
-
-            <div id="faq-dots" class="faq-dots relative z-30 mt-10" aria-label="FAQ navigation"></div>
-            <div class="text-center mt-6 text-[#FF5E00] font-montserrat text-sm tracking-widest uppercase flex items-center justify-center gap-2 lg:hidden"><iconify-icon icon="solar:hand-swipe-linear" class="text-lg"></iconify-icon> Swipe to rotate</div>
         </section>
 
         <!-- CTA Section -->
-        <section class="lg:py-32 bg-white border-stone-200 border-t pt-24 pb-24 overflow-hidden relative">
+        <section class="relative lg:py-32 bg-white border-t border-stone-200 pt-24 pb-24 overflow-hidden">
+            <div class="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] rounded-full bg-[#FF8A4D]/10 blur-3xl z-0"></div>
+            <div class="pointer-events-none absolute -bottom-24 -right-16 w-[26rem] h-[26rem] rounded-full bg-[#FF5E00]/5 blur-3xl z-0"></div>
             <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
-                <h2 id="cta-heading" class="lg:text-7xl xl:text-8xl leading-[1.05] text-5xl tracking-tight mb-12 flex flex-col font-normal items-center text-center w-full">
+                <span class="inline-flex items-center gap-2 mb-7 px-4 py-1.5 rounded-full border border-[#FF5E00]/30 bg-[#FF5E00]/5 text-[#FF5E00] text-xs font-semibold uppercase tracking-[0.18em] font-montserrat"><iconify-icon icon="solar:bolt-circle-linear" class="text-base"></iconify-icon> Ready to flip?</span>
+                <h2 id="cta-heading" class="text-5xl lg:text-7xl xl:text-8xl leading-[1.05] tracking-tight mb-8 flex flex-col font-normal items-center text-center w-full">
                     <span class="cta-bounce-enter block text-[#2C2B29] font-playfair">Pick a side.</span>
-                    <span class="font-playfair text-[#FF5E00] cta-bounce-enter block">Flip the coin.</span>
-                    <span class="font-playfair italic text-[#FFB380] cta-bounce-enter block">Xikomu does the rest.</span>
+                    <span class="cta-bounce-enter block font-playfair text-[#FF5E00]">Flip the coin.</span>
+                    <span class="cta-bounce-enter block font-playfair italic text-[#FFB380]">Xikomu does the rest.</span>
                 </h2>
-                <p class="text-2xl text-stone-500 max-w-2xl mr-auto mb-12 ml-auto font-light">Buy chips, call your flip, and win 1.95&times; &mdash; non-custodial, on Celo, right inside MiniPay.</p>
+                <p class="text-xl sm:text-2xl text-stone-500 max-w-2xl mx-auto mb-10 font-light leading-relaxed">Call heads or tails, win <span class="text-[#FF5E00] font-normal">1.95&times;</span>, and cash out anytime &mdash; provably fair and non-custodial, right inside MiniPay on Celo.</p>
                 <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-                    <a href="/app" class="sm:w-auto hover:bg-[#CC4B00] transition-colors flex btn-pulse text-xl font-normal text-white bg-[#FF5E00] w-full rounded-full pt-4 pr-8 pb-4 pl-8 relative gap-x-2 gap-y-2 items-center justify-center">Play Now</a>
-                    <button class="sm:w-auto hover:bg-stone-50 transition-all flex text-xl font-normal text-stone-900 bg-white w-full border-stone-200 border rounded-full pt-4 pr-8 pb-4 pl-8 gap-x-2 gap-y-2 items-center justify-center">Learn More</button>
+                    <a href="/app" class="btn-pulse w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-[#FF5E00] px-9 py-4 text-xl font-normal text-white shadow-brand-lg hover:bg-[#CC4B00] transition-colors">Play Now</a>
+                    <a href="#how-it-works" class="group w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-stone-200 bg-white px-9 py-4 text-xl font-normal text-stone-900 hover:bg-stone-50 hover:border-stone-300 transition-all">How it works <iconify-icon icon="solar:arrow-right-linear" class="text-xl transition-transform group-hover:translate-x-0.5"></iconify-icon></a>
                 </div>
+                <p class="mt-7 text-sm text-stone-400 font-light flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+                    <span class="inline-flex items-center gap-1.5"><iconify-icon icon="solar:check-circle-linear" class="text-[#FF5E00] text-base"></iconify-icon> No sign-up</span>
+                    <span class="inline-flex items-center gap-1.5"><iconify-icon icon="solar:check-circle-linear" class="text-[#FF5E00] text-base"></iconify-icon> Cash out anytime</span>
+                    <span class="inline-flex items-center gap-1.5"><iconify-icon icon="solar:check-circle-linear" class="text-[#FF5E00] text-base"></iconify-icon> Verified on Celoscan</span>
+                </p>
             </div>
         </section>
     </main>
@@ -381,7 +435,7 @@ export const landingHtml = String.raw`
                     <div class="flex items-center mb-6"><img src="/logo.png" alt="Xikomu" class="h-8 w-auto" /></div>
                     <p class="text-lg text-stone-500 max-w-xs font-light">Provably fair coin flips on Celo.</p>
                 </div>
-                <div><h4 class="text-base font-normal text-stone-900 mb-4 tracking-tight">Product</h4><ul class="space-y-3 text-lg font-light text-stone-500"><li><a href="#features-section" class="hover:text-stone-900 transition-colors">Features</a></li><li><a href="#payment-section" class="hover:text-stone-900 transition-colors">How it Works</a></li></ul></div>
+                <div><h4 class="text-base font-normal text-stone-900 mb-4 tracking-tight">Product</h4><ul class="space-y-3 text-lg font-light text-stone-500"><li><a href="#features-section" class="hover:text-stone-900 transition-colors">Features</a></li><li><a href="#how-it-works" class="hover:text-stone-900 transition-colors">How it Works</a></li></ul></div>
                 <div><h4 class="text-base font-normal text-stone-900 mb-4 tracking-tight">Project</h4><ul class="space-y-3 text-lg font-light text-stone-500"><li><a href="https://github.com/emanuellzoe/xikomu" target="_blank" rel="noopener noreferrer" class="hover:text-stone-900 transition-colors">GitHub</a></li><li><a href="#faq" class="hover:text-stone-900 transition-colors">FAQ</a></li></ul></div>
                 <div><h4 class="text-base font-normal text-stone-900 mb-4 tracking-tight">Legal</h4><ul class="space-y-3 text-lg font-light text-stone-500"><li><a href="#" class="hover:text-stone-900 transition-colors">Privacy Policy</a></li><li><a href="#" class="hover:text-stone-900 transition-colors">Terms of Service</a></li></ul></div>
             </div>

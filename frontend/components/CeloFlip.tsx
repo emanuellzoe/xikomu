@@ -333,7 +333,8 @@ export default function CeloFlip() {
               </div>
 
               {/* Choose side */}
-              <div className="grid grid-cols-2 gap-3 mt-4">
+              <p className="text-sm text-stone-500 font-light mt-5 mb-2">Your call</p>
+              <div className="grid grid-cols-2 gap-3">
                 <button onClick={() => setChoiceHeads(true)}
                   className={`flex items-center justify-center gap-2 rounded-2xl py-3 border-2 transition-all ${choiceHeads ? "border-[#FF5E00] bg-[#FF5E00]/5" : "border-stone-200 hover:border-stone-300"}`}>
                   <CoinMini heads /> <span className="font-medium text-stone-800">Heads</span>
@@ -345,7 +346,10 @@ export default function CeloFlip() {
               </div>
 
               {/* Bet */}
-              <p className="text-sm text-stone-500 mt-5 mb-2 font-light">Bet (CELO) · win pays 1.95×</p>
+              <div className="flex items-baseline justify-between mt-5 mb-2">
+                <p className="text-sm text-stone-500 font-light">Your bet (CELO)</p>
+                <span className="text-xs text-stone-400 font-light">win pays 1.95×</span>
+              </div>
 
               {/* Percent of your chips */}
               <div className="flex flex-wrap gap-2 mb-2">
@@ -362,7 +366,7 @@ export default function CeloFlip() {
                 className="w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-lg text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#FF5E00]/40"
                 placeholder="0.10" />
               <p className="text-xs text-stone-400 mt-1.5 mb-4 font-light">
-                Min {fmt(MIN_BET)} · Max {fmt(houseMaxBet < MAX_BET ? houseMaxBet : MAX_BET)} CELO{chips ? ` · you have ${fmt(chips)} chips` : ""}
+                Min {fmt(MIN_BET)} · Max {fmt(MAX_BET)} CELO{chips ? ` · you have ${fmt(chips)} chips` : ""}
               </p>
 
               <button onClick={doFlip} disabled={!configured || busy || !betValid}
@@ -378,7 +382,7 @@ export default function CeloFlip() {
                         : (chips ?? 0n) < betWei
                           ? "Buy more chips below"
                           : !houseCovers
-                            ? `House max ${fmt(houseMaxBet)} CELO right now`
+                            ? "Bet too high right now"
                             : `Flip for ${bet} CELO`}
               </button>
             </Card>
@@ -391,6 +395,7 @@ export default function CeloFlip() {
                   {busy && lastAction === "cashout" ? "Confirming…" : "Cash out all"}
                 </GhostBtn>
               </div>
+              <p className="text-sm text-stone-500 font-light mb-2">Buy more chips (CELO)</p>
               <div className="flex gap-2">
                 <input inputMode="decimal" value={buyAmt} onChange={(e) => setBuyAmt(e.target.value)}
                   className="flex-1 rounded-xl border border-stone-200 bg-white px-4 py-3 text-lg text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#FF5E00]/40"
@@ -408,7 +413,7 @@ export default function CeloFlip() {
             })()}
 
             <p className="text-center text-xs text-stone-400 font-light">
-              House pool: {house === undefined ? <Sk w="w-10" /> : fmt(house)} CELO · provably on-chain, low-stakes fun.
+              Provably fair on-chain · low-stakes fun.
             </p>
             </div>
             )}
@@ -418,7 +423,6 @@ export default function CeloFlip() {
                 address={address}
                 chips={chips}
                 walletBal={walletBal}
-                house={house}
                 explorer={explorer}
                 flip={flip}
                 onExit={() => disconnect()}
@@ -593,7 +597,6 @@ function ProfileTab({
   address,
   chips,
   walletBal,
-  house,
   explorer,
   flip,
   onExit,
@@ -601,7 +604,6 @@ function ProfileTab({
   address?: Address;
   chips?: bigint;
   walletBal?: bigint;
-  house?: bigint;
   explorer: string;
   flip: Address;
   onExit: () => void;
@@ -624,7 +626,6 @@ function ProfileTab({
         <dl className="space-y-3">
           <StatRow label="Chips" value={chips === undefined ? "…" : fmt(chips)} icon={<ChipIcon />} />
           <StatRow label="Wallet CELO" value={walletBal === undefined ? "…" : fmt(walletBal)} icon={<CeloIcon />} />
-          <StatRow label="House pool" value={house === undefined ? "…" : `${fmt(house)} CELO`} />
         </dl>
       </Card>
 
